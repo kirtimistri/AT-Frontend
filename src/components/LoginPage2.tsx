@@ -325,7 +325,6 @@ const LoginPage2 = () => {
 
         {/* ---- LEFT PANEL ---- */}
         <div className="relative z-[5] flex min-h-[auto] lg:min-h-screen flex-1 flex-col justify-between px-6 lg:px-[50px] pb-10 lg:pb-[50px] pt-8 lg:pt-10">
-          <div className="pointer-events-none absolute inset-0 z-0 bg-gradient-to-r from-[rgba(6,13,26,0.3)] via-[rgba(6,13,26,0.1)] to-[rgba(6,13,26,0.6)]" />
 
           <div>
             <div className="relative z-10 flex items-center gap-3 lg:gap-3.5">
