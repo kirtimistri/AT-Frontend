@@ -14,7 +14,7 @@ const LoginPage3 = () => {
   };
 
   return (
-    <div className="relative flex min-h-screen w-full items-center justify-center overflow-x-hidden bg-[#040b18] font-[Segoe_UI,Roboto,Helvetica_Neue,Arial,sans-serif]">
+    <div className="relative flex min-h-screen w-full items-center justify-center overflow-x-hidden bg-[#040b18] py-6 font-[Segoe_UI,Roboto,Helvetica_Neue,Arial,sans-serif]">
       {/* Background image */}
       <img src={bg3} alt="" className="pointer-events-none fixed inset-0 z-0 h-[100dvh] min-h-full w-full object-cover" />
 
@@ -25,7 +25,7 @@ const LoginPage3 = () => {
           <div className="relative flex h-[85px] w-[85px] items-center justify-center">
             <div className="absolute inset-[-5px] rounded-full border-[2.5px] border-[rgba(40,140,255,0.6)] shadow-[0_0_20px_rgba(40,140,255,0.3),0_0_40px_rgba(40,140,255,0.15),inset_0_0_20px_rgba(40,140,255,0.1)]" />
             <div className="absolute inset-[-12px] -z-10 rounded-full bg-[radial-gradient(circle,rgba(40,140,255,0.12)_0%,transparent_70%)]" />
-            <img src={logo} alt="Akbar Travels Logo" className="h-[70px] w-[70px] rounded-full border-2 border-[rgba(40,120,240,0.3)] object-cover" />
+            <img src={logo} alt="Akbar Bizvoy Logo" className="h-[70px] w-[70px] rounded-full border-2 border-[rgba(40,120,240,0.3)] object-cover" />
           </div>
         </div>
 

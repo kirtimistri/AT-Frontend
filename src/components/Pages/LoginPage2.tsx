@@ -328,7 +328,7 @@ const LoginPage2 = () => {
 
           <div>
             <div className="relative z-10 flex items-center gap-3 lg:gap-3.5">
-              <img src={logo} alt="Akbar Travels" className="h-[45px] w-[45px] lg:h-[60px] lg:w-[60px] shrink-0 rounded-full object-cover" />
+              <img src={logo} alt="Akbar Bizvoy" className="h-[45px] w-[45px] lg:h-[60px] lg:w-[60px] shrink-0 rounded-full object-cover" />
               <div className="flex flex-col">
                 <span className="text-[18px] lg:text-[22px] font-bold leading-[1.15] tracking-[3px] text-white">AKBAR</span>
                 <span className="text-[12px] lg:text-[15px] font-medium leading-[1.15] tracking-[5px] text-white">TRAVELS</span>
@@ -391,7 +391,7 @@ const LoginPage2 = () => {
                 <div className="relative flex h-[85px] w-[85px] items-center justify-center">
                   <div className="absolute inset-[-5px] rounded-full border-[2.5px] border-[rgba(40,140,255,0.6)] shadow-[0_0_20px_rgba(40,140,255,0.3),0_0_40px_rgba(40,140,255,0.15),inset_0_0_20px_rgba(40,140,255,0.1)]" />
                   <div className="absolute inset-[-12px] -z-10 rounded-full bg-[radial-gradient(circle,rgba(40,140,255,0.12)_0%,transparent_70%)]" />
-                  <img src={logo} alt="Akbar Travels Logo" className="h-[70px] w-[70px] rounded-full border-2 border-[rgba(40,120,240,0.3)] object-cover" />
+                  <img src={logo} alt="Akbar Bizvoy Logo" className="h-[70px] w-[70px] rounded-full border-2 border-[rgba(40,120,240,0.3)] object-cover" />
                 </div>
               </div>
 

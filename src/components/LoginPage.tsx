@@ -16,7 +16,7 @@ const LoginPage = () => {
   const planePath = "M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z";
 
   return (
-    <div className="relative flex min-h-screen w-full items-center justify-center overflow-x-hidden bg-gradient-to-b from-[#060e1f] via-[#0b1d35] via-[#0d2240] via-[#0a1a30] to-[#081428] font-[Segoe_UI,Roboto,Helvetica_Neue,Arial,sans-serif]">
+    <div className="relative flex min-h-screen w-full items-center justify-center overflow-x-hidden bg-gradient-to-b from-[#060e1f] via-[#0b1d35] via-[#0d2240] via-[#0a1a30] to-[#081428] py-6 font-[Segoe_UI,Roboto,Helvetica_Neue,Arial,sans-serif]">
       {/* Background image */}
       <img src={bg1} alt="" className="pointer-events-none fixed inset-0 z-0 h-[100dvh] min-h-full w-full object-cover" />
 
@@ -45,11 +45,11 @@ const LoginPage = () => {
         <div className="mb-3 flex justify-center">
           <div className="relative flex items-center justify-center">
             <div className="absolute inset-[-8px] rounded-full bg-[radial-gradient(circle,rgba(40,100,220,0.15)_0%,transparent_70%)]" />
-            <img src={logo} alt="Akbar Travels Logo" className="h-20 w-20 rounded-full border-2 border-[rgba(80,150,240,0.45)] object-cover" />
+            <img src={logo} alt="Akbar Bizvoy Logo" className="h-16 w-16 rounded-full border-2 border-[rgba(80,150,240,0.45)] object-cover sm:h-20 sm:w-20" />
           </div>
         </div>
 
-        <h1 className="m-0 mb-1 text-[28px] font-bold tracking-[0.3px] text-white">Akbar Travels</h1>
+        <h1 className="m-0 mb-1 text-[24px] font-bold tracking-[0.3px] text-white sm:text-[28px]">Akbar Bizvoy</h1>
         <p className="m-0 mb-[22px] text-[15px] text-[rgba(170,195,225,0.65)]">Sign in to your account</p>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
@@ -73,7 +73,7 @@ const LoginPage = () => {
 
           {/* Password input */}
           <div className="w-full">
-            <div className="flex h-11 items-center rounded-[10px] border border-[rgba(80,130,200,0.18)] bg-[rgba(16,30,58,0.9)] px-3.5 transition-[border-color,box-shadow] duration-200 focus-within:border-[rgba(80,150,240,0.35)] focus-within:shadow-[0_0_0_3px_rgba(50,120,220,0.1)]">
+            <div className="relative flex h-11 items-center rounded-[10px] border border-[rgba(80,130,200,0.18)] bg-[rgba(16,30,58,0.9)] px-3.5 transition-[border-color,box-shadow] duration-200 focus-within:border-[rgba(80,150,240,0.35)] focus-within:shadow-[0_0_0_3px_rgba(50,120,220,0.1)]">
               <svg className="mr-3 h-5 w-5 shrink-0 text-[rgba(140,170,210,0.5)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="3" y="11" width="18" height="11" rx="2" />
                 <path d="M7 11V7a5 5 0 0 1 10 0v4" />

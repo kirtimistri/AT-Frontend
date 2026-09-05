@@ -10,6 +10,12 @@ html, body {
   overflow-y: auto;
 }
 
+body {
+  font-family: 'Inter', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 #root {
   width: 100%;
   min-height: 100%;
@@ -18,4 +24,110 @@ html, body {
 
 input, button, textarea {
   font-family: inherit;
+}
+
+/* Spin animation for the From/To swap button */
+@keyframes spin-swap {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.spin-swap {
+  display: inline-block;
+  animation: spin-swap 0.5s ease;
+}
+
+/* Blue → gold glow for the swap button (hover & click) */
+@keyframes swap-glow {
+  0% {
+    border-color: rgba(124, 192, 255, 0.95);
+    box-shadow: 0 0 8px rgba(124, 192, 255, 0.65), 0 0 22px rgba(124, 192, 255, 0.4);
+  }
+  100% {
+    border-color: rgba(212, 175, 55, 0.95);
+    box-shadow: 0 0 8px rgba(212, 175, 55, 0.65), 0 0 22px rgba(212, 175, 55, 0.4);
+  }
+}
+.swap-glow-hover:hover,
+.swap-glow-click:active {
+  animation: swap-glow 0.7s ease forwards;
+}
+.swap-glow-hover:hover svg,
+.swap-glow-click:active svg {
+  color: #f0c265;
+}
+
+/* Golden glow for search-bar field text — only when hovering the text itself */
+.bar-text:hover {
+  color: #f0c265;
+  text-shadow: 0 0 10px rgba(212, 175, 55, 0.55);
+}
+.bar-text-value:hover {
+  color: #f5d67b;
+  text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+}
+.bar-text-muted:hover {
+  color: rgba(240, 194, 101, 0.75);
+  text-shadow: 0 0 10px rgba(212, 175, 55, 0.45);
+}
+
+/* Flash sweep across loading skeleton cards */
+@keyframes card-shimmer {
+  0% { transform: translateX(-100%); }
+  55%, 100% { transform: translateX(100%); }
+}
+.card-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.card-shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(105deg, transparent 20%, rgba(160, 205, 255, 0.32) 50%, transparent 80%);
+  animation: card-shimmer 1.1s ease-in-out infinite;
+  animation-delay: var(--shimmer-delay, 0s);
+  pointer-events: none;
+}
+
+/* Flash-in entrance for loaded result cards (one-way & round trip) */
+@keyframes card-flash-in {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+    filter: brightness(2.1);
+  }
+  55% {
+    opacity: 1;
+    filter: brightness(1.5);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: brightness(1);
+  }
+}
+.card-flash-in {
+  animation: card-flash-in 0.6s ease-out both;
+}
+
+/* Slim scrollbars for internal panels (flight results, filter sidebar) */
+.pretty-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(124, 192, 255, 0.55) rgba(124, 192, 255, 0.08);
+}
+.pretty-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+.pretty-scroll::-webkit-scrollbar-track {
+  background: rgba(124, 192, 255, 0.08);
+  border-radius: 999px;
+}
+.pretty-scroll::-webkit-scrollbar-thumb {
+  background: rgba(124, 192, 255, 0.45);
+  border-radius: 999px;
+  border: 2px solid rgba(124, 192, 255, 0.08);
+}
+.pretty-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(124, 192, 255, 0.7);
 }
