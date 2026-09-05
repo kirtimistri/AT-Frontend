@@ -3,6 +3,7 @@ import { useFlightStore } from '../store/flightStore';
 import { ReturnCalendar } from './ReturnCalendar';
 import { ChevronDown, ChevronRight, ArrowLeftRight } from './icons';
 import { iconProps } from '../lib/iconProps';
+import { ThemeToggle } from './ThemeToggle';
 import logo from '../assets/logo.jpeg';
 
 export const Header = () => {
@@ -57,6 +58,7 @@ export const Header = () => {
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#2B5BFF] text-[12px] font-semibold text-white">
             AS
           </div>
+          <ThemeToggle className="shrink-0" />
         </div>
       </div>
 

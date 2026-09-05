@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '../components/toastStore';
+import { ThemeToggle } from '../components/ThemeToggle';
 import bg2 from '../assets/Backgoundimages/bg2.png';
 import logo from '../assets/logo.jpeg';
 
@@ -255,7 +256,9 @@ const LoginPage2 = () => {
           .card-golden-wrapper::before { animation: none; }
           .earth-dot { animation: none; opacity: 0.5; }
         }
-      `}</style>
+      `}      </style>
+
+      <ThemeToggle />
 
       <div className="relative flex flex-col lg:flex-row h-auto min-h-screen lg:h-screen w-full overflow-y-auto lg:overflow-hidden bg-[#060d1a] font-[Segoe_UI,Roboto,Helvetica_Neue,Arial,sans-serif]">
         <img src={bg2} alt="" className="pointer-events-none fixed inset-0 z-0 h-[100dvh] min-h-full w-full object-cover object-center lg:object-left" />
@@ -393,13 +396,14 @@ const LoginPage2 = () => {
                     <span className="font-[Roboto,Segoe_UI,sans-serif] text-[13px] text-[rgba(210,215,225,0.75)]">I'm not a robot</span>
                   </div>
                   <div className="flex flex-col items-center gap-0.5">
-                    <svg width="26" height="26" viewBox="0 0 48 48" className="mb-0.5">
-                      <path d="M24 4C12.95 4 4 12.95 4 24s8.95 20 20 20 20-8.95 20-20S35.05 4 24 4z" fill="none" />
-                      <path d="M36 14.5A16 16 0 0 0 24 8c-8.84 0-16 7.16-16 16s7.16 16 16 16c7.46 0 13.68-5.1 15.46-12" stroke="#4285f4" strokeWidth="3" fill="none" strokeLinecap="round" />
-                      <path d="M24 16v8l6 6" stroke="#ea4335" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-                      <polygon points="24,12 26.5,15.5 24,18 21.5,15.5" fill="#4285f4" />
+                    <svg width="26" height="26" viewBox="0 0 48 48" fill="none" className="mb-0.5">
+                      {/* reCAPTCHA circular arrow — light blue top-left, dark blue top-right, gray bottom */}
+                      <path d="M20.12 9.51 A15 15 0 0 0 16.5 36.99" stroke="#4285F4" strokeWidth="5.5" strokeLinecap="round" />
+                      <path d="M31.5 36.99 A15 15 0 0 0 27.88 9.51" stroke="#1967D2" strokeWidth="5.5" strokeLinecap="round" />
+                      <path d="M16.5 36.99 A15 15 0 0 0 31.5 36.99" stroke="#9AA0A6" strokeWidth="5.5" strokeLinecap="round" />
+                      <path d="M28.5 5.5 L22 9.5 L28.5 13.5" stroke="#4285F4" strokeWidth="5.5" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
-                    <span className="font-[Roboto,sans-serif] text-[9px] font-medium tracking-[0.3px] text-[rgba(170,175,185,0.7)]">reCAPTCHA</span>
+                    <span className="font-[Roboto,sans-serif] text-[9px] font-medium tracking-[0.3px] text-[#9AA0A6]">reCAPTCHA</span>
                     <span className="font-[Roboto,sans-serif] text-[7px] text-[rgba(140,145,155,0.6)]">Privacy · Terms</span>
                   </div>
                 </div>
