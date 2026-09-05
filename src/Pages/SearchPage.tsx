@@ -1,5 +1,7 @@
 import { useState, type CSSProperties, type ReactNode, type SVGProps } from 'react';
-import logo from '../../assets/logo.jpeg';
+import { STRIP_WINDOW, STRIP_DEFAULT_START, STRIP_DEFAULT_SEL, WEEKDAYS, priceFor, priceColor, HOLIDAYS, holidayForDate, useFlightStore, type Flight, type SortKey, type StripDay } from '../store/flightStore';
+import { AirlineLogo } from '../components/Logos';
+import logo from '../assets/logo.jpeg';
 
 /* ---------- Shared icon components (lucide-style) ---------- */
 
@@ -108,63 +110,22 @@ const GitFork = ({ className }: { className?: string }) => (
 );
 
 const Rupee = ({ className }: { className?: string }) => (
-  <span className={`font-bold transition-all duration-300 group-hover:drop-shadow-[0_0_7px_rgba(240,197,101,0.9)] ${className ?? ''}`}>₹</span>
+  <span className={`font-bold transition-all duration-300 ${className ?? ''}`}>₹</span>
 );
 
-/* ---------- Airline logo marks ---------- */
 
-const IndigoLogo = () => (
-  <div className="flex h-10 w-10 items-center justify-center rounded-md bg-[#0B5CAB]">
-    <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
-      <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z" />
-    </svg>
-  </div>
-);
-
-const AirIndiaLogo = () => (
-  <div className="flex h-10 w-10 items-center justify-center rounded-md bg-[#A6192E]">
-    <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
-      <path d="M4 14.5c4.5-1.6 9.5-2.1 17-3.3-.6 4.7-3.4 8-8.6 9.4-1.7.5-3.4.3-4.6-.4-1-.6-2.5-2.5-3.8-5.7Z" />
-      <path d="M4 14.5c1.2-4.6 3.7-7.6 7-9.5" />
-    </svg>
-  </div>
-);
-
-const AkasaLogo = () => (
-  <div className="flex h-10 w-10 items-center justify-center rounded-md bg-[#2A1650]">
-    <svg viewBox="0 0 24 24" fill="none" className="h-6 w-6">
-      <path d="M12 4 20 19H4L12 4Z" fill="#F97316" />
-      <path d="M12 8.5 17 19H7L12 8.5Z" fill="#FB923C" />
-    </svg>
-  </div>
-);
-
-const SpiceJetLogo = () => (
-  <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-md bg-[#D81E2B]">
-    <svg viewBox="0 0 24 24" className="h-6 w-6">
-      <circle cx="6" cy="6" r="1.3" fill="#1B1B1B" />
-      <circle cx="13" cy="5" r="1.3" fill="#1B1B1B" />
-      <circle cx="19" cy="7" r="1.3" fill="#1B1B1B" />
-      <circle cx="8" cy="12" r="1.3" fill="#1B1B1B" />
-      <circle cx="15" cy="11" r="1.3" fill="#1B1B1B" />
-      <circle cx="20" cy="13" r="1.3" fill="#1B1B1B" />
-      <circle cx="6" cy="18" r="1.3" fill="#1B1B1B" />
-      <circle cx="13" cy="17" r="1.3" fill="#1B1B1B" />
-      <circle cx="18" cy="19" r="1.3" fill="#1B1B1B" />
-    </svg>
-  </div>
-);
 
 /* ---------- Range slider ---------- */
 
-type SliderSpec = { from: number; to: number };
+type SliderSpec = { from: number; to: number; lit?: boolean };
 
-const RangeSlider = ({ from, to }: SliderSpec) => {
+const RangeSlider = ({ from, to, lit = false }: SliderSpec) => {
   const [active, setActive] = useState(false);
+  const on = active || lit;
 
   return (
     <div
-      className={`mt-1 cursor-pointer px-0.5 transition-all duration-300 ${active ? 'opacity-100' : ''}`}
+      className={`mt-1 cursor-pointer px-0.5 transition-all duration-300 ${on ? 'opacity-100' : ''}`}
       onPointerDown={() => setActive(true)}
       onMouseEnter={() => setActive(true)}
       onMouseLeave={() => setActive(false)}
@@ -173,15 +134,15 @@ const RangeSlider = ({ from, to }: SliderSpec) => {
     >
       <div className="relative h-[3px] rounded-full bg-white/10">
         <div
-          className={`absolute top-0 h-full rounded-full transition-colors duration-300 ${active ? 'bg-[#d4af37]' : 'bg-[#3B9CFF]'}`}
+          className={`absolute top-0 h-full rounded-full transition-colors duration-300 ${on ? 'bg-[#d4af37]' : 'bg-[#3B9CFF] group-hover:bg-[#d4af37] group-active:bg-[#d4af37]'}`}
           style={{ left: `${from}%`, width: `${to - from}%` }}
         />
         <div
-          className={`absolute top-1/2 h-[14px] w-[14px] -translate-y-1/2 rounded-full border-2 transition-all duration-300 ${active ? 'border-[#f5d67b] bg-[#2a2208] shadow-[0_0_8px_rgba(212,175,55,0.8)]' : 'border-[#7CC0FF] bg-[#121E3C] shadow-[0_0_4px_rgba(59,156,255,0.5)]'}`}
+          className={`absolute top-1/2 h-[14px] w-[14px] -translate-y-1/2 rounded-full border-2 transition-all duration-300 ${on ? 'border-[#f5d67b] bg-[#2a2208]' : 'border-[#7CC0FF] bg-[#121E3C] group-hover:border-[#f5d67b] group-hover:bg-[#2a2208]'}`}
           style={{ left: `calc(${from}% - 7px)` }}
         />
         <div
-          className={`absolute top-1/2 h-[14px] w-[14px] -translate-y-1/2 rounded-full border-2 transition-all duration-300 ${active ? 'border-[#f5d67b] bg-[#2a2208] shadow-[0_0_8px_rgba(212,175,55,0.8)]' : 'border-[#7CC0FF] bg-[#121E3C] shadow-[0_0_4px_rgba(59,156,255,0.5)]'}`}
+          className={`absolute top-1/2 h-[14px] w-[14px] -translate-y-1/2 rounded-full border-2 transition-all duration-300 ${on ? 'border-[#f5d67b] bg-[#2a2208]' : 'border-[#7CC0FF] bg-[#121E3C] group-hover:border-[#f5d67b] group-hover:bg-[#2a2208]'}`}
           style={{ left: `calc(${to}% - 7px)` }}
         />
       </div>
@@ -197,50 +158,69 @@ type FilterGroupProps = {
   value: string;
   chevron?: 'right' | 'down';
   slider?: SliderSpec;
+  active: boolean;
+  onToggle: () => void;
 };
 
-const FilterGroup = ({ icon, label, value, chevron, slider }: FilterGroupProps) => (
-  <div className="group relative -mx-4 border-b border-white/10 px-4 py-2.5 transition-all duration-300 last:border-b-0 hover:bg-[rgba(212,175,55,0.12)]">
-    <span className="pointer-events-none absolute inset-0 opacity-0 shadow-[inset_0_0_32px_rgba(212,175,55,0.35),0_0_14px_rgba(212,175,55,0.25)] transition-opacity duration-300 group-hover:opacity-100 group-active:opacity-100" />
-    <div className="relative flex items-center justify-between">
-      <div className="flex items-center gap-2.5">
-        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] bg-gradient-to-br from-[rgba(244,114,182,0.32)] via-[rgba(232,0,124,0.16)] to-[rgba(244,114,182,0.08)] text-[#f9a8d4] shadow-[0_0_14px_rgba(232,0,124,0.22),inset_0_1px_0_rgba(255,255,255,0.14)] ring-1 ring-[rgba(244,114,182,0.32)] transition-all duration-300 group-hover:scale-[1.06] group-hover:from-[rgba(212,175,55,0.45)] group-hover:via-[rgba(212,175,55,0.28)] group-hover:to-[rgba(212,175,55,0.12)] group-hover:ring-[rgba(240,197,101,0.8)] group-hover:shadow-[0_0_18px_rgba(212,175,55,0.55),0_0_34px_rgba(212,175,55,0.3),inset_0_1px_0_rgba(255,255,255,0.14)] group-active:scale-[1.06] group-active:from-[rgba(212,175,55,0.45)] group-active:via-[rgba(212,175,55,0.28)] group-active:to-[rgba(212,175,55,0.12)] group-active:ring-[rgba(240,197,101,0.8)] group-active:shadow-[0_0_18px_rgba(212,175,55,0.55),0_0_34px_rgba(212,175,55,0.3),inset_0_1px_0_rgba(255,255,255,0.14)]">
-          <span className="flex items-center justify-center transition-all duration-300 group-hover:drop-shadow-[0_0_7px_rgba(240,197,101,0.9)] group-active:drop-shadow-[0_0_7px_rgba(240,197,101,0.9)]">
-            {icon}
+const FilterGroup = ({ icon, label, value, chevron, slider, active, onToggle }: FilterGroupProps) => {
+  return (
+    <div
+      role="button"
+      tabIndex={0}
+      aria-expanded={active}
+      onClick={onToggle}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onToggle();
+        }
+      }}
+      className={`group relative -mx-4 cursor-pointer select-none border-b border-[rgba(124,192,255,0.16)] px-4 py-2.5 transition-all duration-300 last:border-b-0 ${
+        active
+          ? 'bg-gradient-to-r from-[rgba(212,175,55,0.38)] via-[rgba(212,175,55,0.24)] to-[rgba(212,175,55,0.14)]'
+          : 'hover:bg-gradient-to-r hover:from-[#f0c265] hover:via-[#d4af37] hover:to-[#a8842a]'
+      }`}
+    >
+      <div className="relative flex items-center justify-between">
+        <div className="flex items-center gap-2.5">
+          <span
+            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] bg-gradient-to-br ring-1 transition-all duration-300 ${
+              active
+                ? 'scale-[1.06] from-[rgba(212,175,55,0.45)] via-[rgba(212,175,55,0.28)] to-[rgba(212,175,55,0.12)] text-[#f0c265] ring-[rgba(240,197,101,0.8)] shadow-[inset_0_1px_0_rgba(255,255,255,0.14)]'
+                : 'from-[rgba(59,156,255,0.32)] via-[rgba(37,147,252,0.16)] to-[rgba(124,192,255,0.08)] text-[#7CC0FF] ring-[rgba(124,192,255,0.35)] shadow-[inset_0_1px_0_rgba(255,255,255,0.14)] group-hover:scale-[1.06] group-hover:from-[#f0c265] group-hover:via-[#d4af37] group-hover:to-[#a8842a] group-hover:text-[#0E1833] group-hover:ring-[#f0c265] group-hover:shadow-[0_0_14px_rgba(212,175,55,0.45),inset_0_1px_0_rgba(255,255,255,0.2)] group-active:scale-[1.06] group-active:from-[rgba(212,175,55,0.45)] group-active:via-[rgba(212,175,55,0.28)] group-active:to-[rgba(212,175,55,0.12)] group-active:text-[#f5d67b] group-active:ring-[rgba(240,197,101,0.8)] group-active:shadow-[inset_0_1px_0_rgba(255,255,255,0.14)]'
+            }`}
+          >
+            <span className="flex items-center justify-center transition-all duration-300">
+              {icon}
+            </span>
           </span>
-        </span>
-        <span className="text-[13px] font-semibold text-white transition-colors duration-300 group-hover:text-[#f0c265] group-active:text-[#f0c265]">{label}</span>
+          <span
+            className={`text-[13px] font-semibold transition-colors duration-300 ${
+              active ? 'text-[#f5d67b]' : 'text-[#9CC6FF] group-hover:text-[#0E1833] group-active:text-[#f5d67b]'
+            }`}
+          >
+            {label}
+          </span>
+        </div>
+        {chevron === 'down' ? (
+          <ChevronDown className={`h-3 w-3 transition-colors duration-300 ${active ? 'text-[#f5d67b]' : 'text-[#7CC0FF] group-hover:text-[#0E1833] group-active:text-[#f5d67b]'}`} />
+        ) : chevron === 'right' ? (
+          <ChevronRight className={`h-3 w-3 transition-colors duration-300 ${active ? 'text-[#f5d67b]' : 'text-[#7CC0FF] group-hover:text-[#0E1833] group-active:text-[#f5d67b]'}`} />
+        ) : null}
       </div>
-      {chevron === 'down' ? (
-        <ChevronDown className="h-3 w-3 text-white/40 transition-colors duration-300 group-hover:text-[#f0c265] group-active:text-[#f0c265]" />
-      ) : chevron === 'right' ? (
-        <ChevronRight className="h-3 w-3 text-white/40 transition-colors duration-300 group-hover:text-[#f0c265] group-active:text-[#f0c265]" />
-      ) : null}
+      <p className={`relative mt-[3px] pl-[42px] text-[11.5px] leading-tight transition-colors duration-300 ${active ? 'text-[rgba(240,194,101,0.95)]' : 'text-[#9CC6FF]/85 group-hover:text-[#2a2208]/90 group-active:text-[rgba(240,194,101,0.95)]'}`}>{value}</p>
+      {slider && (
+        <div className="relative pl-[42px]" onClick={(e) => e.stopPropagation()}>
+          <RangeSlider {...slider} lit={active} />
+        </div>
+      )}
     </div>
-    <p className="relative mt-[3px] pl-[42px] text-[11.5px] leading-tight text-white/60 transition-colors duration-300 group-hover:text-[rgba(240,194,101,0.85)] group-active:text-[rgba(240,194,101,0.85)]">{value}</p>
-    {slider && <div className="relative pl-[42px]"><RangeSlider {...slider} /></div>}
-  </div>
-);
+  );
+};
 
 /* ---------- Flight card ---------- */
 
 const inr = (n: number) => `₹${Math.round(n).toLocaleString('en-IN')}`;
-
-type Flight = {
-  badge: string;
-  badgeBg: string;
-  logo: ReactNode;
-  airline: string;
-  code: string;
-  departure: { time: string; airport: string };
-  arrival: { time: string; airport: string };
-  via?: string;
-  duration: string;
-  stops: string;
-  baggage: string;
-  price: number;
-  checkedAgo: string;
-};
 
 /* ---------- Fare option tiers (expandable card details) ---------- */
 
@@ -373,6 +353,234 @@ const LayoverPanel = ({ f }: { f: Flight }) => {
   );
 };
 
+/* ---------- Itinerary details (per-leg breakdown inside expanded card) ---------- */
+
+const CITY_NAMES: Record<string, string> = {
+  BOM: 'Mumbai',
+  DEL: 'Delhi',
+  PNQ: 'Pune',
+  LKO: 'Lucknow',
+  BLR: 'Bengaluru',
+  HYD: 'Hyderabad',
+};
+
+const cityNameOf = (code: string) => CITY_NAMES[code] ?? code;
+
+const twelveHToMins = (t: string): number => {
+  const m = t.match(/(\d+):(\d+)\s*(AM|PM)/i);
+  if (!m) return 0;
+  const h = (parseInt(m[1], 10) % 12) + (m[3].toUpperCase() === 'PM' ? 12 : 0);
+  return h * 60 + parseInt(m[2], 10);
+};
+
+const minsToTwelveH = (m: number): string => {
+  const h24 = ((m % 1440) + 1440) % 1440;
+  const h = Math.floor(h24 / 60);
+  const min = h24 % 60;
+  const period = h >= 12 ? 'PM' : 'AM';
+  const h12 = h % 12 === 0 ? 12 : h % 12;
+  return `${h12}:${String(min).padStart(2, '0')} ${period}`;
+};
+
+const legFlightCode = (f: Flight, i: number): string => {
+  if (i === 0) return f.code;
+  const m = f.code.match(/^(\D+)\s*(\d+)$/);
+  if (!m) return f.code;
+  return `${m[1]} ${parseInt(m[2], 10) + 31 + i * 47}`;
+};
+
+type ItineraryLeg = {
+  code: string;
+  depTime: string;
+  arrTime: string;
+  depCode: string;
+  depCity: string;
+  depTerm: string;
+  arrCode: string;
+  arrCity: string;
+  arrTerm: string;
+  layoverMin?: number;
+};
+
+const itineraryLegs = (f: Flight): ItineraryLeg[] => {
+  const viaList = viaCities(f.via);
+  const n = viaList.length + 1;
+  const depMin = twelveHToMins(f.departure.time);
+  let arrMin = twelveHToMins(f.arrival.time);
+  if (arrMin < depMin) arrMin += 24 * 60; // overnight arrival
+  const total = arrMin - depMin;
+
+  // Deterministic per-flight layovers so the breakdown is stable across renders
+  const hash = f.code.charCodeAt(0) + f.code.length * 13;
+  const layovers = viaList.map((_, i) => 10 + ((hash + i * 17) % 40));
+  const flightMins = Math.max(total - layovers.reduce((a, b) => a + b, 0), 20);
+
+  const stops = [airportCodeOf(f.departure.airport), ...viaList, airportCodeOf(f.arrival.airport)];
+  const depTerm = terminalOf(f.departure.airport);
+  const arrTerm = terminalOf(f.arrival.airport);
+
+  const legs: ItineraryLeg[] = [];
+  let t = depMin;
+  for (let i = 0; i < n; i++) {
+    const legFlight = Math.round((flightMins * (i + 1)) / n) - Math.round((flightMins * i) / n);
+    const arr = t + legFlight;
+    legs.push({
+      code: legFlightCode(f, i),
+      depTime: minsToTwelveH(t),
+      arrTime: minsToTwelveH(arr),
+      depCode: stops[i],
+      depCity: cityNameOf(stops[i]),
+      depTerm: i === 0 ? `Terminal ${depTerm}` : 'Terminal 1',
+      arrCode: stops[i + 1],
+      arrCity: cityNameOf(stops[i + 1]),
+      arrTerm: i === n - 1 ? `Terminal ${arrTerm}` : 'Terminal 1',
+      layoverMin: i < n - 1 ? layovers[i] : undefined,
+    });
+    t = arr + (layovers[i] ?? 0);
+  }
+  return legs;
+};
+
+const ItineraryDetails = ({ f }: { f: Flight }) => {
+  const stripStart = useFlightStore((s) => s.stripStart);
+  const stripSel = useFlightStore((s) => s.stripSel);
+  const legs = itineraryLegs(f);
+  const travelDate = new Date(2026, 8, 9 + stripStart + stripSel);
+  const dateLabel = `${travelDate.toLocaleDateString('en-US', { weekday: 'short' })} ${travelDate.getDate()} ${travelDate.toLocaleDateString('en-US', { month: 'short' })}, ${travelDate.getFullYear()}`;
+
+  return (
+    <div className="rounded-[12px] border border-[#29466e] bg-[#0d1b2a] p-4">
+      <div className="flex items-center gap-1.5 text-[10.5px] font-semibold tracking-[0.12em] text-[#7CC0FF]">
+        <PlaneTakeoff className="h-3.5 w-3.5" />
+        Flight Details
+      </div>
+      <div className="mt-3">
+        {legs.map((leg, i) => (
+          <div key={`${leg.code}-${i}`}>
+            {i > 0 && (
+              <div className="my-3 flex items-center justify-center gap-1.5 text-[11.5px] font-semibold text-white/80">
+                <Timer className="h-4 w-4" />
+                {legs[i - 1].layoverMin} min Layover
+              </div>
+            )}
+            <div className="flex items-start gap-3 sm:gap-5">
+              {/* Airline + flight no */}
+              <div className="flex w-[104px] shrink-0 flex-col sm:w-[120px]">
+                <div className="flex items-center gap-2">
+                  <span className="shrink-0 scale-[0.78] origin-left">
+                    <AirlineLogo airline={f.airline} />
+                  </span>
+                  <span className="min-w-0 text-[13px] font-bold lowercase leading-tight tracking-wide text-white">{f.airline}</span>
+                </div>
+                <span className="mt-1 pl-1 whitespace-nowrap text-[11px] text-[#9eafc7]">{leg.code}</span>
+              </div>
+
+              {/* Departure → Arrival details */}
+              <div className="grid min-w-0 flex-1 grid-cols-2 gap-3 sm:gap-5">
+                <div className="min-w-0">
+                  <div className="whitespace-nowrap text-[16px] font-bold leading-none text-white">{leg.depTime}</div>
+                  <div className="mt-1 text-[11.5px] font-semibold leading-none text-white">{leg.depCode}</div>
+                  <div className="mt-0.5 text-[11px] leading-none text-[#9baec7]">{leg.depCity}</div>
+                  <div className="mt-0.5 text-[11px] leading-none text-[#9baec7]">{dateLabel}</div>
+                  <div className="mt-1.5 text-[11.5px] font-semibold leading-none text-white">{leg.depCode}</div>
+                  <div className="mt-0.5 text-[11px] leading-none text-[#9baec7]">{leg.depTerm}</div>
+                </div>
+                <div className="min-w-0 border-l border-white/10 pl-3 text-right sm:pl-5">
+                  <div className="whitespace-nowrap text-[16px] font-bold leading-none text-white">{leg.arrTime}</div>
+                  <div className="mt-1 text-[11.5px] font-semibold leading-none text-white">{leg.arrCode}</div>
+                  <div className="mt-0.5 text-[11px] leading-none text-[#9baec7]">{leg.arrCity}</div>
+                  <div className="mt-0.5 text-[11px] leading-none text-[#9baec7]">{dateLabel}</div>
+                  <div className="mt-1.5 text-[11.5px] font-semibold leading-none text-white">{leg.arrCode}</div>
+                  <div className="mt-0.5 text-[11px] leading-none text-[#9baec7]">{leg.arrTerm}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+/* ---------- Price breakdown (expanded card) ---------- */
+
+const UserIcon = () => (
+  <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+    <circle cx="12" cy="7" r="4" />
+  </svg>
+);
+
+const SettingsIcon = () => (
+  <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+    <circle cx="12" cy="12" r="3" />
+  </svg>
+);
+
+const SuitcaseIcon = () => (
+  <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M6 7V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2" />
+    <rect x="3" y="7" width="18" height="13" rx="2" />
+    <path d="M9 7v13" />
+    <path d="M15 7v13" />
+  </svg>
+);
+
+const GlobeIcon = () => (
+  <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10" />
+    <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
+    <path d="M2 12h20" />
+  </svg>
+);
+
+const PriceBreakdown = ({ base, baggage }: { base: number; baggage: string }) => {
+  const rows = [
+    { icon: <UserIcon />, label: 'Base fare', sub: '1 × Adult', value: inr(base - 730) },
+    { icon: <SettingsIcon />, label: 'Taxes & fees', sub: 'Includes GST', value: inr(730) },
+    { icon: <SeatIcon />, label: 'Seat selection', sub: 'Standard seat', value: inr(500) },
+    { icon: <SuitcaseIcon />, label: 'Baggage', sub: baggage.replace(/baggage/i, 'check-in'), value: inr(0) },
+    { icon: <GlobeIcon />, label: 'Service fee', sub: 'Platform fee', value: inr(100) },
+  ];
+  const total = base + 600;
+  return (
+    <div className="flex flex-col rounded-[12px] border border-[#29466e] bg-[#0d1b2a] p-4">
+      <div className="text-[10.5px] font-semibold tracking-[0.12em] text-[#7CC0FF]">PRICE BREAKDOWN</div>
+      <div className="mt-3 space-y-1.5">
+        {rows.map((r) => (
+          <div key={r.label} className="flex items-center justify-between gap-3 rounded-[8px] bg-white/[0.03] px-2.5 py-2">
+            <div className="flex min-w-0 items-center gap-2.5">
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-[8px] bg-[#1b2b47] text-[#7CC0FF]">{r.icon}</span>
+              <div className="min-w-0">
+                <div className="text-[12px] font-semibold text-white">{r.label}</div>
+                <div className="text-[10px] text-[#7e93b3]">{r.sub}</div>
+              </div>
+            </div>
+            <span className="shrink-0 text-[12px] font-bold text-white">{r.value}</span>
+          </div>
+        ))}
+      </div>
+      <div className="mt-3 border-t border-dashed border-[#73869e] pt-3">
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="text-[11px] font-bold tracking-wide text-white">TOTAL</div>
+            <div className="text-[9.5px] text-[#7e93b3]">Per person</div>
+          </div>
+          <div className="text-[18px] font-bold leading-none text-[#3B9CFF]">{inr(total)}</div>
+        </div>
+      </div>
+      <button className="mt-4 flex h-10 w-full cursor-pointer items-center justify-center gap-1.5 rounded-full bg-[#2593fc] text-[13px] font-bold text-white shadow-[0_6px_18px_rgba(37,147,252,0.45)] transition-all duration-300 hover:bg-[#d4af37] hover:shadow-[0_0_20px_rgba(212,175,55,0.7),0_0_45px_rgba(212,175,55,0.4)] active:bg-[#f0c265]">
+        Continue
+        <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M5 12h14" />
+          <path d="m12 5 7 7-7 7" />
+        </svg>
+      </button>
+    </div>
+  );
+};
+
 const minutesToHm = (m: number) => `${Math.floor(m / 60)}h ${m % 60}m`;
 
 const LeafIcon = () => (
@@ -429,7 +637,7 @@ const CompactFlightLeft = ({
       {/* Airline header row */}
       <div className="flex items-center gap-2.5">
         <div className="flex shrink-0 flex-col items-center">
-          {f.logo}
+          <AirlineLogo airline={f.airline} />
           <span className="mt-1 whitespace-nowrap text-[11px] text-[#9eafc7]">{f.code}</span>
         </div>
         <span className="min-w-0 text-[13px] font-bold leading-tight tracking-wide text-white">{f.airline}</span>
@@ -646,7 +854,7 @@ const FlightCard = ({
       {/* Top row: logo with code, airline name, metadata inline */}
       <div className="flex items-center gap-3.5">
         <div className="flex shrink-0 flex-col items-center">
-          {f.logo}
+          <AirlineLogo airline={f.airline} />
           <span className="mt-1 text-[11px] text-[#9eafc7]">{f.code}</span>
         </div>
         <div className="min-w-0">
@@ -735,12 +943,17 @@ const FlightCard = ({
         className="mt-4 border-t border-dotted border-[#73869e] pt-4"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="grid grid-cols-1 items-stretch gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="mt-4 grid grid-cols-1 items-stretch gap-3 xl:grid-cols-2">
+          <ItineraryDetails f={f} />
+          <PriceBreakdown base={base} baggage={f.baggage} />
+        </div>
+        <div className="mt-4 grid grid-cols-1 items-stretch gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {fareTiers(base).map((tier) => (
             <FareTierCard key={tier.name} tier={tier} />
           ))}
           <LayoverPanel f={f} />
         </div>
+
       </div>
     )}
   </article>
@@ -748,8 +961,6 @@ const FlightCard = ({
 };
 
 /* ---------- Round-trip columns & summary bar ---------- */
-
-type SortKey = 'price' | 'fastest' | 'departure';
 
 const durationMinutes = (d: string): number => {
   const m = d.match(/(\d+)h\s*(\d+)?m?/);
@@ -842,7 +1053,7 @@ const FlightSummary = ({ label, f }: { label: 'ONWARD' | 'RETURN'; f: Flight | n
     <span className="shrink-0 text-[10px] font-bold tracking-[0.12em] text-[#7CC0FF] sm:text-[10.5px]">{label}</span>
     {f ? (
       <div className="flex min-w-0 flex-1 items-center gap-2.5">
-        <span className="hidden h-8 w-8 shrink-0 items-center justify-center overflow-hidden sm:flex">{f.logo}</span>
+        <span className="hidden h-8 w-8 shrink-0 items-center justify-center overflow-hidden sm:flex"><AirlineLogo airline={f.airline} /></span>
         <div className="min-w-0 flex-1 overflow-hidden">
           <div className="truncate text-[11.5px] font-semibold text-white sm:text-[12.5px]">
             {f.airline} <span className="text-[#9baec7]">• {f.code}</span>
@@ -889,261 +1100,7 @@ const SummaryBar = ({ onward, ret, dayDelta }: SummaryBarProps) => {
   );
 };
 
-/* ---------- Page ---------- */
-
-const flights: Flight[] = [
-  {
-    badge: 'BEST VALUE',
-    badgeBg: 'bg-[#7ac143]',
-    logo: <IndigoLogo />,
-    airline: 'INDIGO',
-    code: '6E 1234',
-    departure: { time: '10:30 AM', airport: 'BOM Terminal 1' },
-    arrival: { time: '12:40 PM', airport: 'DEL Terminal 2' },
-    via: 'via PNQ',
-    duration: '2h 10m',
-    stops: '1 Stop',
-    baggage: '15 kg baggage',
-    price: 5430,
-    checkedAgo: 'Price checked 18 sec ago.',
-  },
-  {
-    badge: 'FASTEST',
-    badgeBg: 'bg-[#1aa6e4]',
-    logo: <AirIndiaLogo />,
-    airline: 'AIR INDIA',
-    code: 'AI 247',
-    departure: { time: '9:40 AM', airport: 'BOM Terminal 2' },
-    arrival: { time: '11:30 AM', airport: 'DEL Terminal 2' },
-    duration: '1h 50m',
-    stops: 'Non-stop',
-    baggage: '15 kg baggage',
-    price: 6250,
-    checkedAgo: 'Price checked 22 sec ago.',
-  },
-  {
-    badge: 'MOST FLEXIBLE',
-    badgeBg: 'bg-[#e4007c]',
-    logo: <AkasaLogo />,
-    airline: 'AKASA',
-    code: 'QP 1421',
-    departure: { time: '7:55 AM', airport: 'BOM Terminal 1' },
-    arrival: { time: '10:15 AM', airport: 'DEL Terminal 1' },
-    duration: '2h 20m',
-    stops: 'Non-stop',
-    baggage: '20 kg baggage',
-    price: 5980,
-    checkedAgo: 'Price checked 38 sec ago.',
-  },
-  {
-    badge: 'LOW',
-    badgeBg: 'bg-[#f39200]',
-    logo: <SpiceJetLogo />,
-    airline: 'SPICEJET',
-    code: 'SG 812',
-    departure: { time: '11:20 AM', airport: 'BOM Terminal 1' },
-    arrival: { time: '1:40 PM', airport: 'DEL Terminal 2' },
-    duration: '2h 20m',
-    stops: 'Non-stop',
-    baggage: '15 kg baggage',
-    price: 4980,
-    checkedAgo: 'Price checked 48 sec ago.',
-  },
-  {
-    badge: 'CHEAPEST',
-    badgeBg: 'bg-[#f39200]',
-    logo: <SpiceJetLogo />,
-    airline: 'SPICEJET',
-    code: 'SG 819',
-    departure: { time: '6:05 AM', airport: 'BOM Terminal 1' },
-    arrival: { time: '8:25 AM', airport: 'DEL Terminal 2' },
-    duration: '2h 20m',
-    stops: 'Non-stop',
-    baggage: '15 kg baggage',
-    price: 4210,
-    checkedAgo: 'Price checked 11 sec ago.',
-  },
-  {
-    badge: 'ECO',
-    badgeBg: 'bg-[#7ac143]',
-    logo: <AkasaLogo />,
-    airline: 'AKASA',
-    code: 'QP 1410',
-    departure: { time: '2:15 PM', airport: 'BOM Terminal 2' },
-    arrival: { time: '4:30 PM', airport: 'DEL Terminal 1' },
-    duration: '2h 15m',
-    stops: 'Non-stop',
-    baggage: '20 kg baggage',
-    price: 6480,
-    checkedAgo: 'Price checked 5 sec ago.',
-  },
-  {
-    badge: 'EARLY BIRD',
-    badgeBg: 'bg-[#1aa6e4]',
-    logo: <AirIndiaLogo />,
-    airline: 'AIR INDIA',
-    code: 'AI 610',
-    departure: { time: '5:30 AM', airport: 'BOM Terminal 2' },
-    arrival: { time: '7:35 AM', airport: 'DEL Terminal 3' },
-    duration: '2h 5m',
-    stops: 'Non-stop',
-    baggage: '23 kg baggage',
-    price: 7850,
-    checkedAgo: 'Price checked 2 min ago.',
-  },
-  {
-    badge: 'REDEYE',
-    badgeBg: 'bg-[#e4007c]',
-    logo: <IndigoLogo />,
-    airline: 'INDIGO',
-    code: '6E 205',
-    departure: { time: '10:45 PM', airport: 'BOM Terminal 1' },
-    arrival: { time: '12:55 AM', airport: 'DEL Terminal 2' },
-    via: 'via LKO',
-    duration: '2h 10m',
-    stops: '1 Stop',
-    baggage: '15 kg baggage',
-    price: 5120,
-    checkedAgo: 'Price checked 3 min ago.',
-  },
-  {
-    badge: '2 STOPS',
-    badgeBg: 'bg-[#f39200]',
-    logo: <IndigoLogo />,
-    airline: 'INDIGO',
-    code: '6E 512',
-    departure: { time: '3:10 PM', airport: 'BOM Terminal 1' },
-    arrival: { time: '7:35 PM', airport: 'DEL Terminal 2' },
-    via: 'via BLR, HYD',
-    duration: '4h 25m',
-    stops: '2 Stops',
-    baggage: '15 kg baggage',
-    price: 5460,
-    checkedAgo: 'Price checked 9 sec ago.',
-  },
-];
-
-/* ---------- Return-direction flights (round trip) ---------- */
-
-const returnFlights: Flight[] = [
-  {
-    badge: 'CHEAPEST',
-    badgeBg: 'bg-[#f39200]',
-    logo: <SpiceJetLogo />,
-    airline: 'SPICEJET',
-    code: 'SG 421',
-    departure: { time: '6:00 AM', airport: 'BOM Terminal 1' },
-    arrival: { time: '8:20 AM', airport: 'DEL Terminal 2' },
-    duration: '2h 20m',
-    stops: 'Non-stop',
-    baggage: '15 kg baggage',
-    price: 4480,
-    checkedAgo: 'Price checked 12 sec ago.',
-  },
-  {
-    badge: 'EARLIEST',
-    badgeBg: 'bg-[#1aa6e4]',
-    logo: <IndigoLogo />,
-    airline: 'INDIGO',
-    code: '6E 885',
-    departure: { time: '5:30 AM', airport: 'BOM Terminal 1' },
-    arrival: { time: '7:40 AM', airport: 'DEL Terminal 2' },
-    duration: '2h 10m',
-    stops: 'Non-stop',
-    baggage: '15 kg baggage',
-    price: 5120,
-    checkedAgo: 'Price checked 8 sec ago.',
-  },
-  {
-    badge: 'FASTEST',
-    badgeBg: 'bg-[#7ac143]',
-    logo: <AirIndiaLogo />,
-    airline: 'AIR INDIA',
-    code: 'AI 632',
-    departure: { time: '8:15 AM', airport: 'BOM Terminal 2' },
-    arrival: { time: '10:05 AM', airport: 'DEL Terminal 3' },
-    duration: '1h 50m',
-    stops: 'Non-stop',
-    baggage: '23 kg baggage',
-    price: 6250,
-    checkedAgo: 'Price checked 25 sec ago.',
-  },
-  {
-    badge: 'BEST VALUE',
-    badgeBg: 'bg-[#e4007c]',
-    logo: <AkasaLogo />,
-    airline: 'AKASA',
-    code: 'QP 1421',
-    departure: { time: '4:35 PM', airport: 'BOM Terminal 1' },
-    arrival: { time: '6:55 PM', airport: 'DEL Terminal 1' },
-    duration: '2h 20m',
-    stops: 'Non-stop',
-    baggage: '20 kg baggage',
-    price: 5980,
-    checkedAgo: 'Price checked 31 sec ago.',
-  },
-  {
-    badge: 'REDEYE',
-    badgeBg: 'bg-[#1aa6e4]',
-    logo: <IndigoLogo />,
-    airline: 'INDIGO',
-    code: '6E 298',
-    departure: { time: '11:20 PM', airport: 'BOM Terminal 1' },
-    arrival: { time: '1:30 AM', airport: 'DEL Terminal 2' },
-    via: 'via LKO',
-    duration: '2h 10m',
-    stops: '1 Stop',
-    baggage: '15 kg baggage',
-    price: 4980,
-    checkedAgo: 'Price checked 42 sec ago.',
-  },
-];
-
-/* ---------- Date & price strip ---------- */
-
-/* ---------- Date & price strip ---------- */
-
-// Days per visible window and defaults matching the original mock
-// (initial window starts Wed, 16 Sep with Thu, 17 Sep selected).
-const STRIP_WINDOW = 7;
-const STRIP_DEFAULT_START = 7; // pool index of Wed, 16 Sep
-const STRIP_DEFAULT_SEL = 1; // selected day in the window: Thu, 17 Sep
-
-// Exact fares from the design; surrounding days get a stable generated fare.
-const KNOWN_DAY_FARES: Record<string, number> = {
-  '2026-9-16': 7153,
-  '2026-9-17': 7032,
-  '2026-9-18': 7153,
-  '2026-9-19': 7154,
-  '2026-9-20': 7154,
-  '2026-9-21': 7072,
-  '2026-9-22': 7153,
-};
-
-type StripDay = { label: string; price: number };
-
-const stripLabel = (d: Date) => {
-  const wd = d.toLocaleDateString('en-US', { weekday: 'short' });
-  const mo = d.toLocaleDateString('en-US', { month: 'short' });
-  return `${wd}, ${d.getDate()} ${mo}`;
-};
-
-const stripPriceFor = (d: Date): number => {
-  const key = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
-  const known = KNOWN_DAY_FARES[key];
-  if (known) return known;
-  const raw = 7000 + ((d.getDate() * 173 + (d.getMonth() + 1) * 97 + 41) % 260);
-  return Math.round(raw / 10) * 10;
-};
-
 const stripInr = (n: number) => `₹${n.toLocaleString('en-IN')}`;
-
-// Pool of consecutive days around the default week so the arrows can page.
-const datePool: StripDay[] = Array.from({ length: 28 }, (_, i) => {
-  const day = new Date(2026, 8, 9 + i); // Wed, 09 Sep 2026 + i days
-  return { label: stripLabel(day), price: stripPriceFor(day) };
-});
-
 type PriceStripProps = {
   dates: StripDay[];
   selected: number;
@@ -1207,25 +1164,6 @@ const PriceStrip = ({ dates, selected, onPick, onPrev, onNext, canPrev, canNext 
   </div>
 );
 
-/* ---------- Return-date calendar ---------- */
-
-const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
-const priceFor = (year: number, month: number, day: number): { price: string; level: 'low' | 'mid' | 'high' } => {
-  // Deterministic pseudo prices so the calendar is stable across renders
-  const raw = 5200 + ((day * 371 + month * 199 + year * 7) % 8800);
-  const rounded = Math.round(raw / 10) * 10;
-  const level = rounded < 7000 ? 'low' : rounded < 8800 ? 'mid' : 'high';
-  const formatted = `₹${Math.round(rounded / 1000 * 10) / 10}k`;
-  return { price: formatted, level };
-};
-
-const priceColor: Record<'low' | 'mid' | 'high', string> = {
-  low: 'text-[#34d399]',
-  mid: 'text-[#eab308]',
-  high: 'text-[#fb923c]',
-};
-
 const monthGrid = (year: number, month: number) => {
   const first = new Date(year, month, 1);
   const startPad = first.getDay();
@@ -1242,32 +1180,6 @@ const monthName = (year: number, month: number) =>
 
 const formatReturn = (year: number, month: number, day: number) =>
   new Date(year, month, day).toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short' });
-
-/* ---------- Holidays / occasions ---------- */
-
-type Holiday = {
-  name: string;
-  dates: string;
-  emoji: string;
-  accent: string;
-  from: { y: number; m: number; d: number }; // m is 0-based
-  to: { y: number; m: number; d: number };
-};
-
-const HOLIDAYS: Holiday[] = [
-  { name: 'Janmashtami (Long Weekend)', dates: 'Fri, 04 Sep - Sun, 06 Sep • 3 Days', emoji: '🦚', accent: '#fb923c', from: { y: 2026, m: 8, d: 4 }, to: { y: 2026, m: 8, d: 6 } },
-  { name: 'Janmashtami', dates: 'Fri, 04 Sep • 1 Day', emoji: '🦚', accent: '#fb923c', from: { y: 2026, m: 8, d: 4 }, to: { y: 2026, m: 8, d: 4 } },
-  { name: 'Gandhi Jayanti', dates: 'Fri, 02 Oct • 1 Day', emoji: '🕊️', accent: '#34d399', from: { y: 2026, m: 9, d: 2 }, to: { y: 2026, m: 9, d: 2 } },
-  { name: 'Dussehra', dates: 'Wed, 21 Oct • 1 Day', emoji: '🏹', accent: '#eab308', from: { y: 2026, m: 9, d: 21 }, to: { y: 2026, m: 9, d: 21 } },
-];
-
-const holidayForDate = (year: number, month: number, day: number): Holiday | undefined =>
-  HOLIDAYS.find((h) => {
-    const s = new Date(h.from.y, h.from.m, h.from.d);
-    const e = new Date(h.to.y, h.to.m, h.to.d);
-    const d = new Date(year, month, day);
-    return d >= s && d <= e;
-  });
 
 type MonthProps = {
   year: number;
@@ -1456,21 +1368,39 @@ const SkeletonCard = ({ index }: { index: number }) => (    <div
 );
 
 const SearchPage = () => {
-  const [fromCity, setFromCity] = useState('PNQ - Pune');
-  const [toCity, setToCity] = useState('DEL - New Delhi');
   const [swapSpin, setSwapSpin] = useState(0);
-  const [returnOpen, setReturnOpen] = useState(false);
-  const [filtersOpen, setFiltersOpen] = useState(false);
-  const [monthOffset, setMonthOffset] = useState(0);
-  const [returnDate, setReturnDate] = useState<string | null>(null);
-  const [searching, setSearching] = useState(false);
-  const [searched, setSearched] = useState(false);
-  const [selectedOnward, setSelectedOnward] = useState<Flight | null>(null);
-  const [selectedReturn, setSelectedReturn] = useState<Flight | null>(null);
-  const [onwardSort, setOnwardSort] = useState<SortKey>('price');
-  const [returnSort, setReturnSort] = useState<SortKey>('price');
-  const [stripStart, setStripStart] = useState(STRIP_DEFAULT_START);
-  const [stripSel, setStripSel] = useState(STRIP_DEFAULT_SEL);
+  const flights = useFlightStore((s) => s.flights);
+  const returnFlights = useFlightStore((s) => s.returnFlights);
+  const datePool = useFlightStore((s) => s.datePool);
+  const fromCity = useFlightStore((s) => s.fromCity);
+  const toCity = useFlightStore((s) => s.toCity);
+  const returnOpen = useFlightStore((s) => s.returnOpen);
+  const filtersOpen = useFlightStore((s) => s.filtersOpen);
+  const monthOffset = useFlightStore((s) => s.monthOffset);
+  const returnDate = useFlightStore((s) => s.returnDate);
+  const searching = useFlightStore((s) => s.searching);
+  const searched = useFlightStore((s) => s.searched);
+  const selectedOnward = useFlightStore((s) => s.selectedOnward);
+  const selectedReturn = useFlightStore((s) => s.selectedReturn);
+  const onwardSort = useFlightStore((s) => s.onwardSort);
+  const returnSort = useFlightStore((s) => s.returnSort);
+  const stripStart = useFlightStore((s) => s.stripStart);
+  const stripSel = useFlightStore((s) => s.stripSel);
+  const setReturnOpen = useFlightStore((s) => s.setReturnOpen);
+  const setFiltersOpen = useFlightStore((s) => s.setFiltersOpen);
+  const setSelectedOnward = useFlightStore((s) => s.setSelectedOnward);
+  const setSelectedReturn = useFlightStore((s) => s.setSelectedReturn);
+  const setOnwardSort = useFlightStore((s) => s.setOnwardSort);
+  const setReturnSort = useFlightStore((s) => s.setReturnSort);
+  const setStripSel = useFlightStore((s) => s.setStripSel);
+  const shiftMonth = useFlightStore((s) => s.shiftMonth);
+  const pickReturnDate = useFlightStore((s) => s.pickReturnDate);
+  const shiftStrip = useFlightStore((s) => s.shiftStrip);
+  const swapCities = useFlightStore((s) => s.swapCities);
+  const doSearch = useFlightStore((s) => s.doSearch);
+  const openFilters = useFlightStore((s) => s.openFilters);
+  const toggleFilterGroup = useFlightStore((s) => s.toggleFilterGroup);
+  const clearFilters = useFlightStore((s) => s.clearFilters);
 
   const stripDates = datePool.slice(stripStart, stripStart + STRIP_WINDOW);
   const stripDay = datePool[stripStart + stripSel];
@@ -1483,20 +1413,12 @@ const SearchPage = () => {
   const barVisible = searched && !!returnDate && (!!selectedOnward || !!selectedReturn);
 
   const handleSwap = () => {
-    setFromCity(toCity);
-    setToCity(fromCity);
+    swapCities();
     setSwapSpin((s) => s + 1);
   };
 
   const handleSearch = () => {
-    if (searching) return;
-    setSelectedOnward(null);
-    setSelectedReturn(null);
-    setSearching(true);
-    window.setTimeout(() => {
-      setSearching(false);
-      setSearched(true);
-    }, 1400);
+    doSearch();
   };
 
   return (
@@ -1520,7 +1442,7 @@ const SearchPage = () => {
               onClick={() => setFiltersOpen(!filtersOpen)}
               aria-label="Toggle filters"
               aria-expanded={filtersOpen}
-              className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-[rgba(124,192,255,0.35)] text-[#7CC0FF] transition-colors duration-200 hover:border-[#d4af37]/70 hover:text-[#f0c265] md:hidden"
+              className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-[rgba(212,175,55,0.35)] text-[#f0c265] transition-colors duration-200 hover:border-[#d4af37]/70 hover:text-[#f5d67b] md:hidden"
             >
               <svg {...iconProps('h-4 w-4')}><line x1="4" y1="6" x2="20" y2="6" /><line x1="4" y1="12" x2="20" y2="12" /><line x1="4" y1="18" x2="20" y2="18" /></svg>
             </button>
@@ -1546,10 +1468,10 @@ const SearchPage = () => {
               onClick={handleSwap}
               aria-label="Swap From and To"
               title="Swap From and To"
-              className="swap-glow-hover swap-glow-click absolute left-1/2 top-1/2 z-10 flex h-8 w-8 -translate-x-1/2 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-[rgba(124,192,255,0.4)] bg-[#0E1833] shadow-[0_3px_10px_rgba(0,0,0,0.45)]"
+              className="swap-glow-hover swap-glow-click absolute left-1/2 top-1/2 z-10 flex h-8 w-8 -translate-x-1/2 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-[rgba(124,192,255,0.45)] bg-[#0E1833] shadow-[0_3px_10px_rgba(0,0,0,0.45)]"
             >
               <span key={swapSpin} className="spin-swap">
-                <ArrowLeftRight className="h-3.5 w-3.5 text-[#7CC0FF] transition-colors duration-300 group-hover/swap:text-[#f0c265]" />
+                <ArrowLeftRight className="h-3.5 w-3.5 text-[#7CC0FF] transition-colors duration-300" />
               </span>
             </button>
 
@@ -1619,12 +1541,9 @@ const SearchPage = () => {
             <div className="pointer-events-none absolute -top-[9px] left-1/2 hidden h-0 w-0 -translate-x-1/2 border-x-[10px] border-b-[10px] border-x-transparent border-b-[rgba(124,192,255,0.35)] lg:block" />
             <ReturnCalendar
               monthOffset={monthOffset}
-              onShift={(dir) => setMonthOffset((m) => Math.max(-12, Math.min(12, m + dir)))}
+              onShift={(dir) => shiftMonth(dir)}
               selected={returnDate}
-              onPick={(label) => {
-                setReturnDate(label);
-                setReturnOpen(false);
-              }}
+              onPick={pickReturnDate}
               onClose={() => setReturnOpen(false)}
             />
           </div>
@@ -1633,49 +1552,59 @@ const SearchPage = () => {
 
       <div className="flex min-h-0 flex-1 flex-col items-stretch overflow-hidden md:flex-row">
         {/* ---- Sidebar ---- */}
-        <aside className={`group/sidebar ${filtersOpen ? 'flex' : 'hidden'} w-full shrink-0 flex-col border-r border-[rgba(124,192,255,0.22)] bg-[#0E1833] p-4 md:flex md:w-[300px]`}>
+        <aside className={`group/sidebar ${filtersOpen ? 'flex' : 'hidden'} w-full shrink-0 flex-col border-r border-[rgba(212,175,55,0.25)] bg-[#0E1833] p-4 md:flex md:w-[300px]`}>
           <div className="flex items-center justify-between pb-2">
-            <span className="text-[11px] font-bold tracking-[0.14em] text-[#7CC0FF] transition-all duration-300 group-hover/sidebar:text-[#f0c265] group-hover/sidebar:drop-shadow-[0_0_6px_rgba(212,175,55,0.6)]">REFINE RESULTS</span>
-            <button className="cursor-pointer border-none bg-transparent text-[11.5px] font-medium text-[#7CC0FF] transition-all duration-200 hover:text-[#f0c265] hover:drop-shadow-[0_0_6px_rgba(212,175,55,0.7)]">
+            <span className="text-[11px] font-bold tracking-[0.14em] text-[#7CC0FF] transition-all duration-300">REFINE RESULTS</span>
+            <button
+              type="button"
+              onClick={clearFilters}
+              className="cursor-pointer border-none bg-transparent text-[11.5px] font-medium text-[#9CC6FF]/85 transition-all duration-200 hover:text-[#f5d67b] hover:drop-shadow-[0_0_6px_rgba(212,175,55,0.7)]"
+            >
               clear all
             </button>
           </div>
 
-          <div className="pretty-scroll min-h-0 max-h-[50vh] flex-1 overflow-x-hidden overflow-y-scroll rounded-[16px] border border-[rgba(124,192,255,0.4)] bg-[#0F1B3A] px-4 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.02)] md:max-h-none">
-            <FilterGroup icon={<GitFork className="h-4 w-4" />} label="Stops" value="Non-stop, 1 stop" chevron="right" />
-            <FilterGroup icon={<PlaneTakeoff className="h-4 w-4" />} label="Airline" value="All airlines" chevron="right" />
+          <div className="pretty-scroll min-h-0 max-h-[50vh] flex-1 overflow-x-hidden overflow-y-scroll rounded-[16px] border border-[rgba(124,192,255,0.35)] bg-[#0F1B3A] px-4 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.02),0_0_18px_rgba(59,156,255,0.12)] md:max-h-none">
+            <FilterGroup icon={<GitFork className="h-4 w-4" />} label="Stops" value="Non-stop, 1 stop" chevron="right" active={openFilters[0]} onToggle={() => toggleFilterGroup(0)} />
+            <FilterGroup icon={<PlaneTakeoff className="h-4 w-4" />} label="Airline" value="All airlines" chevron="right" active={openFilters[1]} onToggle={() => toggleFilterGroup(1)} />
             <FilterGroup
               icon={<ClockArrowUp className="h-4 w-4" />}
               label="Departure"
               value="05:00 AM – 11:59 PM"
               slider={{ from: 10, to: 60 }}
+              active={openFilters[2]}
+              onToggle={() => toggleFilterGroup(2)}
             />
             <FilterGroup
               icon={<ClockArrowDown className="h-4 w-4" />}
               label="Arrival"
               value="07:00 AM – 11:59 PM"
               slider={{ from: 14, to: 64 }}
+              active={openFilters[3]}
+              onToggle={() => toggleFilterGroup(3)}
             />
             <FilterGroup
               icon={<Rupee className="text-[15px]" />}
               label="Price"
               value="₹3,000 – ₹12,000"
               slider={{ from: 5, to: 95 }}
+              active={openFilters[4]}
+              onToggle={() => toggleFilterGroup(4)}
             />
-            <FilterGroup icon={<Timer className="h-4 w-4" />} label="Duration" value="0h – 8h" chevron="down" />
-            <FilterGroup icon={<ShoppingBag className="h-4 w-4" />} label="Baggage" value="15 kg or more" chevron="down" />
-            <FilterGroup icon={<RotateCcw className="h-4 w-4" />} label="Refundability" value="Flexible options" chevron="down" />
+            <FilterGroup icon={<Timer className="h-4 w-4" />} label="Duration" value="0h – 8h" chevron="down" active={openFilters[5]} onToggle={() => toggleFilterGroup(5)} />
+            <FilterGroup icon={<ShoppingBag className="h-4 w-4" />} label="Baggage" value="15 kg or more" chevron="down" active={openFilters[6]} onToggle={() => toggleFilterGroup(6)} />
+            <FilterGroup icon={<RotateCcw className="h-4 w-4" />} label="Refundability" value="Flexible options" chevron="down" active={openFilters[7]} onToggle={() => toggleFilterGroup(7)} />
           </div>
 
           {/* Save Search — matching bordered option at the bottom of the sidebar */}
           <div className="pt-2">
-            <button className="group relative flex w-full cursor-pointer items-center gap-2.5 overflow-hidden rounded-[16px] border border-[rgba(124,192,255,0.4)] bg-[#0F1B3A] px-4 py-2.5 text-left transition-all duration-300 hover:bg-[rgba(212,175,55,0.12)] active:bg-[rgba(212,175,55,0.18)]">
+            <button className="group relative flex w-full cursor-pointer items-center gap-2.5 overflow-hidden rounded-[16px] border border-[rgba(124,192,255,0.35)] bg-[#0F1B3A] px-4 py-2.5 text-left transition-all duration-300 hover:bg-[rgba(212,175,55,0.12)] active:bg-[rgba(212,175,55,0.18)]">
               <span className="pointer-events-none absolute inset-0 opacity-0 shadow-[inset_0_0_30px_rgba(212,175,55,0.4),0_0_14px_rgba(212,175,55,0.3)] transition-opacity duration-300 group-hover:opacity-100 group-active:opacity-100" />
-              <span className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] bg-gradient-to-br from-[rgba(244,114,182,0.32)] via-[rgba(232,0,124,0.16)] to-[rgba(244,114,182,0.08)] text-[#f9a8d4] shadow-[0_0_14px_rgba(232,0,124,0.22),inset_0_1px_0_rgba(255,255,255,0.14)] ring-1 ring-[rgba(244,114,182,0.32)] transition-all duration-300 group-hover:scale-[1.06] group-hover:from-[rgba(212,175,55,0.45)] group-hover:via-[rgba(212,175,55,0.28)] group-hover:to-[rgba(212,175,55,0.12)] group-hover:ring-[rgba(240,197,101,0.8)] group-hover:text-[#f0c265] group-hover:shadow-[0_0_18px_rgba(212,175,55,0.55),0_0_34px_rgba(212,175,55,0.3),inset_0_1px_0_rgba(255,255,255,0.14)] group-active:scale-[1.06] group-active:from-[rgba(212,175,55,0.45)] group-active:via-[rgba(212,175,55,0.28)] group-active:to-[rgba(212,175,55,0.12)] group-active:ring-[rgba(240,197,101,0.8)] group-active:text-[#f0c265] group-active:shadow-[0_0_18px_rgba(212,175,55,0.55),0_0_34px_rgba(212,175,55,0.3),inset_0_1px_0_rgba(255,255,255,0.14)]">
+              <span className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] bg-gradient-to-br from-[rgba(59,156,255,0.32)] via-[rgba(37,147,252,0.16)] to-[rgba(124,192,255,0.08)] text-[#7CC0FF] shadow-[inset_0_1px_0_rgba(255,255,255,0.14)] ring-1 ring-[rgba(124,192,255,0.35)] transition-all duration-300 group-hover:scale-[1.06] group-hover:from-[rgba(212,175,55,0.45)] group-hover:via-[rgba(212,175,55,0.28)] group-hover:to-[rgba(212,175,55,0.12)] group-hover:ring-[rgba(240,197,101,0.8)] group-hover:text-[#f0c265] group-hover:shadow-[0_0_18px_rgba(212,175,55,0.55),0_0_34px_rgba(212,175,55,0.3),inset_0_1px_0_rgba(255,255,255,0.14)] group-active:scale-[1.06] group-active:from-[rgba(212,175,55,0.45)] group-active:via-[rgba(212,175,55,0.28)] group-active:to-[rgba(212,175,55,0.12)] group-active:ring-[rgba(240,197,101,0.8)] group-active:text-[#f0c265] group-active:shadow-[0_0_18px_rgba(212,175,55,0.55),0_0_34px_rgba(212,175,55,0.3),inset_0_1px_0_rgba(255,255,255,0.14)]">
                 <Bookmark className="h-4 w-4" />
               </span>
-              <span className="relative text-[13.5px] font-semibold text-white transition-colors duration-300 group-hover:text-[#f0c265] group-active:text-[#f0c265]">Save Search</span>
-              <ChevronRight className="relative ml-auto h-3.5 w-3.5 text-white/40 transition-colors duration-200 group-hover:text-[#f0c265] group-active:text-[#f0c265]" />
+              <span className="relative text-[13.5px] font-semibold text-[#9CC6FF] transition-colors duration-300 group-hover:text-[#f0c265] group-active:text-[#f0c265]">Save Search</span>
+              <ChevronRight className="relative ml-auto h-3.5 w-3.5 text-[#7CC0FF] transition-colors duration-200 group-hover:text-[#f0c265] group-active:text-[#f0c265]" />
             </button>
           </div>
         </aside>
@@ -1735,8 +1664,8 @@ const SearchPage = () => {
                 dates={stripDates}
                 selected={stripSel}
                 onPick={setStripSel}
-                onPrev={() => setStripStart((s) => Math.max(0, s - STRIP_WINDOW))}
-                onNext={() => setStripStart((s) => Math.min(datePool.length - STRIP_WINDOW, s + STRIP_WINDOW))}
+                onPrev={() => shiftStrip(-1)}
+                onNext={() => shiftStrip(1)}
                 canPrev={stripStart > 0}
                 canNext={stripStart < datePool.length - STRIP_WINDOW}
               />
@@ -1774,8 +1703,8 @@ const SearchPage = () => {
                 dates={stripDates}
                 selected={stripSel}
                 onPick={setStripSel}
-                onPrev={() => setStripStart((s) => Math.max(0, s - STRIP_WINDOW))}
-                onNext={() => setStripStart((s) => Math.min(datePool.length - STRIP_WINDOW, s + STRIP_WINDOW))}
+                onPrev={() => shiftStrip(-1)}
+                onNext={() => shiftStrip(1)}
                 canPrev={stripStart > 0}
                 canNext={stripStart < datePool.length - STRIP_WINDOW}
               />

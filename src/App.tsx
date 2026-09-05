@@ -1,12 +1,14 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import LoginPage2 from './components/Pages/LoginPage2'
-import SearchPage from './components/Pages/SearchPage'
+import LoginPage2 from './Pages/LoginPage2'
+import SearchPage from './Pages/SearchPage'
+import { ToastViewport } from './components/Toast'
 // import LoginPage from './components/LoginPage'
 // import LoginPage3 from './components/LoginPage3'
 
 function App() {
   return (
     <BrowserRouter>
+      <ToastViewport />
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<LoginPage2 />} />

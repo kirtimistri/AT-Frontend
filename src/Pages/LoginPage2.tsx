@@ -1,14 +1,18 @@
 import { useState, useEffect } from 'react';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import bg2 from '../../assets/Backgoundimages/bg2.png';
-import logo from '../../assets/logo.jpeg';
+import { toast } from '../components/toastStore';
+import bg2 from '../assets/Backgoundimages/bg2.png';
+import logo from '../assets/logo.jpeg';
 
 const typingPhrases = [
   'Travel with confidence.',
   'Your journey, simplified.',
   'Fly beyond boundaries.',
 ];
+
+const DEMO_EMAIL = 'demo@akbarbizvoy.com';
+const DEMO_PASSWORD = 'demo123';
 
 const WORD_DELAY = 300;
 const HOLD_DURATION = 2000;
@@ -162,7 +166,25 @@ const LoginPage2 = () => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    navigate('/search');
+    const trimmed = email.trim();
+    if (!trimmed || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+      toast({ kind: 'error', code: 400, title: 'Bad Request', message: 'Please enter a valid email address.' });
+      return;
+    }
+    if (password.length < 6) {
+      toast({ kind: 'error', code: 400, title: 'Bad Request', message: 'Password must be at least 6 characters.' });
+      return;
+    }
+    if (!isRobotChecked) {
+      toast({ kind: 'error', code: 403, title: 'Forbidden', message: 'Please confirm you are not a robot.' });
+      return;
+    }
+    if (trimmed === DEMO_EMAIL && password === DEMO_PASSWORD) {
+      toast({ kind: 'success', code: 200, title: 'Signed In', message: 'Welcome back! Redirecting…' });
+      navigate('/search');
+    } else {
+      toast({ kind: 'error', code: 401, title: 'Unauthorized', message: 'Invalid email or password. Use the demo account shown below.' });
+    }
   };
 
   const buttonWrap = 'flex items-center gap-[3.5px] rounded-4xl border border-[rgba(50,120,220,0.12)] bg-[rgba(30,80,160,0.15)]';
@@ -401,7 +423,7 @@ const LoginPage2 = () => {
               <h1 className="m-0 mb-1 text-[26px] font-bold text-white">Welcome <span className="text-[#3b9cff]">back.</span></h1>
               <p className="m-0 mb-5 text-[13px] text-[rgba(170,195,225,0.55)]">Sign in to continue to your account.</p>
 
-              <form onSubmit={handleSubmit} className="flex flex-col gap-3 text-left">
+              <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-3 text-left">
                 <div>
                   <label className="mb-1 block text-[12px] font-medium text-[rgba(200,215,235,0.7)]">Email address</label>
                   <div className="input-golden-wrapper">
@@ -459,6 +481,21 @@ const LoginPage2 = () => {
                 <button type="submit" className="mt-0.5 flex w-full cursor-pointer items-center justify-center gap-2 rounded-[10px] border-none bg-gradient-to-br from-[#1565e0] via-[#1d7bf5] to-[#2b8df8] py-[11px] text-[15px] font-semibold tracking-[0.3px] font-inherit text-white shadow-[0_4px_20px_rgba(25,100,230,0.3),0_1px_3px_rgba(25,100,230,0.2)] transition-all duration-250 hover:-translate-y-px hover:from-[#1d75f0] hover:via-[#2588ff] hover:to-[#3598ff] hover:shadow-[0_6px_28px_rgba(25,100,230,0.4),0_2px_6px_rgba(25,100,230,0.25)] active:translate-y-0">
                   <svg viewBox="0 0 24 24" fill="currentColor" className="h-[16px] w-[16px]"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" /></svg>
                   Sign In
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEmail(DEMO_EMAIL);
+                    setPassword(DEMO_PASSWORD);
+                    setIsRobotChecked(true);
+                    toast({ kind: 'success', code: 200, title: 'Demo Account', message: 'Credentials filled — signing you in…' });
+                    navigate('/search');
+                  }}
+                  className="mt-2 flex w-full cursor-pointer items-center justify-center gap-2 rounded-[8px] border border-[rgba(212,175,55,0.35)] bg-[rgba(212,175,55,0.08)] px-3 py-2 text-left transition-all duration-200 hover:border-[#d4af37] hover:bg-[rgba(212,175,55,0.16)]"
+                >
+                  <span className="text-[9px] font-bold tracking-[0.14em] text-[#f0c265]">DEMO</span>
+                  <span className="text-[11.5px] text-white/70">demo@akbarbizvoy.com / demo123</span>
                 </button>
 
                 <p className="m-0 mt-1.5 text-center text-[13px] text-[rgba(170,195,225,0.5)]">
