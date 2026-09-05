@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import bg3 from '../assets/bg3.png';
+import bg3 from '../assets/Backgoundimages/bg3.png';
 import logo from '../assets/logo.jpeg';
 
 const LoginPage3 = () => {

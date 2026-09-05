@@ -1,5 +1,5 @@
 import { useState, type CSSProperties, type ReactNode, type SVGProps } from 'react';
-import logo from '../assets/logo.jpeg';
+import logo from '../../assets/logo.jpeg';
 
 /* ---------- Shared icon components (lucide-style) ---------- */
 

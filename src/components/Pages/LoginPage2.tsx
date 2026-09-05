@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import React from 'react';
-import bg2 from '../assets/bg2.png';
-import logo from '../assets/logo.jpeg';
+import bg2 from '../../assets/Backgoundimages/bg2.png';
+import logo from '../../assets/logo.jpeg';
 
 const typingPhrases = [
   'Travel with confidence.',
