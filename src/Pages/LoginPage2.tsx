@@ -18,113 +18,12 @@ const WORD_DELAY = 300;
 const HOLD_DURATION = 2000;
 const FADE_OUT_DURATION = 600;
 
-// Geometry of the earth limb (horizon) in bg2.png (1672x941).
-// The planet is a circle with center (CX, CY) and radius R; the part inside
-// the frame is its upper limb, i.e. the visible horizon arc.
-const BG_W = 1672;
-const BG_H = 941;
-const PLANET = { cx: 929, cy: 1575, r: 1413 };
-
-/**
- * Soft blue atmospheric glow hugging the earth's horizon in the background
- * image. Rendered as an SVG that exactly overlays the *content* box of the
- * <img> (object-cover crops the element box, so the content box is measured
- * from the rendered rect + computed object-position).
- */
-const HorizonGlow = ({ imgRef }: { imgRef: React.RefObject<HTMLImageElement | null> }) => {
-  const [box, setBox] = useState<{ left: number; top: number; width: number; height: number } | null>(null);
-
-  useEffect(() => {
-    const img = imgRef.current;
-    if (!img) return;
-
-    let raf = 0;
-    const update = () => {
-      raf = 0;
-      const rect = img.getBoundingClientRect();
-      if (rect.width === 0 || rect.height === 0) return;
-      // object-fit: cover scale factor
-      const scale = Math.max(rect.width / BG_W, rect.height / BG_H);
-      const cw = BG_W * scale;
-      const ch = BG_H * scale;
-      // Resolve object-position percentages (e.g. `left` -> `0% 50%`)
-      const pos = getComputedStyle(img).objectPosition.match(/-?[\d.]+%/g) ?? [];
-      const px = pos.length > 0 ? parseFloat(pos[0] as string) / 100 : 0;
-      const py = pos.length > 1 ? parseFloat(pos[1] as string) / 100 : 0.5;
-      setBox({
-        left: rect.left + (rect.width - cw) * px,
-        top: rect.top + (rect.height - ch) * py,
-        width: cw,
-        height: ch,
-      });
-    };
-    const schedule = () => { if (!raf) raf = requestAnimationFrame(update); };
-
-    schedule();
-    window.addEventListener('resize', schedule);
-    const ro = new ResizeObserver(schedule);
-    ro.observe(img);
-    return () => {
-      window.removeEventListener('resize', schedule);
-      ro.disconnect();
-      if (raf) cancelAnimationFrame(raf);
-    };
-  }, [imgRef]);
-
-  if (!box) return null;
-
-  return (
-    <svg
-      aria-hidden="true"
-      className="pointer-events-none"
-      style={{ position: 'fixed', left: box.left, top: box.top, width: box.width, height: box.height, zIndex: 2 }}
-      viewBox={`0 0 ${BG_W} ${BG_H}`}
-    >
-      <defs>
-        <linearGradient id="horizonFade" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0" stopColor="#fff" stopOpacity="0" />
-          <stop offset="0.22" stopColor="#fff" stopOpacity="0.4" />
-          <stop offset="0.5" stopColor="#fff" stopOpacity="1" />
-          <stop offset="0.78" stopColor="#fff" stopOpacity="0.4" />
-          <stop offset="1" stopColor="#fff" stopOpacity="0" />
-        </linearGradient>
-        <mask id="horizonMask">
-          <rect width={BG_W} height={BG_H} fill="url(#horizonFade)" />
-        </mask>
-        <filter id="glowHalo" x="-80%" y="-80%" width="260%" height="260%">
-          <feGaussianBlur stdDeviation="55" />
-        </filter>
-        <filter id="glowOuter" x="-80%" y="-80%" width="260%" height="260%">
-          <feGaussianBlur stdDeviation="24" />
-        </filter>
-        <filter id="glowMid" x="-80%" y="-80%" width="260%" height="260%">
-          <feGaussianBlur stdDeviation="9" />
-        </filter>
-        <filter id="glowRim" x="-80%" y="-80%" width="260%" height="260%">
-          <feGaussianBlur stdDeviation="3" />
-        </filter>
-      </defs>
-      <g mask="url(#horizonMask)">
-        {/* wide soft halo bleeding into space above the horizon */}
-        <circle cx={PLANET.cx} cy={PLANET.cy} r={PLANET.r} fill="none" stroke="rgba(70,150,255,0.30)" strokeWidth="360" filter="url(#glowHalo)" />
-        {/* outer atmosphere bloom */}
-        <circle cx={PLANET.cx} cy={PLANET.cy} r={PLANET.r} fill="none" stroke="rgba(110,185,255,0.55)" strokeWidth="150" filter="url(#glowOuter)" />
-        {/* denser atmosphere */}
-        <circle cx={PLANET.cx} cy={PLANET.cy} r={PLANET.r} fill="none" stroke="rgba(160,215,255,0.80)" strokeWidth="50" filter="url(#glowMid)" />
-        {/* bright rim line right at the horizon */}
-        <circle cx={PLANET.cx} cy={PLANET.cy} r={PLANET.r} fill="none" stroke="rgba(232,246,255,0.95)" strokeWidth="11" filter="url(#glowRim)" />
-      </g>
-    </svg>
-  );
-};
-
 const LoginPage2 = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isRobotChecked, setIsRobotChecked] = useState(false);
-  const bgRef = React.useRef<HTMLImageElement>(null);
 
   const [phraseIndex, setPhraseIndex] = useState(0);
   const [visibleWords, setVisibleWords] = useState(0);
@@ -261,14 +160,38 @@ const LoginPage2 = () => {
     { left: '46%', bottom: '27%', size: 2, delay: '1.7s', dur: '2.2s' },
   ];
 
+  // Extra city-lights dots computed deterministically across the land bands
+  const extraGoldenDots = Array.from({ length: 120 }, (_, i) => {
+    const bands = [
+      [10, 23, 30, 38], // North America
+      [26, 34, 19, 28], // South America
+      [38, 47, 30, 36], // Europe
+      [39, 47, 20, 28], // Africa
+      [47, 58, 25, 32], // Middle East / India
+      [58, 74, 19, 32], // Asia / Australia
+    ];
+    const b = bands[i % bands.length];
+    const left = b[0] + ((i * 37) % Math.max(b[1] - b[0], 1)) + (((i * 7) % 10) / 10);
+    const bottom = b[2] + ((i * 53) % Math.max(b[3] - b[2], 1)) + (((i * 13) % 8) / 10);
+    return {
+      left: `${Math.round(left * 10) / 10}%`,
+      bottom: `${Math.round(bottom * 10) / 10}%`,
+      size: i % 6 === 0 ? 1.8 : 1.4,
+      delay: `${(i * 0.143) % 2.2}s`,
+      dur: `${1.8 + ((i * 5) % 7) / 10}s`,
+    };
+  });
+
+  const allGoldenDots = [...goldenDots.map((d) => ({ ...d, size: Math.min(d.size, 1.5) })), ...extraGoldenDots];
+
   return (
     <>
       <style>{`
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
         @keyframes goldenSpin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @keyframes dotPulse {
-          0%, 100% { opacity: 0.6; transform: scale(1); }
-          50% { opacity: 1; transform: scale(1.3); }
+          0%, 100% { opacity: 0.55; transform: scale(1); }
+          50% { opacity: 1; transform: scale(1.5); }
         }
 
         .input-golden-wrapper {
@@ -335,15 +258,12 @@ const LoginPage2 = () => {
       `}</style>
 
       <div className="relative flex flex-col lg:flex-row h-auto min-h-screen lg:h-screen w-full overflow-y-auto lg:overflow-hidden bg-[#060d1a] font-[Segoe_UI,Roboto,Helvetica_Neue,Arial,sans-serif]">
-        <img ref={bgRef} src={bg2} alt="" className="pointer-events-none fixed inset-0 z-0 h-[100dvh] min-h-full w-full object-cover object-center lg:object-left" />
-
-        {/* Earth horizon atmosphere glow */}
-        <HorizonGlow imgRef={bgRef} />
+        <img src={bg2} alt="" className="pointer-events-none fixed inset-0 z-0 h-[100dvh] min-h-full w-full object-cover object-center lg:object-left" />
 
         {/* Golden dots */}
         <div className="pointer-events-none absolute inset-0 z-[3]">
-          {goldenDots.map((d, i) => (
-            <div key={i} className="earth-dot" style={{ left: d.left, bottom: d.bottom, width: `${d.size}px`, height: `${d.size}px`, background: `radial-gradient(circle, rgba(255,223,100,1) 0%, rgba(255,200,50,0.9) 25%, rgba(255,180,0,0.5) 55%, transparent 80%)`, boxShadow: `0 0 ${d.size + 2}px rgba(255,223,100,0.9), 0 0 ${d.size + 6}px rgba(255,200,50,0.6), 0 0 ${d.size + 10}px rgba(255,180,0,0.3)`, '--delay': d.delay, '--dur': d.dur } as React.CSSProperties} />
+          {allGoldenDots.map((d, i) => (
+            <div key={i} className="earth-dot" style={{ left: d.left, bottom: d.bottom, width: `${d.size}px`, height: `${d.size}px`, background: `radial-gradient(circle, rgba(255,243,180,1) 0%, rgba(255,230,120,1) 30%, rgba(255,200,60,0.85) 55%, rgba(255,180,0,0.35) 75%, transparent 85%)`, boxShadow: `0 0 ${d.size + 3}px rgba(255,240,150,1), 0 0 ${d.size + 8}px rgba(255,215,90,0.9), 0 0 ${d.size + 16}px rgba(255,190,40,0.55), 0 0 ${d.size + 26}px rgba(255,170,0,0.25)`, '--delay': d.delay, '--dur': d.dur } as React.CSSProperties} />
           ))}
         </div>
 
@@ -382,12 +302,18 @@ const LoginPage2 = () => {
                   );
                 })}
               </div>
-              <div className="my-[14px] h-[3px] w-10 rounded bg-[#3b9cff]" />
-              <p className="m-0 text-[14px] lg:text-[16px] leading-[1.65] text-[rgba(170,195,225,0.6)]">Smart journeys. Seamless<br />experiences. Every time.</p>
+              {/* Brand colour lines — blue, green, orange, pink (from the logo), side by side, below the big text */}
+              <div className="mt-[14px] flex items-center gap-[3px]">
+                <span className="h-[3px] w-9 rounded-full bg-[#00AEEF] lg:w-10" />
+                <span className="h-[3px] w-9 rounded-full bg-[#8CC63F] lg:w-10" />
+                <span className="h-[3px] w-9 rounded-full bg-[#F5821F] lg:w-10" />
+                <span className="h-[3px] w-9 rounded-full bg-[#E4007F] lg:w-10" />
+              </div>
+              <p className="m-0 mt-[14px] text-[14px] lg:text-[16px] leading-[1.65] text-[rgba(170,195,225,0.6)]">Smart journeys. Seamless<br />experiences. Every time.</p>
             </div>
           </div>
 
-          <div className="relative z-10 flex flex-wrap gap-4 lg:gap-9 pb-2">
+          <div className="relative z-10 flex flex-wrap items-center gap-4 lg:gap-9 pb-2 drop-shadow-[0_14px_18px_rgba(0,0,0,0.6)] lg:drop-shadow-[0_16px_26px_rgba(0,0,0,0.5)]">
             {[
               { icon: <><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /><polyline points="9 12 11 14 15 10" /></>, title: 'Trusted', sub: 'Since 1987' },
               { icon: <><circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></>, title: 'Global', sub: 'Presence' },
