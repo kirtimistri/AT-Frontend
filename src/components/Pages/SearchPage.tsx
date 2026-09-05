@@ -1,5 +1,6 @@
 import { useState, type CSSProperties, type ReactNode, type SVGProps } from 'react';
 import logo from '../../assets/logo.jpeg';
+import { useThemeStore } from '../../store/themeStore';
 
 /* ---------- Shared icon components (lucide-style) ---------- */
 
@@ -110,6 +111,36 @@ const GitFork = ({ className }: { className?: string }) => (
 const Rupee = ({ className }: { className?: string }) => (
   <span className={`font-bold transition-all duration-300 group-hover:drop-shadow-[0_0_7px_rgba(240,197,101,0.9)] ${className ?? ''}`}>₹</span>
 );
+
+/* ---------- Theme Toggle ---------- */
+const ThemeToggle = () => {
+  const { theme, toggleTheme } = useThemeStore();
+  return (
+    <button
+      onClick={toggleTheme}
+      aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+      className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-[rgba(124,192,255,0.35)] text-[#7CC0FF] transition-colors duration-200 hover:border-[#d4af37]/70 hover:text-[#f0c265]"
+    >
+      {theme === 'dark' ? (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 2v2" />
+          <path d="M12 20v2" />
+          <path d="m4.93 4.93 1.41 1.41" />
+          <path d="m17.66 17.66 1.41 1.41" />
+          <path d="M2 12h2" />
+          <path d="M20 12h2" />
+          <path d="m6.34 17.66-1.41 1.41" />
+          <path d="m19.07 4.93-1.41 1.41" />
+        </svg>
+      ) : (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+          <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+        </svg>
+      )}
+    </button>
+  );
+};
 
 /* ---------- Airline logo marks ---------- */
 
@@ -802,15 +833,18 @@ type ResultsColumnProps = {
   onSort: (k: SortKey) => void;
 };
 
-const ResultsColumn = ({ title, flights, dayDelta, selected, onSelect, fromLabel, toLabel, sort, onSort }: ResultsColumnProps) => (
+const ResultsColumn = ({ title, flights, dayDelta, selected, onSelect, fromLabel, toLabel, sort, onSort }: ResultsColumnProps) => {
+  const { theme } = useThemeStore();
+  const isLight = theme === 'light';
+  return (
   <section className="min-w-0">
     <div className="flex items-baseline justify-between gap-3">
-      <span className="text-[15px] font-bold text-white">{title}</span>
-      <span className="text-[12px] text-[#9baec7]">{flights.length} Flights Available</span>
+      <span className={`text-[15px] font-bold ${isLight ? 'text-[#1e293b]' : 'text-white'}`}>{title}</span>
+      <span className={`text-[12px] ${isLight ? 'text-[#94a3b8]' : 'text-[#9baec7]'}`}>{flights.length} Flights Available</span>
     </div>
-    <div className="mt-2 flex items-center gap-1 border-b border-white/10 pb-2">
+    <div className={`mt-2 flex items-center gap-1 border-b pb-2 ${isLight ? 'border-[rgba(0,0,0,0.08)]' : 'border-white/10'}`}>
       <SortTabs active={sort} onChange={onSort} />
-      <span className="ml-auto text-[11px] text-[#7CC0FF]">Smart</span>
+      <span className={`ml-auto text-[11px] ${isLight ? 'text-[#2563eb]' : 'text-[#7CC0FF]'}`}>Smart</span>
     </div>
     <div className="space-y-5 pt-4">
       {flights.map((f, i) => (
@@ -829,7 +863,8 @@ const ResultsColumn = ({ title, flights, dayDelta, selected, onSelect, fromLabel
       ))}
     </div>
   </section>
-);
+  );
+};
 
 type SummaryBarProps = {
   onward: Flight | null;
@@ -1456,6 +1491,8 @@ const SkeletonCard = ({ index }: { index: number }) => (    <div
 );
 
 const SearchPage = () => {
+  const { theme } = useThemeStore();
+  const isLight = theme === 'light';
   const [fromCity, setFromCity] = useState('PNQ - Pune');
   const [toCity, setToCity] = useState('DEL - New Delhi');
   const [swapSpin, setSwapSpin] = useState(0);
@@ -1500,9 +1537,9 @@ const SearchPage = () => {
   };
 
   return (
-    <div className="flex min-h-[100dvh] flex-col overflow-x-hidden bg-[#0B132B] text-white lg:h-[100dvh] lg:overflow-hidden">
+    <div className={`flex min-h-[100dvh] flex-col overflow-x-hidden text-white lg:h-[100dvh] lg:overflow-hidden ${isLight ? 'bg-[#f0f4f8] text-[#1e293b]' : 'bg-[#0B132B]'}`}>
       {/* ---- Header ---- */}
-      <header className="sticky top-0 z-30 shrink-0 border-b border-white/10 bg-[#0E1833] px-3 pb-2 pt-2 sm:px-6 sm:pb-4 sm:pt-3">
+      <header className={`sticky top-0 z-30 shrink-0 border-b px-3 pb-2 pt-2 sm:px-6 sm:pb-4 sm:pt-3 ${isLight ? 'border-[rgba(0,0,0,0.08)] bg-white shadow-[0_1px_3px_rgba(0,0,0,0.06)]' : 'border-white/10 bg-[#0E1833]'}`}>
         <div className="flex items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-2 sm:gap-5">
             <div className="flex items-center gap-2">
@@ -1511,10 +1548,11 @@ const SearchPage = () => {
             </div>
           </div>
           <div className="flex shrink-0 items-center gap-2 sm:gap-5">
-            <button className="flex cursor-pointer items-center gap-1.5 border-none bg-transparent text-[12.5px] font-medium text-white/85 sm:text-[13.5px]">
-              Economy <ChevronDown className="h-3.5 w-3.5 text-white/50" />
+            <ThemeToggle />
+            <button className={`flex cursor-pointer items-center gap-1.5 border-none bg-transparent text-[12.5px] font-medium sm:text-[13.5px] ${isLight ? 'text-[#475569]' : 'text-white/85'}`}>
+              Economy <ChevronDown className={`h-3.5 w-3.5 ${isLight ? 'text-[#94a3b8]' : 'text-white/50'}`} />
             </button>
-            <span className="hidden text-[12.5px] text-white/45 md:inline">43 options analyzed</span>
+            <span className={`hidden text-[12.5px] md:inline ${isLight ? 'text-[#94a3b8]' : 'text-white/45'}`}>43 options analyzed</span>
             <button
               type="button"
               onClick={() => setFiltersOpen(!filtersOpen)}
@@ -1531,7 +1569,7 @@ const SearchPage = () => {
         </div>
 
         {/* ---- Search widget bar ---- */}
-        <div className="group relative mt-2 flex flex-wrap items-stretch overflow-hidden rounded-[26px] border border-[rgba(124,192,255,0.22)] bg-[#0F1B3A] shadow-[0_10px_30px_rgba(0,0,0,0.35)] transition-all duration-300 hover:border-[#d4af37]/70 hover:shadow-[0_0_18px_rgba(212,175,55,0.3),0_0_50px_rgba(212,175,55,0.14)] sm:mt-3 sm:rounded-l-[16px] sm:rounded-r-[26px]">
+        <div className={`group relative mt-2 flex flex-wrap items-stretch overflow-hidden rounded-[26px] border transition-all duration-300 hover:border-[#d4af37]/70 sm:mt-3 sm:rounded-l-[16px] sm:rounded-r-[26px] ${isLight ? 'border-[rgba(0,0,0,0.1)] bg-white shadow-[0_4px_16px_rgba(0,0,0,0.08)] hover:shadow-[0_0_18px_rgba(212,175,55,0.15)]' : 'border-[rgba(124,192,255,0.22)] bg-[#0F1B3A] shadow-[0_10px_30px_rgba(0,0,0,0.35)] hover:shadow-[0_0_18px_rgba(212,175,55,0.3),0_0_50px_rgba(212,175,55,0.14)]'}`}>
           {/* From + To (swap button overlaps the divider) */}
           <div className="relative flex w-full min-w-0 border-b border-white/10 sm:w-auto sm:flex-1 sm:border-b-0">
             <div className="relative flex min-w-0 flex-1 items-center px-3 py-2 sm:px-5 sm:py-4">
@@ -1633,15 +1671,15 @@ const SearchPage = () => {
 
       <div className="flex min-h-0 flex-1 flex-col items-stretch overflow-hidden md:flex-row">
         {/* ---- Sidebar ---- */}
-        <aside className={`group/sidebar ${filtersOpen ? 'flex' : 'hidden'} w-full shrink-0 flex-col border-r border-[rgba(124,192,255,0.22)] bg-[#0E1833] p-4 md:flex md:w-[300px]`}>
+        <aside className={`group/sidebar ${filtersOpen ? 'flex' : 'hidden'} w-full shrink-0 flex-col border-r p-4 md:flex md:w-[300px] ${isLight ? 'border-[rgba(0,0,0,0.08)] bg-white' : 'border-[rgba(124,192,255,0.22)] bg-[#0E1833]'}`}>
           <div className="flex items-center justify-between pb-2">
-            <span className="text-[11px] font-bold tracking-[0.14em] text-[#7CC0FF] transition-all duration-300 group-hover/sidebar:text-[#f0c265] group-hover/sidebar:drop-shadow-[0_0_6px_rgba(212,175,55,0.6)]">REFINE RESULTS</span>
+            <span className={`text-[11px] font-bold tracking-[0.14em] transition-all duration-300 group-hover/sidebar:text-[#f0c265] group-hover/sidebar:drop-shadow-[0_0_6px_rgba(212,175,55,0.6)] ${isLight ? 'text-[#2563eb]' : 'text-[#7CC0FF]'}`}>REFINE RESULTS</span>
             <button className="cursor-pointer border-none bg-transparent text-[11.5px] font-medium text-[#7CC0FF] transition-all duration-200 hover:text-[#f0c265] hover:drop-shadow-[0_0_6px_rgba(212,175,55,0.7)]">
               clear all
             </button>
           </div>
 
-          <div className="pretty-scroll min-h-0 max-h-[50vh] flex-1 overflow-x-hidden overflow-y-scroll rounded-[16px] border border-[rgba(124,192,255,0.4)] bg-[#0F1B3A] px-4 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.02)] md:max-h-none">
+          <div className={`pretty-scroll min-h-0 max-h-[50vh] flex-1 overflow-x-hidden overflow-y-scroll rounded-[16px] border px-4 py-1.5 md:max-h-none ${isLight ? 'border-[rgba(0,0,0,0.1)] bg-[#f8fafc] shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]' : 'border-[rgba(124,192,255,0.4)] bg-[#0F1B3A] shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]'} md:max-h-none`}>
             <FilterGroup icon={<GitFork className="h-4 w-4" />} label="Stops" value="Non-stop, 1 stop" chevron="right" />
             <FilterGroup icon={<PlaneTakeoff className="h-4 w-4" />} label="Airline" value="All airlines" chevron="right" />
             <FilterGroup
@@ -1669,7 +1707,7 @@ const SearchPage = () => {
 
           {/* Save Search — matching bordered option at the bottom of the sidebar */}
           <div className="pt-2">
-            <button className="group relative flex w-full cursor-pointer items-center gap-2.5 overflow-hidden rounded-[16px] border border-[rgba(124,192,255,0.4)] bg-[#0F1B3A] px-4 py-2.5 text-left transition-all duration-300 hover:bg-[rgba(212,175,55,0.12)] active:bg-[rgba(212,175,55,0.18)]">
+            <button className={`group relative flex w-full cursor-pointer items-center gap-2.5 overflow-hidden rounded-[16px] border px-4 py-2.5 text-left transition-all duration-300 hover:bg-[rgba(212,175,55,0.12)] active:bg-[rgba(212,175,55,0.18)] ${isLight ? 'border-[rgba(0,0,0,0.1)] bg-[#f8fafc]' : 'border-[rgba(124,192,255,0.4)] bg-[#0F1B3A]'}`}>
               <span className="pointer-events-none absolute inset-0 opacity-0 shadow-[inset_0_0_30px_rgba(212,175,55,0.4),0_0_14px_rgba(212,175,55,0.3)] transition-opacity duration-300 group-hover:opacity-100 group-active:opacity-100" />
               <span className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] bg-gradient-to-br from-[rgba(244,114,182,0.32)] via-[rgba(232,0,124,0.16)] to-[rgba(244,114,182,0.08)] text-[#f9a8d4] shadow-[0_0_14px_rgba(232,0,124,0.22),inset_0_1px_0_rgba(255,255,255,0.14)] ring-1 ring-[rgba(244,114,182,0.32)] transition-all duration-300 group-hover:scale-[1.06] group-hover:from-[rgba(212,175,55,0.45)] group-hover:via-[rgba(212,175,55,0.28)] group-hover:to-[rgba(212,175,55,0.12)] group-hover:ring-[rgba(240,197,101,0.8)] group-hover:text-[#f0c265] group-hover:shadow-[0_0_18px_rgba(212,175,55,0.55),0_0_34px_rgba(212,175,55,0.3),inset_0_1px_0_rgba(255,255,255,0.14)] group-active:scale-[1.06] group-active:from-[rgba(212,175,55,0.45)] group-active:via-[rgba(212,175,55,0.28)] group-active:to-[rgba(212,175,55,0.12)] group-active:ring-[rgba(240,197,101,0.8)] group-active:text-[#f0c265] group-active:shadow-[0_0_18px_rgba(212,175,55,0.55),0_0_34px_rgba(212,175,55,0.3),inset_0_1px_0_rgba(255,255,255,0.14)]">
                 <Bookmark className="h-4 w-4" />
@@ -1684,11 +1722,11 @@ const SearchPage = () => {
         <main className={`pretty-scroll min-w-0 flex-1 overflow-x-hidden overflow-y-scroll p-3 sm:p-6 ${barVisible ? 'pb-[128px] md:pb-[124px]' : ''}`}>
           {!searched ? (
             <div className="flex h-full flex-col items-center justify-center text-center">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full border border-[rgba(124,192,255,0.4)] bg-[#0F1B3A] text-[#7CC0FF]">
+              <div className={`flex h-16 w-16 items-center justify-center rounded-full border ${isLight ? 'border-[rgba(37,99,235,0.2)] bg-[#eff6ff] text-[#2563eb]' : 'border-[rgba(124,192,255,0.4)] bg-[#0F1B3A] text-[#7CC0FF]'}`}>
                 <PlaneTakeoff className="h-7 w-7" />
               </div>
-              <p className="mt-5 text-[16px] font-bold text-white">Search flights to see results</p>
-              <p className="mt-1.5 max-w-sm text-[13px] text-white/50">
+              <p className={`mt-5 text-[16px] font-bold ${isLight ? 'text-[#1e293b]' : 'text-white'}`}>Search flights to see results</p>
+              <p className={`mt-1.5 max-w-sm text-[13px] ${isLight ? 'text-[#94a3b8]' : 'text-white/50'}`}>
                 Enter your route and press the Search button to load available flights for {fromCity} → {toCity}.
               </p>
             </div>

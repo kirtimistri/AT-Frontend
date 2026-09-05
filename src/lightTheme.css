@@ -1,0 +1,489 @@
+/* ============================================================
+   LIGHT THEME CSS OVERRIDES
+   Applied when <html> has class "light-theme"
+   ============================================================ */
+
+/* ---- Global base ---- */
+html.light-theme,
+html.light-theme body {
+  background: #f0f4f8 !important;
+  color: #1e293b !important;
+}
+
+html.light-theme #root {
+  background: #f0f4f8;
+}
+
+/* ---- Dark backgrounds → light ---- */
+html.light-theme .bg-\[\#060d1a\],
+html.light-theme .bg-\[\#060e1f\],
+html.light-theme .bg-\[\#0B132B\],
+html.light-theme .bg-\[\#0B132B\]\/100,
+html.light-theme .bg-\[\#0E1833\],
+html.light-theme .bg-\[\#0F1B3A\],
+html.light-theme .bg-\[\#0F1B3A\]\/95,
+html.light-theme .bg-\[\#0d1b2a\],
+html.light-theme .bg-\[\#0f172a\],
+html.light-theme .bg-\[\#121E3C\],
+html.light-theme .bg-\[\#121E3C\]\/100,
+html.light-theme .bg-\[\#10b981\]\/10,
+html.light-theme .bg-\[\#122844\],
+html.light-theme .bg-\[\#16304f\],
+html.light-theme .bg-\[\#16324f\],
+html.light-theme .bg-\[\#1b4aa0\],
+html.light-theme .bg-\[\#1c3a5f\],
+html.light-theme .bg-\[\#1d3f69\] {
+  background-color: #ffffff !important;
+}
+
+/* ---- Slightly tinted backgrounds ---- */
+html.light-theme .bg-\[\#121E3C\],
+html.light-theme .bg-\[\#0F1B3A\] {
+  background-color: #f8fafc !important;
+}
+
+/* ---- Background color overrides via utility ---- */
+html.light-theme [class*="bg-[#0"] {
+  background-color: #ffffff !important;
+}
+
+html.light-theme [class*="bg-[rgba(10,"] {
+  background-color: rgba(255, 255, 255, 0.97) !important;
+}
+
+/* ---- Card inner backgrounds ---- */
+html.light-theme .card-golden-inner {
+  background: rgba(255, 255, 255, 0.97) !important;
+  box-shadow: inset 0 0 6px rgba(218,165,32,0.10), inset 0 0 14px rgba(218,165,32,0.05) !important;
+}
+
+html.light-theme .input-golden-inner {
+  background: #f1f5f9 !important;
+}
+
+html.light-theme .input-golden-wrapper {
+  background: rgba(80, 130, 200, 0.10) !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+html.light-theme .input-golden-wrapper:focus-within {
+  background: rgba(80, 150, 240, 0.15) !important;
+  box-shadow: 0 0 0 3px rgba(50, 120, 220, 0.08) !important;
+}
+
+/* ---- Text color overrides ---- */
+html.light-theme .text-white {
+  color: #1e293b !important;
+}
+
+html.light-theme [class*="text-[#dde6f0]"],
+html.light-theme [class*="text-[#ffffff]"] {
+  color: #1e293b !important;
+}
+
+html.light-theme [class*="text-[rgba(200,215,235,"],
+html.light-theme [class*="text-[rgba(170,195,225,"],
+html.light-theme [class*="text-[rgba(210,215,225,"],
+html.light-theme [class*="text-[rgba(140,170,210,"] {
+  color: #475569 !important;
+}
+
+html.light-theme [class*="text-white/"] {
+  color: #475569 !important;
+}
+
+html.light-theme .bar-text {
+  color: #2563eb !important;
+}
+
+html.light-theme .bar-text-value {
+  color: #1e293b !important;
+}
+
+html.light-theme .bar-text-muted {
+  color: #94a3b8 !important;
+}
+
+/* ---- Blue accent preserved ---- */
+html.light-theme [class*="text-[#3b9cff]"],
+html.light-theme [class*="text-[#2593fc]"],
+html.light-theme [class*="text-[#7CC0FF]"],
+html.light-theme [class*="text-[#4aa3ff]"] {
+  color: #2563eb !important;
+}
+
+/* ---- Dark text overrides for specific elements ---- */
+html.light-theme [class*="text-[#9baec7]"],
+html.light-theme [class*="text-[#7a8ba3]"],
+html.light-theme [class*="text-[#7e93b3]"],
+html.light-theme [class*="text-[#9eafc7]"],
+html.light-theme [class*="text-[#8fa3bf]"],
+html.light-theme [class*="text-[#a0a8b8]"],
+html.light-theme [class*="text-[#b6c3d5]"] {
+  color: #64748b !important;
+}
+
+/* ---- Border overrides ---- */
+html.light-theme [class*="border-[#214b7e]"],
+html.light-theme [class*="border-[#29466e]"],
+html.light-theme [class*="border-[#315073]"],
+html.light-theme [class*="border-[rgba(124,192,255,"] {
+  border-color: rgba(0, 0, 0, 0.12) !important;
+}
+
+html.light-theme [class*="border-white/"] {
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+html.light-theme [class*="border-[#73869e]"],
+html.light-theme [class*="border-dotted"],
+html.light-theme [class*="border-dashed"] {
+  border-color: rgba(0, 0, 0, 0.15) !important;
+}
+
+/* ---- Specific border colors ---- */
+html.light-theme [class*="border-white\/10"] {
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+/* ---- Divider overrides ---- */
+html.light-theme [class*="divide-white/"] {
+  --tw-divide-opacity: 1;
+}
+
+/* ---- Card border in light theme ---- */
+html.light-theme article[class*="bg-[#0f172a]"],
+html.light-theme article[class*="border-"] {
+  background-color: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06) !important;
+}
+
+html.light-theme article[class*="border-[#d4af37]"] {
+  border-color: #d4af37 !important;
+  box-shadow: 0 0 12px rgba(212,175,55,0.25), 0 0 30px rgba(212,175,55,0.10) !important;
+}
+
+/* ---- Badge colors (keep vibrant) ---- */
+/* Badges keep their brand colors - no override needed */
+
+/* ---- Skeleton loading cards ---- */
+html.light-theme [class*="card-shimmer"][class*="bg-[#0F1B3A]"] {
+  background-color: #e2e8f0 !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+html.light-theme [class*="bg-[#16304f]"] {
+  background-color: #e2e8f0 !important;
+}
+
+html.light-theme [class*="bg-[#1c3a5f]"],
+html.light-theme [class*="bg-[#1d3f69]"] {
+  background-color: #cbd5e1 !important;
+}
+
+html.light-theme [class*="bg-[#122844]"] {
+  background-color: #e2e8f0 !important;
+}
+
+/* ---- Plane icon circles ---- */
+html.light-theme [class*="bg-[#dbe2ec]"],
+html.light-theme [class*="bg-[#e2e8f2]"] {
+  background-color: #1e40af !important;
+}
+
+/* ---- Price strip ---- */
+html.light-theme [class*="bg-[#0F1B3A]"][class*="rounded-"] {
+  background-color: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* ---- Sort tabs ---- */
+html.light-theme [class*="bg-\[\#2593fc\]"] {
+  background-color: #2563eb !important;
+}
+
+/* ---- Summary bar ---- */
+html.light-theme [class*="bg-\[\#0F1B3A\]\/95"] {
+  background-color: rgba(255, 255, 255, 0.97) !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* ---- Sidebar ---- */
+html.light-theme aside {
+  background-color: #ffffff !important;
+}
+
+/* ---- Range slider ---- */
+html.light-theme [class*="bg-white/10"] {
+  background-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+/* ---- Button backgrounds in light theme ---- */
+html.light-theme [class*="bg-transparent"] {
+  background-color: transparent !important;
+}
+
+/* ---- Feature button wrapper (LoginPage) ---- */
+html.light-theme [class*="border-[rgba(50,120,220,"][class*="bg-[rgba(30,80,160,"] {
+  background-color: rgba(37, 99, 235, 0.08) !important;
+  border-color: rgba(37, 99, 235, 0.15) !important;
+}
+
+/* ---- reCAPTCHA box ---- */
+html.light-theme [class*="bg-[rgba(25,35,55,0.6)]"] {
+  background-color: #f1f5f9 !important;
+  border-color: rgba(0, 0, 0, 0.2) !important;
+}
+
+/* ---- recaptcha border ---- */
+html.light-theme [class*="border-[rgba(180,180,180,"] {
+  border-color: rgba(0, 0, 0, 0.12) !important;
+}
+
+/* ---- recaptcha bg ---- */
+html.light-theme [class*="bg-[rgba(240,240,240,"] {
+  background-color: #f8fafc !important;
+}
+
+/* ---- Golden glow dots hidden in light mode ---- */
+html.light-theme .earth-dot {
+  opacity: 0.3 !important;
+}
+
+/* ---- HorizonGlow hidden in light mode ---- */
+html.light-theme .pointer-events-none svg {
+  opacity: 0;
+}
+
+/* ---- Scrollbar overrides for light theme ---- */
+html.light-theme .pretty-scroll {
+  scrollbar-color: rgba(100, 116, 139, 0.4) rgba(100, 116, 139, 0.1);
+}
+
+html.light-theme .pretty-scroll::-webkit-scrollbar-track {
+  background: rgba(100, 116, 139, 0.08);
+}
+
+html.light-theme .pretty-scroll::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.35);
+}
+
+html.light-theme .pretty-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.55);
+}
+
+/* ---- Card shimmer override ---- */
+html.light-theme .card-shimmer::after {
+  background: linear-gradient(105deg, transparent 20%, rgba(100, 116, 139, 0.15) 50%, transparent 80%) !important;
+}
+
+/* ---- Swap glow button ---- */
+html.light-theme .swap-glow-hover:hover svg,
+html.light-theme .swap-glow-click:active svg {
+  color: #d4af37 !important;
+}
+
+/* ---- Golden glow text hover ---- */
+html.light-theme .bar-text:hover {
+  color: #d4af37 !important;
+  text-shadow: none;
+}
+
+html.light-theme .bar-text-value:hover {
+  color: #d4af37 !important;
+  text-shadow: none;
+}
+
+html.light-theme .bar-text-muted:hover {
+  color: #d4af37 !important;
+  text-shadow: none;
+}
+
+/* ---- Smooth transition between themes ---- */
+html {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+html * {
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* ---- Flight card text overrides ---- */
+html.light-theme article {
+  background-color: #ffffff !important;
+}
+
+html.light-theme article .text-white {
+  color: #1e293b !important;
+}
+
+/* ---- Select button stays vibrant ---- */
+/* SelectButton blue/gold stays as-is for both themes */
+
+/* ---- FareTierCard overrides ---- */
+html.light-theme [class*="border-[#29466e]"][class*="bg-[#0d1b2a]"] {
+  background-color: #f8fafc !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+html.light-theme [class*="bg-white/\[0\.03\]"] {
+  background-color: rgba(0, 0, 0, 0.03) !important;
+}
+
+/* ---- LayoverPanel overrides ---- */
+html.light-theme [class*="bg-white/\[0\.03\]"] {
+  background-color: rgba(0, 0, 0, 0.02) !important;
+}
+
+/* ---- Logo shadow adjustment ---- */
+html.light-theme img[class*="shadow-"] {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* ---- Holiday strip cards ---- */
+html.light-theme [class*="bg-\[\#121E3C\]"][class*="rounded-full"] {
+  background-color: #f1f5f9 !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+/* ---- Calendar cells ---- */
+html.light-theme [class*="hover:bg-\[\#131c33\]"]:hover {
+  background-color: #f1f5f9 !important;
+}
+
+html.light-theme [class*="bg-\[\#121E3C\]"][class*="rounded-"]:not([class*="border-white"]) {
+  background-color: #f1f5f9 !important;
+}
+
+/* ---- Search widget bar in light mode ---- */
+html.light-theme [class*="border-[rgba(124,192,255,0.22)"][class*="bg-[#0F1B3A]"] {
+  background-color: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* ---- Header in light mode ---- */
+html.light-theme header {
+  background-color: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+/* ---- User avatar ---- */
+html.light-theme [class*="bg-\[\#2B5BFF\]"] {
+  background-color: #2563eb !important;
+}
+
+/* ---- Flight card backgrounds (all dark variants) ---- */
+html.light-theme [class*="bg-\[\#0f172a\]"] {
+  background-color: #ffffff !important;
+}
+
+/* ---- Sort tabs active state ---- */
+html.light-theme [class*="bg-\[\#2593fc\]"][class*="text-white"] {
+  background-color: #2563eb !important;
+  color: #ffffff !important;
+}
+
+/* ---- Badge keep their colors ---- */
+html.light-theme [class*="bg-\[\#7ac143\]"] { background-color: #7ac143 !important; }
+html.light-theme [class*="bg-\[\#1aa6e4\]"] { background-color: #1aa6e4 !important; }
+html.light-theme [class*="bg-\[\#e4007c\]"] { background-color: #e4007c !important; }
+html.light-theme [class*="bg-\[\#f39200\]"] { background-color: #f39200 !important; }
+
+/* ---- Plane icon circles in flight timeline ---- */
+html.light-theme [class*="bg-\[\#dbe2ec\]"] {
+  background-color: #2563eb !important;
+}
+html.light-theme [class*="bg-\[\#e2e8f2\]"] {
+  background-color: #2563eb !important;
+}
+
+/* ---- Plane fill icon color in timeline ---- */
+html.light-theme [class*="text-\[\#2e7bf6\]"] {
+  color: #ffffff !important;
+}
+html.light-theme [class*="text-\[\#1d3a63\]"] {
+  color: #ffffff !important;
+}
+
+/* ---- Dotted line in flight timeline ---- */
+html.light-theme [class*="border-dotted"] {
+  border-color: rgba(0, 0, 0, 0.2) !important;
+}
+
+/* ---- Separator dividers ---- */
+html.light-theme [class*="bg-\[\#315073\]"] {
+  background-color: rgba(0, 0, 0, 0.15) !important;
+}
+
+/* ---- Flight card metadata text ---- */
+html.light-theme [class*="text-\[\#a0a8b8\]"] {
+  color: #94a3b8 !important;
+}
+
+/* ---- Gold accent icon ---- */
+html.light-theme [class*="text-\[\#f9a8d4\]"] {
+  color: #db2777 !important;
+}
+
+/* ---- Green indicator ---- */
+html.light-theme [class*="bg-\[\#22c55e\]"] {
+  background-color: #22c55e !important;
+}
+
+/* ---- Orange indicator ---- */
+html.light-theme [class*="bg-\[\#fb923c\]"] {
+  background-color: #fb923c !important;
+}
+
+/* ---- Red indicator ---- */
+html.light-theme [class*="bg-\[\#ef4444\]"] {
+  background-color: #ef4444 !important;
+}
+
+/* ---- Selected card gold border glow ---- */
+html.light-theme article[class*="border-\[\#d4af37\]"] {
+  box-shadow: 0 0 12px rgba(212,175,55,0.25), 0 0 30px rgba(212,175,55,0.10) !important;
+}
+
+/* ---- Unselected card border ---- */
+html.light-theme article[class*="border-\[\#214b7e\]"] {
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+/* ---- Summary bar ---- */
+html.light-theme [class*="bg-\[\#0F1B3A\]"][class*="rounded-\[16px\]"] {
+  background-color: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+/* ---- Date strip selected cell ---- */
+html.light-theme [class*="bg-\[\#121E3C\]"][class*="rounded-\[10px\]"] {
+  background-color: #eff6ff !important;
+}
+
+/* ---- Search results area background ---- */
+html.light-theme main {
+  background-color: transparent !important;
+}
+
+/* ---- Sidebar filter text colors ---- */
+html.light-theme aside [class*="text-white"] {
+  color: #1e293b !important;
+}
+html.light-theme aside [class*="text-white/"] {
+  color: #64748b !important;
+}
+
+/* ---- Dark bg override pattern (catch remaining cases) ---- */
+html.light-theme [class*="bg-\[\#0"] {
+  background-color: #ffffff !important;
+}
+
+/* ---- Keep certain branded backgrounds ---- */
+html.light-theme [class*="bg-\[\#1565e0\]"] { background-color: #2563eb !important; }
+html.light-theme [class*="bg-\[\#1d7bf5\]"] { background-color: #2563eb !important; }
+html.light-theme [class*="bg-\[\#2b8df8\]"] { background-color: #2563eb !important; }
