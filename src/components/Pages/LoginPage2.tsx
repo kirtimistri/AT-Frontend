@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import bg2 from '../../assets/Backgoundimages/bg2.png';
 import logo from '../../assets/logo.jpeg';
 
@@ -114,6 +115,7 @@ const HorizonGlow = ({ imgRef }: { imgRef: React.RefObject<HTMLImageElement | nu
 };
 
 const LoginPage2 = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -160,7 +162,7 @@ const LoginPage2 = () => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log('Sign in attempted with:', { email, password, isRobotChecked });
+    navigate('/search');
   };
 
   const buttonWrap = 'flex items-center gap-[3.5px] rounded-4xl border border-[rgba(50,120,220,0.12)] bg-[rgba(30,80,160,0.15)]';
