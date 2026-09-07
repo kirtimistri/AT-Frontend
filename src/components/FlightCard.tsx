@@ -1,8 +1,8 @@
-import { useState, type ReactNode } from 'react';
+import { useState } from 'react';
 import { useFlightStore, type Flight } from '../store/flightStore';
 import { useThemeStore } from '../store/themeStore';
 import { AirlineLogo } from './Logos';
-import { Clock, ShoppingBag, PlaneTakeoff, PlaneFill, Timer, Bookmark, LeafIcon, MapPinIcon, SeatIcon, UserIcon, SettingsIcon, SuitcaseIcon, GlobeIcon } from './icons';
+import { Clock, ShoppingBag, PlaneTakeoff, PlaneFill, Timer, SeatIcon, UserIcon, SettingsIcon, SuitcaseIcon, GlobeIcon, LeafIcon } from './icons';
 import { iconProps } from '../lib/iconProps';
 import { inr, airportCodeOf, terminalOf, viaCities, stopsCount, minutesToHm, cityNameOf, twelveHToMins, minsToTwelveH, legFlightCode } from '../lib/format';
 
@@ -149,7 +149,7 @@ const ItineraryDetails = ({ f }: { f: Flight }) => {
               </div>
 
               {/* Departure → Arrival details */}
-              <div className="grid min-w-0 flex-1 grid-cols-2 gap-3 sm:gap-5">
+              <div className="grid min-w-0 flex-[1.05] grid-cols-2 gap-3 sm:gap-5">
                 <div className="min-w-0">
                   <div className="itinerary-time whitespace-nowrap text-[16px] font-bold leading-none text-white transition-colors duration-300">{leg.depTime}</div>
                   <div className="itinerary-code mt-1 text-[11.5px] font-semibold leading-none text-white transition-colors duration-300">{leg.depCode}</div>
@@ -264,7 +264,7 @@ const PriceBreakdown = ({ base, baggage }: { base: number; baggage: string }) =>
           <div className="price-breakdown-total-value text-[18px] font-bold leading-none text-[#3B9CFF] transition-colors duration-300">{inr(total)}</div>
         </div>
       </div>
-      <button className="mt-4 flex h-10 w-full cursor-pointer items-center justify-center gap-1.5 rounded-full bg-[#2593fc] text-[13px] font-bold text-white shadow-[0_6px_18px_rgba(37,147,252,0.45)] transition-all duration-300 hover:bg-[#d4af37] hover:shadow-[0_0_20px_rgba(212,175,55,0.7),0_0_45px_rgba(212,175,55,0.4)] active:bg-[#f0c265]">
+      <button className="mt-2 flex h-8 w-full cursor-pointer items-center justify-center gap-1.5 rounded-full bg-[#2593fc] text-[12.5px] font-bold text-white shadow-[0_6px_18px_rgba(37,147,252,0.45)] transition-all duration-300 hover:bg-[#d4af37] hover:shadow-[0_0_20px_rgba(212,175,55,0.7),0_0_45px_rgba(212,175,55,0.4)] active:bg-[#f0c265]">
         Continue
         <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
           <path d="M5 12h14" />
@@ -305,9 +305,7 @@ const CompactFlightLeft = ({
   toLabel: string;
   isLight?: boolean;
 }) => {
-  const viaList = viaCities(f.via);
   const stopN = stopsCount(f.stops);
-  const planeCount = Math.max(stopN + 1, viaList.length + 1);
   const depCode = fromLabel.split(' ')[0];
   const depTerm = fromLabel.split(' ').slice(1).join(' ') || 'Terminal 1';
   const arrCode = toLabel.split(' ')[0];
@@ -468,7 +466,7 @@ export const FlightCard = ({
   const [expanded, setExpanded] = useState(false);
   const base = f.price + dayDelta;
   const viaList = viaCities(f.via);
-  const planeCount = Math.max(stopsCount(f.stops) + 1, viaList.length + 1);
+  const planeCount = Math.max(stopsCount(f.stops), viaList.length);
   return (
   <article
     onClick={onSelect}
@@ -533,10 +531,10 @@ export const FlightCard = ({
       </div>
     ) : (
     <>
-    <div className="flex min-w-0 flex-1 flex-col lg:flex-row">
+    <div className="flex min-h-0 min-w-0 flex-1 flex-col lg:flex-row">
     <div className="min-w-0 flex-1 pr-0 lg:pr-6">
 
-      {/* Top row: logo with code, airline name, metadata inline */}
+      {/* Top row: logo with code, airline name, metadata + last stop inline */}
       <div className="flex items-center gap-3.5">
         <div className="flex shrink-0 flex-col items-center">
           <AirlineLogo airline={f.airline} />
@@ -557,6 +555,16 @@ export const FlightCard = ({
               {f.baggage}
             </span>
           </div>
+          {viaList.length > 0 ? (
+            <span className="mt-1.5 block whitespace-nowrap text-[9.5px] font-semibold text-[#fdba74]">
+              via {viaList.join(', ')}
+            </span>
+          ) : (
+            <span className="mt-1.5 flex items-center gap-1 whitespace-nowrap text-[9.5px] font-semibold text-[#22c55e]">
+              <span className="h-[5px] w-[5px] rounded-full bg-[#22c55e]" />
+              Non-stop
+            </span>
+          )}
         </div>
       </div>
 
@@ -570,12 +578,12 @@ export const FlightCard = ({
         <div className="relative mx-2 h-10 min-w-[72px] flex-1 sm:min-w-[88px]">
           <div className={`absolute inset-x-0 top-1/2 border-t border-dotted transition-colors duration-300 ${isLight ? 'border-[#D1D5DB]' : 'border-[#8295ad]'}`} />
           {f.via ? (
-            /* Layover: one plane per leg (stops + 1), via city below each plane */
+            /* Flight with stops: one plane per leg (stops + 1), via city below each plane */
             <>
               {Array.from({ length: planeCount }, (_, i) => (
                 <div
                   key={`p-${i}`}
-                  className="absolute top-1/2 flex h-6 w-6 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-[#dbe2ec] shadow-[0_2px_6px_rgba(0,0,0,0.35)]"
+                  className="absolute top-1/2 flex h-5 w-5 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-[#fdba74] shadow-[0_1px_2px_rgba(0,0,0,0.25)]"
                   style={{ left: `${((i + 0.5) / planeCount) * 100}%` }}
                 >                  <PlaneFill className={`h-3.5 w-3.5 rotate-45 transition-colors duration-300 ${isLight ? 'text-[#2563EB]' : 'text-[#1d3a63]'}`} />
                 </div>
@@ -586,7 +594,7 @@ export const FlightCard = ({
                   className={`absolute top-1/2 max-w-[50%] -translate-x-1/2 translate-y-[20px] truncate px-0.5 text-[10.5px] transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#9baec7]'}`}
                   style={{ left: `${((i + 0.5) / planeCount) * 100}%` }}
                 >
-                  via {city}
+                  {city}
                 </div>
               ))}
             </>
@@ -627,15 +635,22 @@ export const FlightCard = ({
         className="expanded-divider mt-4 border-t border-dotted border-[#73869e] pt-4 transition-colors duration-300"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="mt-4 grid grid-cols-1 items-stretch gap-3 xl:grid-cols-2">
-          <ItineraryDetails f={f} />
-          <PriceBreakdown base={base} baggage={f.baggage} />
+        <div className="mt-4 grid grid-cols-1 gap-3 xl:grid-cols-2">
+          <div className="min-w-0">
+            <ItineraryDetails f={f} />
+          </div>
+          <div className="min-w-0">
+            <PriceBreakdown base={base} baggage={f.baggage} />
+          </div>
         </div>
-        <div className="mt-4 grid grid-cols-1 items-stretch gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          {fareTiers(base).map((tier) => (
-            <FareTierCard key={tier.name} tier={tier} />
-          ))}
-          <LayoverPanel f={f} />
+        <div className="mt-4 "
+          style={{ overflowX: 'auto', scrollbarWidth: 'thin', scrollbarColor: '#2593fc #122844', WebkitOverflowScrolling: 'touch' }}
+        >
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            {fareTiers(base).map((tier) => (
+              <FareTierCard key={tier.name} tier={tier} />
+            ))}
+          </div>
         </div>
 
       </div>
