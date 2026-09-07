@@ -52,7 +52,7 @@ export const ResultsColumn = ({ title, flights, dayDelta, selected, onSelect, fr
           onSelect={() => onSelect(f)}
           fromLabel={fromLabel(f)}
           toLabel={toLabel(f)}
-          expandable={false}
+          expandable
           compact
           index={i}
         />
