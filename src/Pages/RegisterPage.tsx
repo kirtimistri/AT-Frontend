@@ -6,9 +6,8 @@ import lightBg from '../assets/Backgoundimages/backgroundlight.jpeg';
 import logo from '../assets/Backgoundimages/rlogo.jpeg';
 
 import { useThemeStore } from '../store/themeStore';
-import { useAuthStore } from '../store/authStore';
-import { loginUser, ApiError } from '../services/authService';
-import { loadRecaptchaScript, executeRecaptcha } from '../services/captcha';
+import { signupUser, ApiError } from '../services/authService';
+import ReCAPTCHA from 'react-google-recaptcha';
 import { toast } from '../components/toastStore';
 import { ThemeToggle } from '../components/ThemeToggle';
 
@@ -21,9 +20,6 @@ const PLANET = {
   cy: 1575,
   r: 1413,
 };
-
-const DEMO_EMAIL = 'demo@akbarbizvoy.com';
-const DEMO_PASSWORD = 'demo123';
 
 const HorizonGlow = ({
   imgRef,
@@ -127,82 +123,30 @@ const HorizonGlow = ({
           x2="1"
           y2="0"
         >
-          <stop
-            offset="0"
-            stopColor="#fff"
-            stopOpacity="0"
-          />
-
-          <stop
-            offset="0.22"
-            stopColor="#fff"
-            stopOpacity="0.4"
-          />
-
-          <stop
-            offset="0.5"
-            stopColor="#fff"
-            stopOpacity="1"
-          />
-
-          <stop
-            offset="0.78"
-            stopColor="#fff"
-            stopOpacity="0.4"
-          />
-
-          <stop
-            offset="1"
-            stopColor="#fff"
-            stopOpacity="0"
-          />
+          <stop offset="0" stopColor="#fff" stopOpacity="0" />
+          <stop offset="0.22" stopColor="#fff" stopOpacity="0.4" />
+          <stop offset="0.5" stopColor="#fff" stopOpacity="1" />
+          <stop offset="0.78" stopColor="#fff" stopOpacity="0.4" />
+          <stop offset="1" stopColor="#fff" stopOpacity="0" />
         </linearGradient>
 
         <mask id="horizonMask">
-          <rect
-            width={BG_W}
-            height={BG_H}
-            fill="url(#horizonFade)"
-          />
+          <rect width={BG_W} height={BG_H} fill="url(#horizonFade)" />
         </mask>
 
-        <filter
-          id="glowHalo"
-          x="-80%"
-          y="-80%"
-          width="260%"
-          height="260%"
-        >
+        <filter id="glowHalo" x="-80%" y="-80%" width="260%" height="260%">
           <feGaussianBlur stdDeviation="55" />
         </filter>
 
-        <filter
-          id="glowOuter"
-          x="-80%"
-          y="-80%"
-          width="260%"
-          height="260%"
-        >
+        <filter id="glowOuter" x="-80%" y="-80%" width="260%" height="260%">
           <feGaussianBlur stdDeviation="24" />
         </filter>
 
-        <filter
-          id="glowMid"
-          x="-80%"
-          y="-80%"
-          width="260%"
-          height="260%"
-        >
+        <filter id="glowMid" x="-80%" y="-80%" width="260%" height="260%">
           <feGaussianBlur stdDeviation="9" />
         </filter>
 
-        <filter
-          id="glowRim"
-          x="-80%"
-          y="-80%"
-          width="260%"
-          height="260%"
-        >
+        <filter id="glowRim" x="-80%" y="-80%" width="260%" height="260%">
           <feGaussianBlur stdDeviation="3" />
         </filter>
       </defs>
@@ -252,40 +196,27 @@ const HorizonGlow = ({
   );
 };
 
-const LoginPage2 = () => {
+const RegisterPage = () => {
   const navigate = useNavigate();
 
   const { theme } = useThemeStore();
-  const authLogin = useAuthStore((s) => s.login);
 
   const bgRef = useRef<HTMLImageElement>(null);
 
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
 
-  const siteKey = import.meta.env
+  const RECAPTCHA_SITE_KEY = import.meta.env
     .VITE_RECAPTCHA_SITE_KEY as string | undefined;
 
-  const generateCaptchaToken = (): Promise<string> => {
-    if (!siteKey) return Promise.resolve('');
-
-    return executeRecaptcha(siteKey, 'login').catch(
-      (error: unknown) => {
-        console.error('reCAPTCHA failed:', error);
-        return '';
-      }
-    );
-  };
-
-  useEffect(() => {
-    if (siteKey) {
-      loadRecaptchaScript(siteKey).catch(() => {});
-    }
-  }, [siteKey]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isLight = theme === 'light';
 
@@ -304,8 +235,7 @@ const LoginPage2 = () => {
 
   const [visibleWords, setVisibleWords] = useState(0);
 
-  const [fadePhase, setFadePhase] =
-    useState<'in' | 'out'>('in');
+  const [fadePhase, setFadePhase] = useState<'in' | 'out'>('in');
 
   // ------------------------------------------
   // DARK THEME TYPING PHRASES
@@ -332,8 +262,7 @@ const LoginPage2 = () => {
 
     let active = true;
 
-    const currentPhrase =
-      typingPhrases[phraseIndex];
+    const currentPhrase = typingPhrases[phraseIndex];
 
     const words = currentPhrase.split(' ');
 
@@ -352,8 +281,7 @@ const LoginPage2 = () => {
       );
     });
 
-    const totalTyping =
-      words.length * WORD_DELAY;
+    const totalTyping = words.length * WORD_DELAY;
 
     timers.push(
       setTimeout(() => {
@@ -367,8 +295,7 @@ const LoginPage2 = () => {
       setTimeout(() => {
         if (active) {
           setPhraseIndex(
-            (prev) =>
-              (prev + 1) % typingPhrases.length
+            (prev) => (prev + 1) % typingPhrases.length
           );
         }
       }, totalTyping + HOLD_DURATION + FADE_OUT_DURATION)
@@ -408,8 +335,7 @@ const LoginPage2 = () => {
         );
       });
 
-      const totalReveal =
-        taglineWords.length * 300 + 800;
+      const totalReveal = taglineWords.length * 300 + 800;
 
       timers.push(
         setTimeout(() => {
@@ -438,7 +364,7 @@ const LoginPage2 = () => {
   }, [isLight]);
 
   // ------------------------------------------
-  // LOGIN SUBMIT
+  // REGISTER SUBMIT
   // ------------------------------------------
 
   const handleSubmit = async (
@@ -448,33 +374,49 @@ const LoginPage2 = () => {
 
     if (isSubmitting) return;
 
-    const trimmed = email.trim();
+    if (!captchaToken) {
+      toast({
+        kind: 'error',
+        code: 403,
+        title: 'CAPTCHA Required',
+        message:
+          'Please verify you are not a robot first.',
+      });
+      return;
+    }
+
+    const trimmedName = name.trim();
+    const trimmedEmail = email.trim();
 
     setIsSubmitting(true);
 
     try {
-      const captcha = await generateCaptchaToken();
-      const res = await loginUser(trimmed, password, captcha);
+      const res = await signupUser({
+        name: trimmedName,
+        email: trimmedEmail,
+        password,
+        confirmPassword,
+        captcha: captchaToken,
+      });
 
-      if (res.success && res.data) {
-        authLogin(res.data);
-
+      if (res.success) {
         toast({
           kind: 'success',
-          code: 200,
-          title: 'Signed In',
+          code: 201,
+          title: 'Created',
           message:
-            'Welcome back! Redirecting…',
+            res.message ||
+            'Account created! Redirecting…',
         });
 
-        navigate('/search');
+        navigate('/login');
       } else {
         toast({
           kind: 'error',
           code: 400,
-          title: 'Login Failed',
+          title: 'Signup Failed',
           message:
-            res.message || 'Invalid credentials.',
+            res.message || 'Could not create account.',
         });
       }
     } catch (err: unknown) {
@@ -485,15 +427,21 @@ const LoginPage2 = () => {
               title:
                 err.status === 0
                   ? 'Network Error'
-                  : err.status === 401 ||
-                      err.status === 403
-                    ? 'Unauthorized'
-                    : 'Server Error',
+                  : err.status === 400
+                    ? 'Bad Request'
+                    : err.status === 401 ||
+                        err.status === 403
+                      ? 'Unauthorized'
+                      : err.status === 409
+                        ? 'Conflict'
+                        : 'Server Error',
               code:
                 err.status === 0
                   ? 0
-                  : err.status === 401 ||
-                      err.status === 403
+                  : err.status === 400 ||
+                      err.status === 401 ||
+                      err.status === 403 ||
+                      err.status === 409
                     ? err.status
                     : 500,
             }
@@ -814,9 +762,7 @@ const LoginPage2 = () => {
         {/* EARTH HORIZON GLOW */}
         {/* -------------------------------- */}
 
-        {!isLight && (
-          <HorizonGlow imgRef={bgRef} />
-        )}
+        {!isLight && <HorizonGlow imgRef={bgRef} />}
 
         {/* -------------------------------- */}
         {/* GOLDEN DOTS */}
@@ -949,8 +895,7 @@ const LoginPage2 = () => {
                 "
               >
                 {taglineWords.map((word, i) => {
-                  const isBlue =
-                    word === 'Seamless';
+                  const isBlue = word === 'Seamless';
 
                   return (
                     <span key={i}>
@@ -1067,9 +1012,7 @@ const LoginPage2 = () => {
             )}
           </div>
 
-          {!isLight && (
-            <div className="flex-1" />
-          )}
+          {!isLight && <div className="flex-1" />}
 
           {/* -------------------------------- */}
           {/* FEATURE ICONS */}
@@ -1112,20 +1055,11 @@ const LoginPage2 = () => {
               {
                 icon: (
                   <>
-                    <circle
-                      cx="12"
-                      cy="12"
-                      r="10"
-                    />
+                    <circle cx="12" cy="12" r="10" />
 
                     <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
 
-                    <line
-                      x1="2"
-                      y1="12"
-                      x2="22"
-                      y2="12"
-                    />
+                    <line x1="2" y1="12" x2="22" y2="12" />
                   </>
                 ),
 
@@ -1336,9 +1270,9 @@ const LoginPage2 = () => {
                   }
                 `}
               >
-                Welcome{' '}
+                Create{' '}
                 <span className="text-[#2563eb]">
-                  back.
+                  account.
                 </span>
               </h1>
 
@@ -1354,7 +1288,7 @@ const LoginPage2 = () => {
                   }
                 `}
               >
-                Sign in to continue to your account.
+                Sign up to continue to your account.
               </p>
 
               {/* FORM */}
@@ -1363,6 +1297,78 @@ const LoginPage2 = () => {
                 noValidate
                 className="flex flex-col gap-3 text-left"
               >
+                {/* NAME */}
+                <div>
+                  <label
+                    className={`
+                      mb-1
+                      block
+                      text-[12px]
+                      font-medium
+                      ${
+                        isLight
+                          ? 'text-[#475569]'
+                          : 'text-[rgba(200,215,235,0.7)]'
+                      }
+                    `}
+                  >
+                    Name
+                  </label>
+
+                  <div className="input-golden-wrapper">
+                    <div className="input-golden-inner">
+                      <svg
+                        className={`
+                          golden-icon
+                          mr-3
+                          h-[18px]
+                          w-[18px]
+                          shrink-0
+                          ${
+                            isLight
+                              ? 'text-[#94a3b8]'
+                              : 'text-[rgba(140,170,210,0.45)]'
+                          }
+                        `}
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.6"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+
+                        <circle cx="12" cy="7" r="4" />
+                      </svg>
+
+                      <input
+                        type="text"
+                        value={name}
+                        onChange={(e) =>
+                          setName(e.target.value)
+                        }
+                        placeholder="Enter your name"
+                        required
+                        className={`
+                          h-full
+                          flex-1
+                          bg-transparent
+                          text-[14px]
+                          font-inherit
+                          leading-[40px]
+                          outline-none
+                          ${
+                            isLight
+                              ? 'text-[#1e293b] placeholder:text-[#94a3b8]'
+                              : 'text-[#dde6f0] placeholder:text-[rgba(140,170,210,0.4)]'
+                          }
+                        `}
+                      />
+                    </div>
+                  </div>
+                </div>
+
                 {/* EMAIL */}
                 <div>
                   <label
@@ -1403,13 +1409,9 @@ const LoginPage2 = () => {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                       >
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                        <rect x="2" y="4" width="20" height="16" rx="2" />
 
-                        <circle
-                          cx="12"
-                          cy="7"
-                          r="4"
-                        />
+                        <path d="m22 7-10 6L2 7" />
                       </svg>
 
                       <input
@@ -1479,28 +1481,20 @@ const LoginPage2 = () => {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                       >
-                        <rect
-                          x="3"
-                          y="11"
-                          width="18"
-                          height="11"
-                          rx="2"
-                        />
+                        <rect x="3" y="11" width="18" height="11" rx="2" />
 
                         <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                       </svg>
 
                       <input
                         type={
-                          showPassword
-                            ? 'text'
-                            : 'password'
+                          showPassword ? 'text' : 'password'
                         }
                         value={password}
                         onChange={(e) =>
                           setPassword(e.target.value)
                         }
-                        placeholder="Enter your password"
+                        placeholder="Create a password"
                         required
                         className={`
                           h-full
@@ -1522,9 +1516,7 @@ const LoginPage2 = () => {
                       <button
                         type="button"
                         onClick={() =>
-                          setShowPassword(
-                            !showPassword
-                          )
+                          setShowPassword(!showPassword)
                         }
                         className={`
                           absolute
@@ -1565,11 +1557,7 @@ const LoginPage2 = () => {
                             <>
                               <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
 
-                              <circle
-                                cx="12"
-                                cy="12"
-                                r="3"
-                              />
+                              <circle cx="12" cy="12" r="3" />
                             </>
                           ) : (
                             <>
@@ -1581,12 +1569,7 @@ const LoginPage2 = () => {
 
                               <path d="M9.88 9.88a3 3 0 0 0 4.24 4.24" />
 
-                              <line
-                                x1="1"
-                                y1="1"
-                                x2="23"
-                                y2="23"
-                              />
+                              <line x1="1" y1="1" x2="23" y2="23" />
                             </>
                           )}
                         </svg>
@@ -1595,33 +1578,171 @@ const LoginPage2 = () => {
                   </div>
                 </div>
 
-                {/* FORGOT PASSWORD */}
-                <div className="mt-[-3px] text-right">
-                  <a
-                    href="#"
+                {/* CONFIRM PASSWORD */}
+                <div>
+                  <label
                     className={`
-                      text-[12.5px]
+                      mb-1
+                      block
+                      text-[12px]
                       font-medium
-                      no-underline
-                      transition-colors
-                      duration-200
-                      hover:underline
                       ${
                         isLight
-                          ? 'text-[#2563eb] hover:text-[#1d4ed8]'
-                          : 'text-[#3b9cff] hover:text-[#6bb3ff]'
+                          ? 'text-[#475569]'
+                          : 'text-[rgba(200,215,235,0.7)]'
                       }
                     `}
                   >
-                    Forgot password?
-                  </a>
+                    Confirm Password
+                  </label>
+
+                  <div className="input-golden-wrapper">
+                    <div className="input-golden-inner relative">
+                      <svg
+                        className={`
+                          golden-icon
+                          mr-3
+                          h-[18px]
+                          w-[18px]
+                          shrink-0
+                          ${
+                            isLight
+                              ? 'text-[#94a3b8]'
+                              : 'text-[rgba(140,170,210,0.45)]'
+                          }
+                        `}
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.6"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <rect x="3" y="11" width="18" height="11" rx="2" />
+
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+
+                        <path d="M12 15v3" />
+                      </svg>
+
+                      <input
+                        type={
+                          showConfirmPassword
+                            ? 'text'
+                            : 'password'
+                        }
+                        value={confirmPassword}
+                        onChange={(e) =>
+                          setConfirmPassword(e.target.value)
+                        }
+                        placeholder="Re-enter your password"
+                        required
+                        className={`
+                          h-full
+                          flex-1
+                          bg-transparent
+                          text-[14px]
+                          font-inherit
+                          leading-[40px]
+                          outline-none
+                          ${
+                            isLight
+                              ? 'text-[#1e293b] placeholder:text-[#94a3b8]'
+                              : 'text-[#dde6f0] placeholder:text-[rgba(140,170,210,0.4)]'
+                          }
+                        `}
+                      />
+
+                      {/* SHOW CONFIRM PASSWORD */}
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setShowConfirmPassword(!showConfirmPassword)
+                        }
+                        className={`
+                          absolute
+                          right-3
+                          top-1/2
+                          flex
+                          -translate-y-1/2
+                          cursor-pointer
+                          items-center
+                          justify-center
+                          border-none
+                          bg-transparent
+                          p-1
+                          transition-colors
+                          duration-200
+                          ${
+                            isLight
+                              ? 'text-[#94a3b8] hover:text-[#475569]'
+                              : 'text-[rgba(140,170,210,0.45)] hover:text-[rgba(170,200,240,0.8)]'
+                          }
+                        `}
+                        aria-label={
+                          showConfirmPassword
+                            ? 'Hide password'
+                            : 'Show password'
+                        }
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.6"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="h-[18px] w-[18px]"
+                        >
+                          {showConfirmPassword ? (
+                            <>
+                              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+
+                              <circle cx="12" cy="12" r="3" />
+                            </>
+                          ) : (
+                            <>
+                              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
+
+                              <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
+
+                              <path d="m14.12 14.12-4.24-4.24" />
+
+                              <path d="M9.88 9.88a3 3 0 0 0 4.24 4.24" />
+
+                              <line x1="1" y1="1" x2="23" y2="23" />
+                            </>
+                          )}
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
                 </div>
 
-                
+                {/* RECAPTCHA */}
+                <div className="flex w-full justify-center overflow-hidden">
+                  {RECAPTCHA_SITE_KEY ? (
+                    <ReCAPTCHA
+                      sitekey={RECAPTCHA_SITE_KEY}
+                      theme={isLight ? 'light' : 'dark'}
+                      onChange={(token) =>
+                        setCaptchaToken(token)
+                      }
+                      onExpired={() =>
+                        setCaptchaToken(null)
+                      }
+                      onErrored={() =>
+                        setCaptchaToken(null)
+                      }
+                    />
+                  ) : (
+                    <span className="text-[12px] text-[#dc2626]">
+                      reCAPTCHA is not configured.
+                    </span>
+                  )}
+                </div>
 
-                
-
-                {/* SIGN IN */}
+                {/* CREATE ACCOUNT */}
                 <button
                   type="submit"
                   disabled={isSubmitting}
@@ -1665,72 +1786,26 @@ const LoginPage2 = () => {
                 >
                   <svg
                     viewBox="0 0 24 24"
-                    fill="currentColor"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                     className="h-[16px] w-[16px]"
                   >
-                    <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" />
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+
+                    <circle cx="9" cy="7" r="4" />
+
+                    <path d="M19 8v6" />
+
+                    <path d="M22 11h-6" />
                   </svg>
 
-                  {isSubmitting ? 'Signing In…' : 'Sign In'}
+                  {isSubmitting ? 'Creating Account…' : 'Create Account'}
                 </button>
 
-                {/* DEMO LOGIN */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEmail(DEMO_EMAIL);
-                    setPassword(DEMO_PASSWORD);
-
-                    toast({
-                      kind: 'success',
-                      code: 200,
-                      title: 'Demo Account',
-                      message:
-                        'Credentials filled — signing you in…',
-                    });
-
-                    navigate('/search');
-                  }}
-                  className="
-                    mt-2
-                    flex
-                    w-full
-                    cursor-pointer
-                    items-center
-                    justify-center
-                    gap-2
-                    rounded-[8px]
-                    border
-                    border-[rgba(212,175,55,0.35)]
-                    bg-[rgba(212,175,55,0.08)]
-                    px-3
-                    py-2
-                    text-left
-                    transition-all
-                    duration-200
-                    hover:border-[#d4af37]
-                    hover:bg-[rgba(212,175,55,0.16)]
-                  "
-                >
-                  <span className="text-[9px] font-bold tracking-[0.14em] text-[#f0c265]">
-                    DEMO
-                  </span>
-
-                  <span
-                    className={`
-                      text-[11.5px]
-                      ${
-                        isLight
-                          ? 'text-[#475569]'
-                          : 'text-white/70'
-                      }
-                    `}
-                  >
-                    demo@akbarbizvoy.com / demo123
-                  </span>
-                </button>
-
-                {/* CREATE ACCOUNT */}
+                {/* SIGN IN */}
                 <p
                   className={`
                     m-0
@@ -1744,17 +1819,19 @@ const LoginPage2 = () => {
                     }
                   `}
                 >
-                  Don't have an account?{' '}
+                  Already have an account?{' '}
 
-                  <a
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      navigate('/register');
-                    }}
+                  <button
+                    type="button"
+                    onClick={() => navigate('/login')}
                     className={`
                       font-semibold
                       no-underline
+                      cursor-pointer
+                      border-none
+                      bg-transparent
+                      p-0
+                      text-[13px]
                       transition-colors
                       duration-200
                       hover:underline
@@ -1765,8 +1842,8 @@ const LoginPage2 = () => {
                       }
                     `}
                   >
-                    Create account
-                  </a>
+                    Sign in
+                  </button>
                 </p>
               </form>
             </div>
@@ -1777,4 +1854,4 @@ const LoginPage2 = () => {
   );
 };
 
-export default LoginPage2;
+export default RegisterPage;
