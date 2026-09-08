@@ -8,7 +8,6 @@ import logo from '../assets/Backgoundimages/rlogo.jpeg';
 import { useThemeStore } from '../store/themeStore';
 import { useAuthStore } from '../store/authStore';
 import { loginUser, ApiError } from '../services/authService';
-import { loadRecaptchaScript, executeRecaptcha } from '../services/captcha';
 import { toast } from '../components/toastStore';
 import { ThemeToggle } from '../components/ThemeToggle';
 
@@ -267,25 +266,9 @@ const LoginPage2 = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const siteKey = import.meta.env
-    .VITE_RECAPTCHA_SITE_KEY as string | undefined;
-
-  const generateCaptchaToken = (): Promise<string> => {
-    if (!siteKey) return Promise.resolve('');
-
-    return executeRecaptcha(siteKey, 'login').catch(
-      (error: unknown) => {
-        console.error('reCAPTCHA failed:', error);
-        return '';
-      }
-    );
-  };
-
-  useEffect(() => {
-    if (siteKey) {
-      loadRecaptchaScript(siteKey).catch(() => {});
-    }
-  }, [siteKey]);
+  // Synchronous lock that prevents duplicate submissions even if state updates
+  // haven't rendered yet (e.g. double-click before the re-render).
+  const submitLock = useRef(false);
 
   const isLight = theme === 'light';
 
@@ -446,15 +429,16 @@ const LoginPage2 = () => {
   ) => {
     e.preventDefault();
 
-    if (isSubmitting) return;
+    if (isSubmitting || submitLock.current) return;
+
+    submitLock.current = true;
 
     const trimmed = email.trim();
 
     setIsSubmitting(true);
 
     try {
-      const captcha = await generateCaptchaToken();
-      const res = await loginUser(trimmed, password, captcha);
+      const res = await loginUser(trimmed, password);
 
       if (res.success && res.data) {
         authLogin(res.data);
@@ -485,10 +469,12 @@ const LoginPage2 = () => {
               title:
                 err.status === 0
                   ? 'Network Error'
-                  : err.status === 401 ||
-                      err.status === 403
-                    ? 'Unauthorized'
-                    : 'Server Error',
+                  : err.status === 408
+                    ? 'Request Timed Out'
+                    : err.status === 401 ||
+                        err.status === 403
+                      ? 'Unauthorized'
+                      : 'Server Error',
               code:
                 err.status === 0
                   ? 0
@@ -511,6 +497,7 @@ const LoginPage2 = () => {
         message,
       });
     } finally {
+      submitLock.current = false;
       setIsSubmitting(false);
     }
   };

@@ -26,7 +26,7 @@ export const FlightTimeline = ({ duration, isDirect, stops, isReturn = false }: 
           />
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
             <Plane
-              className="h-4 w-4 -rotate-45"
+              className="h-4 w-4 rotate-45"
               style={{ color: accentColor }}
             />
           </div>

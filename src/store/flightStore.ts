@@ -20,6 +20,22 @@ export type SortKey = 'price' | 'fastest' | 'departure';
 
 export type StripDay = { label: string; price: number };
 
+export type SearchSnapshot = {
+  searched: boolean;
+  selectedOnward: Flight | null;
+  selectedReturn: Flight | null;
+  fromCity: string;
+  toCity: string;
+  returnDate: string | null;
+  returnOpen: boolean;
+  onwardSort: SortKey;
+  returnSort: SortKey;
+  stripStart: number;
+  stripSel: number;
+  monthOffset: number;
+  filtersOpen: boolean;
+};
+
 // ── Client-side dummy data ────────────────────────────────────────────────
 // These arrays live inside the zustand store (see useFlightStore) so all
 // components read the same data through the store instead of importing it.
@@ -334,6 +350,7 @@ type FlightStore = {
   shiftStrip: (dir: -1 | 1) => void;
   swapCities: () => void;
   doSearch: () => void;
+  restoreSearch: (snapshot: SearchSnapshot) => void;
 };
 
 export const useFlightStore = create<FlightStore>()((set, get) => ({
@@ -391,6 +408,23 @@ export const useFlightStore = create<FlightStore>()((set, get) => ({
           : Math.min(s.datePool.length - STRIP_WINDOW, s.stripStart + STRIP_WINDOW),
     })),
   swapCities: () => set((s) => ({ fromCity: s.toCity, toCity: s.fromCity })),
+
+  restoreSearch: (snapshot) =>
+    set({
+      searched: snapshot.searched,
+      selectedOnward: snapshot.selectedOnward,
+      selectedReturn: snapshot.selectedReturn,
+      fromCity: snapshot.fromCity,
+      toCity: snapshot.toCity,
+      returnDate: snapshot.returnDate,
+      returnOpen: snapshot.returnOpen,
+      onwardSort: snapshot.onwardSort,
+      returnSort: snapshot.returnSort,
+      stripStart: snapshot.stripStart,
+      stripSel: snapshot.stripSel,
+      monthOffset: snapshot.monthOffset,
+      filtersOpen: snapshot.filtersOpen,
+    }),
 
   doSearch: () => {
     const { searching, fromCity, toCity, returnDate } = get();

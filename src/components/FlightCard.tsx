@@ -438,7 +438,8 @@ export const FlightCard = ({
   const [expanded, setExpanded] = useState(false);
   const base = f.price + dayDelta;
   const viaList = viaCities(f.via);
-  const planeCount = Math.max(stopsCount(f.stops), viaList.length);
+  const planeCount = Math.max(stopsCount(f.stops) + 1, viaList.length + 1);
+
   return (
   <article
     onClick={onSelect}

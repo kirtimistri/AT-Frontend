@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useFlightStore, STRIP_WINDOW, STRIP_DEFAULT_START, STRIP_DEFAULT_SEL } from '../store/flightStore';
 import { useThemeStore } from '../store/themeStore';
 import { Header } from '../components/Header';
@@ -8,6 +9,7 @@ import { SkeletonCard } from '../components/SkeletonCard';
 import { SummaryBar } from '../components/SummaryBar';
 import { FlightCard } from '../components/FlightCard';
 import { PlaneTakeoff } from '../components/icons';
+import { readSearchSnapshot, clearSearchSnapshot } from '../lib/openReview';
 
 const SearchPage = () => {
   const { theme } = useThemeStore();
@@ -33,6 +35,15 @@ const SearchPage = () => {
   const setReturnSort = useFlightStore((s) => s.setReturnSort);
   const setStripSel = useFlightStore((s) => s.setStripSel);
   const shiftStrip = useFlightStore((s) => s.shiftStrip);
+  const restoreSearch = useFlightStore((s) => s.restoreSearch);
+
+  useEffect(() => {
+    const snapshot = readSearchSnapshot();
+    if (snapshot) {
+      restoreSearch(snapshot);
+      clearSearchSnapshot();
+    }
+  }, [restoreSearch]);
 
   const stripDates = datePool.slice(stripStart, stripStart + STRIP_WINDOW);
   const stripDay = datePool[stripStart + stripSel];
@@ -153,7 +164,14 @@ const SearchPage = () => {
 
               <div className="space-y-6 pt-5">
                 {flights.map((f, i) => (
-                  <FlightCard key={i} f={f} dayDelta={dayDelta} index={i} />
+                  <FlightCard
+                    key={i}
+                    f={f}
+                    dayDelta={dayDelta}
+                    index={i}
+                    selected={selectedOnward?.code === f.code}
+                    onSelect={() => setSelectedOnward(f)}
+                  />
                 ))}
               </div>
             </div>

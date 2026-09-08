@@ -9,6 +9,18 @@ const RECAPTCHA_API_URLS = [
 
 let pendingLoad: Promise<void> | null = null;
 
+// reCAPTCHA v3 tokens are valid for 2 minutes. Cache the most recent token
+// per site key + action and reuse it so submitting skips the Google round-trip.
+// 90s keeps us safely inside the 2-minute window.
+const TOKEN_CACHE_MAX_AGE_MS = 90000;
+
+const tokenCache = new Map<
+  string,
+  { token: string; when: number }
+>();
+
+const pendingExec = new Map<string, Promise<string>>();
+
 export function loadRecaptchaScript(
   siteKey: string
 ): Promise<void> {
@@ -90,7 +102,27 @@ export function executeRecaptcha(
   siteKey: string,
   action: string
 ): Promise<string> {
-  return new Promise((resolve, reject) => {
+  const cacheKey = `${siteKey}:${action}`;
+
+  // Reuse a fresh cached token instead of waiting on Google again.
+  const cached = tokenCache.get(cacheKey);
+
+  if (
+    cached &&
+    Date.now() - cached.when < TOKEN_CACHE_MAX_AGE_MS
+  ) {
+    return Promise.resolve(cached.token);
+  }
+
+  // Share an in-flight execution so concurrent callers (e.g. a pre-warm and
+  // an actual submit) don't both round-trip to Google.
+  const inFlight = pendingExec.get(cacheKey);
+
+  if (inFlight) {
+    return inFlight;
+  }
+
+  const run = new Promise<string>((resolve, reject) => {
     if (!siteKey) {
       reject(
         new Error(
@@ -136,6 +168,10 @@ export function executeRecaptcha(
                   ? `${token.slice(0, 20)}…`
                   : '(empty)'
               );
+              tokenCache.set(cacheKey, {
+                token,
+                when: Date.now(),
+              });
               resolve(token);
             })
             .catch((err: unknown) => {
@@ -156,5 +192,11 @@ export function executeRecaptcha(
         clearTimeout(timer);
         reject(err);
       });
+  }).finally(() => {
+    pendingExec.delete(cacheKey);
   });
+
+  pendingExec.set(cacheKey, run);
+
+  return run;
 }

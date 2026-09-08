@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import bg1 from '../assets/Backgoundimages/bg1.png';
-import { LogoIcon } from './Logo';
+import { Logo } from './Logo';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -13,43 +13,22 @@ const LoginPage = () => {
     console.log('Sign in attempted with:', { email, password, isRobotChecked });
   };
 
-  const planePath = "M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z";
-
   return (
     <div className="relative flex min-h-screen w-full items-center justify-center overflow-x-hidden bg-gradient-to-b from-[#060e1f] via-[#0b1d35] via-[#0d2240] via-[#0a1a30] to-[#081428] py-6 font-[Segoe_UI,Roboto,Helvetica_Neue,Arial,sans-serif]">
       {/* Background image */}
       <img src={bg1} alt="" className="pointer-events-none fixed inset-0 z-0 h-[100dvh] min-h-full w-full object-cover" />
 
-      {/* Earth atmosphere glow */}
-      <div className="pointer-events-none absolute bottom-[-60px] left-1/2 z-[1] h-[280px] w-[160%] -translate-x-1/2 bg-[radial-gradient(ellipse_70%_100%_at_center_bottom,rgba(30,120,220,0.4)_0%,rgba(20,80,180,0.2)_40%,rgba(10,40,100,0.05)_70%,transparent_100%)]" />
-      <div className="pointer-events-none absolute bottom-0 left-0 z-[1] h-[120px] w-full bg-gradient-to-t from-[rgba(50,140,240,0.25)] via-[rgba(40,120,220,0.2)] via-[rgba(30,100,200,0.15)] via-[rgba(20,80,160,0.08)] to-transparent" />
 
-      {/* Decorative arc lines */}
-      <svg className="pointer-events-none absolute top-[-5%] left-1/2 z-[2] w-[70%] max-w-[900px] -translate-x-1/2" viewBox="0 0 800 600" fill="none">
-        <ellipse cx="400" cy="350" rx="380" ry="300" stroke="rgba(80,130,200,0.12)" strokeWidth="1.2" strokeDasharray="10 8" />
-      </svg>
-      <svg className="pointer-events-none absolute top-[5%] left-1/2 z-[2] w-[60%] max-w-[780px] -translate-x-1/2" viewBox="0 0 800 600" fill="none">
-        <ellipse cx="400" cy="380" rx="340" ry="260" stroke="rgba(80,130,200,0.08)" strokeWidth="1.2" strokeDasharray="10 8" />
-      </svg>
 
-      {/* Plane decorations */}
-      <svg className="pointer-events-none absolute z-[2] h-9 w-9 top-[10%] left-[8%]" viewBox="0 0 24 24" fill="none"><path d={planePath} fill="rgba(120,155,200,0.35)" /></svg>
-      <svg className="pointer-events-none absolute z-[2] h-7 w-7 top-[32%] left-[5%]" viewBox="0 0 24 24" fill="none"><path d={planePath} fill="rgba(120,155,200,0.25)" /></svg>
-      <svg className="pointer-events-none absolute z-[2] h-8 w-8 top-[14%] right-[10%]" viewBox="0 0 24 24" fill="none"><path d={planePath} fill="rgba(120,155,200,0.3)" /></svg>
-      <svg className="pointer-events-none absolute z-[2] h-6 w-6 top-[38%] right-[7%]" viewBox="0 0 24 24" fill="none"><path d={planePath} fill="rgba(120,155,200,0.22)" /></svg>
-      <svg className="pointer-events-none absolute z-[2] h-6.5 w-6.5 top-[58%] left-[14%]" viewBox="0 0 24 24" fill="none"><path d={planePath} fill="rgba(120,155,200,0.28)" /></svg>
+
 
       {/* Main card */}
       <div className="relative z-10 w-[92%] max-w-[440px] rounded-[18px] border border-[rgba(80,140,220,0.12)] bg-[rgba(12,22,45,0.82)] px-6 py-7 pb-6 text-center shadow-[0_25px_80px_rgba(0,0,0,0.55),0_0_60px_rgba(20,60,140,0.08),inset_0_1px_0_rgba(100,160,240,0.06)] backdrop-blur-2xl sm:px-10">
         {/* Logo */}
         <div className="mb-3 flex justify-center">
-          <div className="relative flex items-center justify-center">
-            <div className="absolute inset-[-8px] rounded-full bg-[radial-gradient(circle,rgba(40,100,220,0.15)_0%,transparent_70%)]" />
-            <LogoIcon size="xl" />
-          </div>
+          <Logo size="xl" withText withTagline className="items-center" textClassName="text-[20px] text-white" />
         </div>
 
-        <h1 className="m-0 mb-1 text-[24px] font-bold tracking-[0.3px] text-white sm:text-[28px]">Akbar Bizvoy</h1>
         <p className="m-0 mb-[22px] text-[15px] text-[rgba(170,195,225,0.65)]">Sign in to your account</p>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
