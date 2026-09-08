@@ -4,6 +4,7 @@ import type { Flight } from '../store/flightStore';
 import { inr } from '../lib/format';
 import { parseFlightParam } from '../lib/review';
 import { AirlineLogo } from '../components/Logos';
+import { BrandLogo } from '../components/BrandLogo';
 import { Clock, ArrowLeftRight, PlaneFill, PlaneTakeoff } from '../components/icons';
 
 const AIRPORT_NAMES: Record<string, string> = {
@@ -210,7 +211,10 @@ const ReviewPage = () => {
             <ArrowLeftRight className="h-4 w-4 rotate-180" />
             Back to Search Results
           </Link>
-          <span className="text-[12px] font-semibold text-[#9baec7]">Akbar Bizvoy</span>
+          <span className="flex items-center gap-2 text-[12px] font-semibold text-[#9baec7]">
+            <BrandLogo size="sm" />
+            Akbar Bizvoy
+          </span>
         </div>
       </div>
 
