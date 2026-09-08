@@ -82,36 +82,6 @@ const FareTierCard = ({ tier }: { tier: ReturnType<typeof fareTiers>[number] }) 
   </div>
 );
 
-const LayoverPanel = ({ f }: { f: Flight }) => {
-  const location = f.via ? f.via.replace('via ', '') : airportCodeOf(f.arrival.airport);
-  const seatsLeft = 2 + ((f.code.charCodeAt(0) + f.code.length) % 5);
-  const rows: { icon: ReactNode; label: string; value: string }[] = [
-    { icon: <MapPinIcon />, label: 'Location', value: location },
-    { icon: <PlaneTakeoff className="h-3.5 w-3.5" />, label: 'Terminal', value: terminalOf(f.departure.airport) },
-    { icon: <Clock className="h-3.5 w-3.5" />, label: 'Time', value: '10m' },
-    { icon: <Bookmark className="h-3.5 w-3.5" />, label: 'Fare type', value: 'Economy Saver' },
-    { icon: <SeatIcon />, label: 'Seats left', value: `Only ${seatsLeft} seats at this price` },
-  ];
-  return (
-    <div className="layover-panel flex w-full shrink-0 flex-col rounded-[12px] border border-[#29466e] bg-[#0d1b2a] p-3 transition-colors duration-300 xl:w-[210px] xl:shrink-0">
-      <div className="layover-title flex items-center gap-1.5 text-[12px] font-bold text-white transition-colors duration-300">
-        <span className="h-[8px] w-[8px] rounded-full bg-[#22c55e]" />
-
-        {f.via ? 'Layover Flight' : 'Non-stop Flight'}
-      </div>
-      <div className="mt-2.5 space-y-1.5">
-        {rows.map((r) => (
-          <div key={r.label} className="layover-row flex items-start gap-2 rounded-[8px] bg-white/[0.03] px-2.5 py-1.5 transition-colors duration-300">
-            <span className="flex h-5 w-5 shrink-0 items-center justify-center text-[#7CC0FF]">{r.icon}</span>
-            <span className="layover-label shrink-0 whitespace-nowrap text-[11px] text-[#9baec7] transition-colors duration-300">{r.label}:</span>
-            <span className="layover-value min-w-0 flex-1 text-right text-[11px] font-semibold leading-snug text-white transition-colors duration-300">{r.value}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
 /* ---------- Itinerary details (per-leg breakdown inside expanded card) ---------- */
 
 const ItineraryDetails = ({ f }: { f: Flight }) => {
@@ -306,6 +276,8 @@ const CompactFlightLeft = ({
   isLight?: boolean;
 }) => {
   const stopN = stopsCount(f.stops);
+  const viaList = viaCities(f.via);
+  const planeCount = Math.max(stopN, viaList.length);
   const depCode = fromLabel.split(' ')[0];
   const depTerm = fromLabel.split(' ').slice(1).join(' ') || 'Terminal 1';
   const arrCode = toLabel.split(' ')[0];
@@ -427,7 +399,7 @@ const CompactPriceCol = ({
   onSelect?: () => void;
   isLight?: boolean;
 }) => (
-  <div className={`flex w-full shrink-0 flex-col items-center border-t border-dotted pt-3 text-center lg:w-[150px] lg:border-t-0 lg:pl-3 lg:pt-0 transition-colors duration-300 ${isLight ? 'border-[#E5E7EB]' : 'border-[#73869e]'}`}>
+  <div className={`flex w-full shrink-0 flex-col items-center border-t border-dotted pt-3 text-center lg:w-[150px] lg:border-t-0 lg:border-l lg:pl-3 lg:pt-0 transition-colors duration-300 ${isLight ? 'border-[#E5E7EB]' : 'border-[#73869e]'}`}>
     <div className={`text-[10.5px] font-semibold tracking-[0.1em] transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#9baec7]'}`}>TRIP FIT</div>
     <div className={`mt-0.5 text-[19px] font-bold leading-tight tracking-tight transition-colors duration-300 ${isLight ? 'text-[#111827]' : 'text-white'}`}>{inr(f.price + dayDelta)}</div>
     <div className={`mt-1.5 flex items-center gap-1.5 text-[12px] transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#b6c3d5]'}`}>
@@ -614,7 +586,7 @@ export const FlightCard = ({
     </div>
 
     {/* Right section: pricing & action */}
-    <div className={`flex w-full shrink-0 flex-col items-center border-t border-dotted pt-4 text-center lg:w-[210px] lg:border-t-0 lg:pl-6 lg:pt-0 transition-colors duration-300 ${isLight ? 'border-[#E5E7EB]' : 'border-[#73869e]'}`}>
+    <div className={`flex w-full shrink-0 flex-col items-center border-t border-dotted pt-4 text-center lg:w-[210px] lg:border-t-0 lg:border-l lg:pl-6 lg:pt-0 transition-colors duration-300 ${isLight ? 'border-[#E5E7EB]' : 'border-[#73869e]'}`}>
       <div className={`text-[10.5px] font-semibold tracking-[0.1em] transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#9baec7]'}`}>TRIP FIT</div>
       <div className={`mt-0.5 text-[21px] font-bold leading-tight tracking-tight transition-colors duration-300 ${isLight ? 'text-[#111827]' : 'text-white'}`}>{inr(f.price + dayDelta)}</div>
       <div className={`mt-1.5 flex items-center gap-1.5 text-[12px] transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#b6c3d5]'}`}>
