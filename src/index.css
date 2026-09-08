@@ -1,5 +1,35 @@
 @import "tailwindcss";
 
+/* ============================================================
+   Akbar Bizvoy Logo — theme design tokens
+   Default values below apply in DARK mode. Light-mode overrides
+   are declared in theme.css under `.light-theme`.
+   ============================================================ */
+:root {
+  --logo-blue: #2E86F5;
+  --logo-green: #22C55E;
+  --logo-orange: #F97316;
+  --logo-pink: #EC4899;
+  --logo-inner: #FFFFFF;
+  --logo-inner-ring: #FFFFFF;
+  --logo-text: #FFFFFF;
+}
+
+/* Smooth color transitions when the theme switches */
+.akbar-logo-icon,
+.akbar-logo-icon *,
+.akbar-logo-text {
+  transition: fill 0.3s ease, stroke 0.3s ease, color 0.3s ease;
+}
+
+.akbar-logo-text {
+  color: var(--logo-text);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
 html, body {
   width: 100%;
   height: 100%;
@@ -8,6 +38,12 @@ html, body {
   background: #060e1f;
   overflow-x: hidden;
   overflow-y: auto;
+  transition: background-color 0.3s ease;
+}
+
+.light-theme body,
+.light-theme html {
+  background: #FFFFFF;
 }
 
 body {
@@ -57,6 +93,13 @@ input, button, textarea {
 }
 
 /* Golden glow for search-bar field text — only when hovering the text itself */
+.light-theme .bar-text:hover,
+.light-theme .bar-text-value:hover,
+.light-theme .bar-text-muted:hover {
+  color: inherit;
+  text-shadow: none;
+}
+
 .bar-text:hover {
   color: #f0c265;
   text-shadow: 0 0 10px rgba(212, 175, 55, 0.55);
@@ -89,6 +132,9 @@ input, button, textarea {
   animation-delay: var(--shimmer-delay, 0s);
   pointer-events: none;
 }
+.light-theme .card-shimmer::after {
+  background: linear-gradient(105deg, transparent 20%, rgba(37, 99, 235, 0.12) 50%, transparent 80%);
+}
 
 /* Flash-in entrance for loaded result cards (one-way & round trip) */
 @keyframes card-flash-in {
@@ -116,6 +162,19 @@ html {
   scrollbar-width: thin;
   scrollbar-color: rgba(124, 192, 255, 0.55) rgba(124, 192, 255, 0.08);
 }
+.light-theme {
+  scrollbar-color: #CBD5E1 #F1F5F9;
+}
+.light-theme ::-webkit-scrollbar-track {
+  background: #F1F5F9;
+}
+.light-theme ::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border: 2px solid #F1F5F9;
+}
+.light-theme ::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
@@ -137,6 +196,19 @@ html {
 .pretty-scroll {
   scrollbar-width: thin;
   scrollbar-color: rgba(124, 192, 255, 0.55) rgba(124, 192, 255, 0.08);
+}
+.light-theme .pretty-scroll {
+  scrollbar-color: #CBD5E1 #F1F5F9;
+}
+.light-theme .pretty-scroll::-webkit-scrollbar-track {
+  background: #F1F5F9;
+}
+.light-theme .pretty-scroll::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border: 2px solid #F1F5F9;
+}
+.light-theme .pretty-scroll::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
 }
 .pretty-scroll::-webkit-scrollbar {
   width: 8px;

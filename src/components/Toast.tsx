@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { dismissToast, getActiveToasts, subscribeToasts, type ToastData, type ToastKind } from './toastStore';
+import { useThemeStore } from '../store/themeStore';
 
 const statusLabel = (code: number): string => {
   switch (code) {
@@ -36,7 +37,7 @@ const statusLabel = (code: number): string => {
 
 const kindTheme: Record<
   ToastKind,
-  { bar: string; text: string; glow: string; tileBg: string; tileRing: string }
+  { bar: string; text: string; glow: string; tileBg: string; tileRing: string; lightBg: string; lightText: string }
 > = {
   error: {
     bar: '#ff5f6d',
@@ -44,6 +45,8 @@ const kindTheme: Record<
     glow: 'rgba(255,95,109,0.45)',
     tileBg: 'linear-gradient(135deg, rgba(255,95,109,0.30), rgba(255,95,109,0.07))',
     tileRing: 'rgba(255,95,109,0.35)',
+    lightBg: 'linear-gradient(135deg, rgba(255,95,109,0.12), rgba(255,95,109,0.04))',
+    lightText: '#dc2626',
   },
   warning: {
     bar: '#d4af37',
@@ -51,6 +54,8 @@ const kindTheme: Record<
     glow: 'rgba(212,175,55,0.5)',
     tileBg: 'linear-gradient(135deg, rgba(212,175,55,0.32), rgba(212,175,55,0.08))',
     tileRing: 'rgba(240,197,101,0.4)',
+    lightBg: 'linear-gradient(135deg, rgba(212,175,55,0.14), rgba(212,175,55,0.04))',
+    lightText: '#B8860B',
   },
   success: {
     bar: '#34d399',
@@ -58,6 +63,8 @@ const kindTheme: Record<
     glow: 'rgba(52,211,153,0.4)',
     tileBg: 'linear-gradient(135deg, rgba(52,211,153,0.28), rgba(52,211,153,0.06))',
     tileRing: 'rgba(52,211,153,0.35)',
+    lightBg: 'linear-gradient(135deg, rgba(52,211,153,0.12), rgba(52,211,153,0.03))',
+    lightText: '#16A34A',
   },
   info: {
     bar: '#7CC0FF',
@@ -65,6 +72,8 @@ const kindTheme: Record<
     glow: 'rgba(124,192,255,0.45)',
     tileBg: 'linear-gradient(135deg, rgba(124,192,255,0.3), rgba(124,192,255,0.07))',
     tileRing: 'rgba(124,192,255,0.35)',
+    lightBg: 'linear-gradient(135deg, rgba(124,192,255,0.12), rgba(124,192,255,0.04))',
+    lightText: '#2563EB',
   },
 };
 
@@ -100,6 +109,8 @@ const kindIcons: Record<ToastKind, ReactNode> = {
 
 export function ToastViewport() {
   const [items, setItems] = useState<ToastData[]>(() => getActiveToasts());
+  const { theme } = useThemeStore();
+  const isLight = theme === 'light';
 
   useEffect(() => {
     return subscribeToasts((next) => setItems(next));
@@ -114,8 +125,8 @@ export function ToastViewport() {
             key={t.id}
             role="status"
             aria-live="polite"
-            className="toast-pop pointer-events-auto relative w-full max-w-[380px] overflow-hidden rounded-[14px] border border-[rgba(124,192,255,0.22)] bg-[#0F1B3A]/95 backdrop-blur"
-            style={{ boxShadow: `0 14px 44px rgba(0,0,0,0.6), 0 0 24px ${p.glow}` }}
+            className={`toast-pop pointer-events-auto relative w-full max-w-[380px] overflow-hidden rounded-[14px] border backdrop-blur transition-colors duration-300 ${isLight ? 'border-[#E5E7EB] bg-white/97 shadow-[0_14px_44px_rgba(0,0,0,0.1)]' : 'border-[rgba(124,192,255,0.22)] bg-[#0F1B3A]/95 shadow-[0_14px_44px_rgba(0,0,0,0.6)]'}`}
+            style={!isLight ? { boxShadow: `0 14px 44px rgba(0,0,0,0.6), 0 0 24px ${p.glow}` } : undefined}
           >
             <span
               className="pointer-events-none absolute inset-x-0 top-0 h-px"
@@ -125,38 +136,38 @@ export function ToastViewport() {
               <span
                 className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[11px]"
                 style={{
-                  background: p.tileBg,
+                  background: isLight ? p.lightBg : p.tileBg,
                   border: `1px solid ${p.tileRing}`,
-                  boxShadow: `inset 0 1px 0 rgba(255,255,255,0.14), 0 0 16px ${p.glow}`,
+                  boxShadow: isLight ? 'none' : `inset 0 1px 0 rgba(255,255,255,0.14), 0 0 16px ${p.glow}`,
                 }}
               >
-                <span className="flex h-[18px] w-[18px]" style={{ color: p.text }}>
+                <span className="flex h-[18px] w-[18px]" style={{ color: isLight ? p.lightText : p.text }}>
                   {kindIcons[t.kind]}
                 </span>
               </span>
 
               <div className="min-w-0 flex-1 pt-[2px]">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-[13px] font-bold tracking-wide" style={{ color: p.text }}>
+                  <span className={`text-[13px] font-bold tracking-wide transition-colors duration-300 ${isLight ? 'text-[#111827]' : ''}`} style={!isLight ? { color: p.text } : undefined}>
                     {t.title}
                   </span>
                   {typeof t.code === 'number' && (
                     <span
-                      className="rounded-[6px] px-1.5 py-px font-mono text-[10px] font-bold tracking-wide"
-                      style={{ color: p.text, border: `1px solid ${p.tileRing}`, background: 'rgba(14,24,51,0.8)' }}
+                      className="toast-status-badge rounded-[6px] px-1.5 py-px font-mono text-[10px] font-bold tracking-wide transition-colors duration-300"
+                      style={!isLight ? { color: p.text, border: `1px solid ${p.tileRing}`, background: 'rgba(14,24,51,0.8)' } : { color: p.lightText, border: `1px solid ${p.tileRing}`, background: '#F7F9FC' }}
                     >
                       {t.code} {statusLabel(t.code)}
                     </span>
                   )}
                 </div>
                 {t.message && (
-                  <p className="mt-0.5 text-[12.5px] leading-snug text-white/75">{t.message}</p>
+                  <p className={`toast-message mt-0.5 text-[12.5px] leading-snug transition-colors duration-300 ${isLight ? 'text-[#4B5563]' : 'text-white/75'}`}>{t.message}</p>
                 )}
               </div>
 
               <button
                 onClick={() => dismissToast(t.id)}
-                className="flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-full border border-[rgba(124,192,255,0.25)] bg-transparent text-white/45 transition-all duration-200 hover:border-[#d4af37]/70 hover:text-[#f0c265]"
+                className={`toast-dismiss-btn flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-full border bg-transparent transition-all duration-200 ${isLight ? 'border-[#E5E7EB] text-[#9CA3AF] hover:border-[#2563EB] hover:text-[#2563EB]' : 'border-[rgba(124,192,255,0.25)] text-white/45 hover:border-[#d4af37]/70 hover:text-[#f0c265]'}`}
                 aria-label="Dismiss"
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="h-3 w-3">

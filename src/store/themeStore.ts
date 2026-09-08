@@ -11,6 +11,11 @@ const readInitialTheme = (): Theme => {
 
 const applyTheme = (theme: Theme) => {
   document.documentElement.dataset.theme = theme;
+  if (theme === 'light') {
+    document.documentElement.classList.add('light-theme');
+  } else {
+    document.documentElement.classList.remove('light-theme');
+  }
 };
 
 type ThemeStore = {

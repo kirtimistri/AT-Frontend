@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import bg3 from '../assets/Backgoundimages/bg3.png';
-import logo from '../assets/logo.jpeg';
+import { LogoIcon } from './Logo';
 
 const LoginPage3 = () => {
   const [email, setEmail] = useState('');
@@ -25,7 +25,7 @@ const LoginPage3 = () => {
           <div className="relative flex h-[85px] w-[85px] items-center justify-center">
             <div className="absolute inset-[-5px] rounded-full border-[2.5px] border-[rgba(40,140,255,0.6)] shadow-[0_0_20px_rgba(40,140,255,0.3),0_0_40px_rgba(40,140,255,0.15),inset_0_0_20px_rgba(40,140,255,0.1)]" />
             <div className="absolute inset-[-12px] -z-10 rounded-full bg-[radial-gradient(circle,rgba(40,140,255,0.12)_0%,transparent_70%)]" />
-            <img src={logo} alt="Akbar Bizvoy Logo" className="h-[70px] w-[70px] rounded-full border-2 border-[rgba(40,120,240,0.3)] object-cover" />
+            <LogoIcon size="xl" />
           </div>
         </div>
 
