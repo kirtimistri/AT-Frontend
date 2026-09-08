@@ -127,6 +127,7 @@ const SearchPage = () => {
               <div className="grid grid-cols-1 items-start gap-6 pt-5 xl:grid-cols-2">
                 <ResultsColumn
                   title={`${fromCode} - ${toCode}`}
+                  scope="onward"
                   flights={flights}
                   dayDelta={dayDelta}
                   selected={selectedOnward}
@@ -138,6 +139,7 @@ const SearchPage = () => {
                 />
                 <ResultsColumn
                   title={`${toCode} - ${fromCode}`}
+                  scope="return"
                   flights={returnFlights}
                   dayDelta={dayDelta}
                   selected={selectedReturn}

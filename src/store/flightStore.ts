@@ -336,6 +336,7 @@ type FlightStore = {
   stripStart: number;
   stripSel: number;
   openFilters: boolean[];
+  activePriceBreakdownId: string | null;
   setReturnOpen: (v: boolean) => void;
   setFiltersOpen: (v: boolean) => void;
   toggleFilterGroup: (i: number) => void;
@@ -348,6 +349,7 @@ type FlightStore = {
   setReturnSort: (k: SortKey) => void;
   setStripSel: (i: number) => void;
   shiftStrip: (dir: -1 | 1) => void;
+  setActivePriceBreakdownId: (id: string | null) => void;
   swapCities: () => void;
   doSearch: () => void;
   restoreSearch: (snapshot: SearchSnapshot) => void;
@@ -373,6 +375,7 @@ export const useFlightStore = create<FlightStore>()((set, get) => ({
   stripStart: STRIP_DEFAULT_START,
   stripSel: STRIP_DEFAULT_SEL,
   openFilters: Array(8).fill(false),
+  activePriceBreakdownId: null,
 
   setReturnOpen: (v) => set({ returnOpen: v }),
   setFiltersOpen: (v) => set({ filtersOpen: v }),
@@ -400,6 +403,7 @@ export const useFlightStore = create<FlightStore>()((set, get) => ({
   setOnwardSort: (k) => set({ onwardSort: k }),
   setReturnSort: (k) => set({ returnSort: k }),
   setStripSel: (i) => set({ stripSel: i }),
+  setActivePriceBreakdownId: (id) => set({ activePriceBreakdownId: id }),
   shiftStrip: (dir) =>
     set((s) => ({
       stripStart:

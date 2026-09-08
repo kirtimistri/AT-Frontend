@@ -19,6 +19,7 @@ const SortTabs = ({ active, onChange, isLight }: { active: SortKey; onChange: (k
 
 type ResultsColumnProps = {
   title: string;
+  scope?: string;
   flights: Flight[];
   dayDelta: number;
   selected: Flight | null;
@@ -29,7 +30,7 @@ type ResultsColumnProps = {
   onSort: (k: SortKey) => void;
 };
 
-export const ResultsColumn = ({ title, flights, dayDelta, selected, onSelect, fromLabel, toLabel, sort, onSort }: ResultsColumnProps) => {
+export const ResultsColumn = ({ title, scope, flights, dayDelta, selected, onSelect, fromLabel, toLabel, sort, onSort }: ResultsColumnProps) => {
   const { theme } = useThemeStore();
   const isLight = theme === 'light';
   return (
@@ -54,6 +55,7 @@ export const ResultsColumn = ({ title, flights, dayDelta, selected, onSelect, fr
             toLabel={toLabel(f)}
             expandable
             compact
+            scope={scope}
             index={i}
           />
         ))}
