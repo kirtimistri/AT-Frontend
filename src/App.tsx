@@ -3,6 +3,7 @@ import LoginPage2 from './Pages/LoginPage2'
 import RegisterPage from './Pages/RegisterPage'
 import SearchPage from './Pages/SearchPage'
 import TripReviewPage from './Pages/TripReviewPage'
+import ReviewPage from './Pages/ReviewPage'
 import { ToastViewport } from './components/Toast'
 import './theme.css' // Light theme styles
 // import LoginPage from './components/LoginPage'
@@ -18,6 +19,7 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/search" element={<SearchPage />} />
         <Route path="/review-trip" element={<TripReviewPage />} />
+        <Route path="/review" element={<ReviewPage />} />
         {/* <Route path="/login1" element={<LoginPage />} /> */}
         {/* <Route path="/login3" element={<LoginPage3 />} /> */}
       </Routes>

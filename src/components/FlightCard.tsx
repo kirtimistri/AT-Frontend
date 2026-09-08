@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import { useFlightStore, type Flight } from '../store/flightStore';
 import { useThemeStore } from '../store/themeStore';
+import type { Flight } from '../store/flightStore';
+
+
 import { AirlineLogo } from './Logos';
-import { Clock, ShoppingBag, PlaneTakeoff, PlaneFill, Timer, SeatIcon, UserIcon, SettingsIcon, SuitcaseIcon, GlobeIcon, LeafIcon } from './icons';
+import { Clock, ShoppingBag, PlaneFill, PlaneTakeoff, LeafIcon } from './icons';
 import { iconProps } from '../lib/iconProps';
-import { inr, airportCodeOf, terminalOf, viaCities, stopsCount, minutesToHm, cityNameOf, twelveHToMins, minsToTwelveH, legFlightCode } from '../lib/format';
+import { inr, viaCities, stopsCount, minutesToHm, airportCodeOf } from '../lib/format';
 
 /* ---------- Fare option tiers (expandable card details) ---------- */
 
@@ -124,8 +127,23 @@ const ItineraryDetails = ({ f }: { f: Flight }) => {
   return (
     <div className="itinerary-panel rounded-[12px] border border-[#29466e] bg-[#0d1b2a] p-4 transition-colors duration-300">
       <div className="itinerary-heading flex items-center gap-1.5 text-[10.5px] font-semibold tracking-[0.12em] text-[#7CC0FF] transition-colors duration-300">
+const LayoverFlightCard = ({ f }: { f: Flight }) => {
+  const viaList = viaCities(f.via);
+  const hash = f.code.charCodeAt(0) + f.code.length * 13;
+  const layover = 10 + (hash % 40);
+  const location = viaList[0] ?? airportCodeOf(f.arrival.airport);
+  const fields: { label: string; value: string }[] = [
+    { label: 'Location', value: location },
+    { label: 'Terminal', value: '1' },
+    { label: 'Time', value: `${layover}m` },
+    { label: 'Fare type', value: 'Economy Saver' },
+    { label: 'Seats left', value: 'Only 3 seats at this price' },
+  ];
+  return (
+    <div className="flex w-[240px] shrink-0 flex-col rounded-[12px] border border-[#29466e] bg-[#0d1b2a] p-3.5">
+      <div className="flex items-center gap-1.5 text-[10.5px] font-semibold tracking-[0.12em] text-[#7CC0FF]">
         <PlaneTakeoff className="h-3.5 w-3.5" />
-        Flight Details
+        Layover Flight
       </div>
       <div className="mt-3">
         {legs.map((leg, i) => (
@@ -168,6 +186,11 @@ const ItineraryDetails = ({ f }: { f: Flight }) => {
                 </div>
               </div>
             </div>
+      <div className="mt-2.5 space-y-1.5">
+        {fields.map((row) => (
+          <div key={row.label} className="flex items-center justify-between gap-2 rounded-[8px] bg-white/[0.03] px-2.5 py-1.5">
+            <span className="text-[10px] font-semibold text-[#7e93b3]">{row.label}</span>
+            <span className="min-w-0 text-right text-[11px] font-bold text-white">{row.value}</span>
           </div>
         ))}
       </div>
@@ -175,18 +198,6 @@ const ItineraryDetails = ({ f }: { f: Flight }) => {
   );
 };
 
-type ItineraryLeg = {
-  code: string;
-  depTime: string;
-  arrTime: string;
-  depCode: string;
-  depCity: string;
-  depTerm: string;
-  arrCode: string;
-  arrCity: string;
-  arrTerm: string;
-  layoverMin?: number;
-};
 
 const itineraryLegs = (f: Flight): ItineraryLeg[] => {
   const viaList = viaCities(f.via);
@@ -432,6 +443,11 @@ const CompactPriceCol = ({
     <div className={`mt-0.5 text-[19px] font-bold leading-tight tracking-tight transition-colors duration-300 ${isLight ? 'text-[#111827]' : 'text-white'}`}>{inr(f.price + dayDelta)}</div>
     <div className={`mt-1.5 flex items-center gap-1.5 text-[12px] transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#b6c3d5]'}`}>
       <Clock className={`h-3.5 w-3.5 transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#b6c3d5]'}`} />
+  <div className="flex w-full shrink-0 flex-col items-center border-t border-dotted border-[#73869e] pt-3 text-center lg:w-[150px] lg:border-t-0 lg:border-l lg:pl-3 lg:pt-0">
+    <div className="text-[10.5px] font-semibold tracking-[0.1em] text-[#9baec7]">TRIP FIT</div>
+    <div className="mt-0.5 text-[19px] font-bold leading-tight tracking-tight text-white">{inr(f.price + dayDelta)}</div>
+    <div className="mt-1.5 flex items-center gap-1.5 text-[12px] text-[#b6c3d5]">
+      <Clock className="h-3.5 w-3.5" />
       {f.duration}
     </div>
     <div className="mt-auto w-full">
@@ -619,6 +635,11 @@ export const FlightCard = ({
       <div className={`mt-0.5 text-[21px] font-bold leading-tight tracking-tight transition-colors duration-300 ${isLight ? 'text-[#111827]' : 'text-white'}`}>{inr(f.price + dayDelta)}</div>
       <div className={`mt-1.5 flex items-center gap-1.5 text-[12px] transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#b6c3d5]'}`}>
         <Clock className={`h-3.5 w-3.5 transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#b6c3d5]'}`} />
+    <div className="flex w-full shrink-0 flex-col items-center border-t border-dotted border-[#73869e] pt-4 text-center lg:w-[210px] lg:border-t-0 lg:border-l lg:pl-6 lg:pt-0">
+      <div className="text-[10.5px] font-semibold tracking-[0.1em] text-[#9baec7]">TRIP FIT</div>
+      <div className="mt-0.5 text-[21px] font-bold leading-tight tracking-tight text-white">{inr(f.price + dayDelta)}</div>
+      <div className="mt-1.5 flex items-center gap-1.5 text-[12px] text-[#b6c3d5]">
+        <Clock className="h-3.5 w-3.5" />
         {f.duration}
       </div>
       <div className="mt-4 w-full lg:mt-auto">
@@ -635,22 +656,17 @@ export const FlightCard = ({
         className="expanded-divider mt-4 border-t border-dotted border-[#73869e] pt-4 transition-colors duration-300"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="mt-4 grid grid-cols-1 gap-3 xl:grid-cols-2">
-          <div className="min-w-0">
-            <ItineraryDetails f={f} />
-          </div>
-          <div className="min-w-0">
-            <PriceBreakdown base={base} baggage={f.baggage} />
-          </div>
-        </div>
-        <div className="mt-4 "
-          style={{ overflowX: 'auto', scrollbarWidth: 'thin', scrollbarColor: '#2593fc #122844', WebkitOverflowScrolling: 'touch' }}
-        >
-          <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="flex items-start gap-3">
+          <div className="flex min-w-0 flex-1 gap-3 overflow-x-auto pb-2"
+            style={{ scrollbarWidth: 'thin', scrollbarColor: '#2593fc #122844', WebkitOverflowScrolling: 'touch' }}
+          >
             {fareTiers(base).map((tier) => (
-              <FareTierCard key={tier.name} tier={tier} />
+              <div key={tier.name} className="flex min-w-[220px] flex-1">
+                <FareTierCard tier={tier} />
+              </div>
             ))}
           </div>
+          <LayoverFlightCard f={f} />
         </div>
 
       </div>
