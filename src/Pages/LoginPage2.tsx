@@ -11,6 +11,9 @@ import { loginUser, ApiError } from '../services/authService';
 import { loadRecaptchaScript, executeRecaptcha } from '../services/captcha';
 import { toast } from '../components/toastStore';
 import { ThemeToggle } from '../components/ThemeToggle';
+import bg2 from '../assets/Backgoundimages/bg2.png';
+import captcha from '../assets/Backgoundimages/captcha.jpeg';
+import logo from '../assets/logo.jpeg';
 
 // Geometry of the earth limb (horizon) in bg2.png (1672x941).
 const BG_W = 1672;
@@ -1633,6 +1636,17 @@ const LoginPage2 = () => {
                 </div>
 
                 
+                <div className="mt-0 flex items-center justify-between rounded-[4px] border border-[rgba(180,180,180,0.12)] bg-[rgba(240,240,240,0.04)] px-3.5 py-2.5">
+                  <div className="flex items-center gap-3">
+                    <button type="button" onClick={() => setIsRobotChecked(!isRobotChecked)} className={`flex h-[28px] w-[28px] min-w-[28px] cursor-pointer items-center justify-center rounded-[3px] border-2 bg-[rgba(25,35,55,0.6)] p-0 transition-colors duration-200 hover:border-[rgba(180,180,180,0.5)] ${isRobotChecked ? 'border-[rgba(66,133,244,0.5)]' : 'border-[rgba(180,180,180,0.35)]'}`}>
+                      {isRobotChecked && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#4285f4" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>}
+                    </button>
+                    <span className="font-[Roboto,Segoe_UI,sans-serif] text-[13px] text-[rgba(210,215,225,0.75)]">I'm not a robot</span>
+                  </div>
+                  <div className="flex flex-col items-center gap-0.5">
+                    <img src={captcha} alt="reCAPTCHA" className="mb-0.5 h-[36px] w-[36px] rounded-[4px] object-cover" />
+                  </div>
+                </div>
 
                 
 

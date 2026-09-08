@@ -57,6 +57,12 @@ export const SummaryBar = ({ onward, ret, dayDelta }: { onward: Flight | null; r
             <div className={`mt-0.5 text-[18px] font-bold leading-none sm:mt-1 sm:text-[22px] transition-colors duration-300 ${isLight ? 'text-[#111827]' : 'text-white'}`}>{inr(total)}</div>
             <div className={`mt-0.5 text-[10px] font-semibold sm:mt-1 sm:text-[11px] transition-colors duration-300 ${any ? (isLight ? 'text-[#16A34A]' : 'text-[#34d399]') : (isLight ? 'text-[#9CA3AF]' : 'text-white/40')}`}>
               {both ? 'Extra ₹697 Off' : (ret ? 'Select onward to combine fares' : 'Select return for round-trip')}
+      <div className="flex w-full shrink-0 items-center justify-between gap-4 border-t border-white/10 px-4 py-2.5 sm:w-auto sm:justify-between sm:gap-6 sm:border-l sm:border-t-0 sm:px-6 sm:py-3">
+          <div className="text-left">
+            <div className="text-[10px] font-semibold text-[#ff8533] sm:text-[11px]">Flight Details &gt;</div>
+            <div className="mt-0.5 text-[18px] font-bold leading-none text-white sm:mt-1 sm:text-[22px]">{inr(total)}</div>
+            <div className={`mt-0.5 text-[10px] font-semibold sm:mt-1 sm:text-[11px] ${both ? 'text-[#34d399]' : 'text-white/40'}`}>
+              {both ? 'Extra ₹697 Off' : 'Select return to combine fares'}
             </div>
           </div>
           <button
