@@ -3,6 +3,7 @@ import { useFlightStore } from '../store/flightStore';
 import { AirlineLogo } from './Logos';
 import { inr } from '../lib/format';
 import { useThemeStore } from '../store/themeStore';
+import { openReview } from '../lib/openReview';
 
 const FlightSummary = ({ label, f, isLight }: { label: 'ONWARD' | 'RETURN'; f: Flight | null; isLight?: boolean }) => (
   <div className={`flex min-w-0 items-center gap-2.5 px-3 py-2.5 sm:w-auto sm:flex-1 sm:gap-3.5 sm:px-6 sm:py-3 transition-colors duration-300 ${isLight ? 'text-[#111827]' : 'text-white/90'}`}>
@@ -61,14 +62,13 @@ export const SummaryBar = ({ onward, ret, dayDelta }: { onward: Flight | null; r
           <button
             onClick={() => {
               if (any) {
-                sessionStorage.setItem('bookingSelection', JSON.stringify({
+                openReview({
                   onward,
                   returnFlight: ret,
                   date,
                   fromCode,
                   toCode,
-                }));
-                window.open('/review-trip?bookingId=TRV-2024-8894X', '_blank', 'noopener,noreferrer');
+                });
               }
             }}
             disabled={!any}

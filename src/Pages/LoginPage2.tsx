@@ -267,6 +267,10 @@ const LoginPage2 = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Synchronous lock that prevents duplicate submissions even if state updates
+  // haven't rendered yet (e.g. double-click before the re-render).
+  const submitLock = useRef(false);
+
   const siteKey = import.meta.env
     .VITE_RECAPTCHA_SITE_KEY as string | undefined;
 
@@ -283,7 +287,13 @@ const LoginPage2 = () => {
 
   useEffect(() => {
     if (siteKey) {
-      loadRecaptchaScript(siteKey).catch(() => {});
+      loadRecaptchaScript(siteKey)
+        .then(() => {
+          // Pre-generate the token so it's cached and ready by the time the
+          // user clicks "Sign in" — avoids a serial Google round-trip at submit.
+          executeRecaptcha(siteKey, 'login').catch(() => {});
+        })
+        .catch(() => {});
     }
   }, [siteKey]);
 
@@ -446,7 +456,9 @@ const LoginPage2 = () => {
   ) => {
     e.preventDefault();
 
-    if (isSubmitting) return;
+    if (isSubmitting || submitLock.current) return;
+
+    submitLock.current = true;
 
     const trimmed = email.trim();
 
@@ -485,10 +497,12 @@ const LoginPage2 = () => {
               title:
                 err.status === 0
                   ? 'Network Error'
-                  : err.status === 401 ||
-                      err.status === 403
-                    ? 'Unauthorized'
-                    : 'Server Error',
+                  : err.status === 408
+                    ? 'Request Timed Out'
+                    : err.status === 401 ||
+                        err.status === 403
+                      ? 'Unauthorized'
+                      : 'Server Error',
               code:
                 err.status === 0
                   ? 0
@@ -511,6 +525,7 @@ const LoginPage2 = () => {
         message,
       });
     } finally {
+      submitLock.current = false;
       setIsSubmitting(false);
     }
   };

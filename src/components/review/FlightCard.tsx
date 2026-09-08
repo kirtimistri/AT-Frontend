@@ -1,5 +1,6 @@
 import { Luggage, Briefcase, UtensilsCrossed } from 'lucide-react';
 import { FlightTimeline } from './FlightTimeline';
+import { AirlineLogo } from '../Logos';
 
 export type FlightCardProps = {
   type: 'OUTBOUND' | 'RETURN';
@@ -46,22 +47,30 @@ export const FlightCard = ({
   return (
     <div className="rounded-[7px] bg-[#F7F4F3] p-5">
       {/* Top row */}
-      <div className="mb-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <span
-            className={`rounded-[3px] px-2.5 py-1 text-[10px] font-bold uppercase ${
-              isReturn
-                ? 'bg-[#B5122B] text-white'
-                : 'bg-white text-[#004B7C]'
-            }`}
-          >
-            {type}
+      <div className="mb-4">
+        <div className="flex items-center gap-2">
+          <span className="shrink-0 origin-left">
+            <AirlineLogo airline={airline.toUpperCase()} />
           </span>
-          <span className="text-[13px] text-[#555]">{date}</span>
+          <span className="text-[13px] font-semibold text-[#171717]">{airline}</span>
         </div>
-        <span className="text-[11px] text-[#999]">
-          Flight {flightNumber} &middot; {airline}
-        </span>
+        <div className="mt-2 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <span
+              className={`rounded-[3px] px-2.5 py-1 text-[10px] font-bold uppercase ${
+                isReturn
+                  ? 'bg-[#B5122B] text-white'
+                  : 'bg-white text-[#004B7C]'
+              }`}
+            >
+              {type}
+            </span>
+            <span className="text-[13px] text-[#555]">{date}</span>
+          </div>
+          <span className="text-[11px] text-[#999]">
+            Flight {flightNumber}
+          </span>
+        </div>
       </div>
 
       {/* Route + timeline */}

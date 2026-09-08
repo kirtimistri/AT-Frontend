@@ -218,6 +218,10 @@ const RegisterPage = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Synchronous lock that prevents duplicate submissions even if state updates
+  // haven't rendered yet (e.g. double-click before the re-render).
+  const submitLock = useRef(false);
+
   const isLight = theme === 'light';
 
   // ------------------------------------------
@@ -372,7 +376,7 @@ const RegisterPage = () => {
   ) => {
     e.preventDefault();
 
-    if (isSubmitting) return;
+    if (isSubmitting || submitLock.current) return;
 
     if (!captchaToken) {
       toast({
@@ -384,6 +388,8 @@ const RegisterPage = () => {
       });
       return;
     }
+
+    submitLock.current = true;
 
     const trimmedName = name.trim();
     const trimmedEmail = email.trim();
@@ -427,14 +433,16 @@ const RegisterPage = () => {
               title:
                 err.status === 0
                   ? 'Network Error'
-                  : err.status === 400
-                    ? 'Bad Request'
-                    : err.status === 401 ||
-                        err.status === 403
-                      ? 'Unauthorized'
-                      : err.status === 409
-                        ? 'Conflict'
-                        : 'Server Error',
+                  : err.status === 408
+                    ? 'Request Timed Out'
+                    : err.status === 400
+                      ? 'Bad Request'
+                      : err.status === 401 ||
+                          err.status === 403
+                        ? 'Unauthorized'
+                        : err.status === 409
+                          ? 'Conflict'
+                          : 'Server Error',
               code:
                 err.status === 0
                   ? 0
@@ -459,6 +467,7 @@ const RegisterPage = () => {
         message,
       });
     } finally {
+      submitLock.current = false;
       setIsSubmitting(false);
     }
   };
