@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { useFlightStore, type Flight } from '../store/flightStore';
+import type { Flight } from '../store/flightStore';
 
 
 import { AirlineLogo } from './Logos';
-import { Clock, ShoppingBag, PlaneTakeoff, PlaneFill, Timer, SeatIcon, UserIcon, SettingsIcon, SuitcaseIcon, GlobeIcon, LeafIcon } from './icons';
+import { Clock, ShoppingBag, PlaneFill, PlaneTakeoff, LeafIcon } from './icons';
 import { iconProps } from '../lib/iconProps';
-import { inr, airportCodeOf, terminalOf, viaCities, stopsCount, minutesToHm, cityNameOf, twelveHToMins, minsToTwelveH, legFlightCode } from '../lib/format';
+import { inr, viaCities, stopsCount, minutesToHm, airportCodeOf } from '../lib/format';
 
 /* ---------- Fare option tiers (expandable card details) ---------- */
 
@@ -83,64 +83,29 @@ const FareTierCard = ({ tier }: { tier: ReturnType<typeof fareTiers>[number] }) 
   </div>
 );
 
-
-
-/* ---------- Itinerary details (per-leg breakdown inside expanded card) ---------- */
-
-const ItineraryDetails = ({ f }: { f: Flight }) => {
-  const stripStart = useFlightStore((s) => s.stripStart);
-  const stripSel = useFlightStore((s) => s.stripSel);
-  const legs = itineraryLegs(f);
-  const travelDate = new Date(2026, 8, 9 + stripStart + stripSel);
-  const dateLabel = `${travelDate.toLocaleDateString('en-US', { weekday: 'short' })} ${travelDate.getDate()} ${travelDate.toLocaleDateString('en-US', { month: 'short' })}, ${travelDate.getFullYear()}`;
-
+const LayoverFlightCard = ({ f }: { f: Flight }) => {
+  const viaList = viaCities(f.via);
+  const hash = f.code.charCodeAt(0) + f.code.length * 13;
+  const layover = 10 + (hash % 40);
+  const location = viaList[0] ?? airportCodeOf(f.arrival.airport);
+  const fields: { label: string; value: string }[] = [
+    { label: 'Location', value: location },
+    { label: 'Terminal', value: '1' },
+    { label: 'Time', value: `${layover}m` },
+    { label: 'Fare type', value: 'Economy Saver' },
+    { label: 'Seats left', value: 'Only 3 seats at this price' },
+  ];
   return (
-    <div className="rounded-[12px] border border-[#29466e] bg-[#0d1b2a] p-4">
+    <div className="flex w-[240px] shrink-0 flex-col rounded-[12px] border border-[#29466e] bg-[#0d1b2a] p-3.5">
       <div className="flex items-center gap-1.5 text-[10.5px] font-semibold tracking-[0.12em] text-[#7CC0FF]">
         <PlaneTakeoff className="h-3.5 w-3.5" />
-        Flight Details
+        Layover Flight
       </div>
-      <div className="mt-3">
-        {legs.map((leg, i) => (
-          <div key={`${leg.code}-${i}`}>
-            {i > 0 && (
-              <div className="my-3 flex items-center justify-center gap-1.5 text-[11.5px] font-semibold text-white/80">
-                <Timer className="h-4 w-4" />
-                {legs[i - 1].layoverMin} min Layover
-              </div>
-            )}
-            <div className="flex items-start gap-3 sm:gap-5">
-              {/* Airline + flight no */}
-              <div className="flex w-[104px] shrink-0 flex-col sm:w-[120px]">
-                <div className="flex items-center gap-2">
-                  <span className="shrink-0 scale-[0.78] origin-left">
-                    <AirlineLogo airline={f.airline} />
-                  </span>
-                  <span className="min-w-0 text-[13px] font-bold lowercase leading-tight tracking-wide text-white">{f.airline}</span>
-                </div>
-                <span className="mt-1 pl-1 whitespace-nowrap text-[11px] text-[#9eafc7]">{leg.code}</span>
-              </div>
-
-              {/* Departure → Arrival details */}
-              <div className="grid min-w-0 flex-[1.05] grid-cols-2 gap-3 sm:gap-5">
-                <div className="min-w-0">
-                  <div className="whitespace-nowrap text-[16px] font-bold leading-none text-white">{leg.depTime}</div>
-                  <div className="mt-1 text-[11.5px] font-semibold leading-none text-white">{leg.depCode}</div>
-                  <div className="mt-0.5 text-[11px] leading-none text-[#9baec7]">{leg.depCity}</div>
-                  <div className="mt-0.5 text-[11px] leading-none text-[#9baec7]">{dateLabel}</div>
-                  <div className="mt-1.5 text-[11.5px] font-semibold leading-none text-white">{leg.depCode}</div>
-                  <div className="mt-0.5 text-[11px] leading-none text-[#9baec7]">{leg.depTerm}</div>
-                </div>
-                <div className="min-w-0 border-l border-white/10 pl-3 text-right sm:pl-6">
-                  <div className="whitespace-nowrap text-[16px] font-bold leading-none text-white">{leg.arrTime}</div>
-                  <div className="mt-1 text-[11.5px] font-semibold leading-none text-white">{leg.arrCode}</div>
-                  <div className="mt-0.5 text-[11px] leading-none text-[#9baec7]">{leg.arrCity}</div>
-                  <div className="mt-0.5 text-[11px] leading-none text-[#9baec7]">{dateLabel}</div>
-                  <div className="mt-1.5 text-[11.5px] font-semibold leading-none text-white">{leg.arrCode}</div>
-                  <div className="mt-0.5 text-[11px] leading-none text-[#9baec7]">{leg.arrTerm}</div>
-                </div>
-              </div>
-            </div>
+      <div className="mt-2.5 space-y-1.5">
+        {fields.map((row) => (
+          <div key={row.label} className="flex items-center justify-between gap-2 rounded-[8px] bg-white/[0.03] px-2.5 py-1.5">
+            <span className="text-[10px] font-semibold text-[#7e93b3]">{row.label}</span>
+            <span className="min-w-0 text-right text-[11px] font-bold text-white">{row.value}</span>
           </div>
         ))}
       </div>
@@ -148,105 +113,7 @@ const ItineraryDetails = ({ f }: { f: Flight }) => {
   );
 };
 
-type ItineraryLeg = {
-  code: string;
-  depTime: string;
-  arrTime: string;
-  depCode: string;
-  depCity: string;
-  depTerm: string;
-  arrCode: string;
-  arrCity: string;
-  arrTerm: string;
-  layoverMin?: number;
-};
 
-const itineraryLegs = (f: Flight): ItineraryLeg[] => {
-  const viaList = viaCities(f.via);
-  const n = viaList.length + 1;
-  const depMin = twelveHToMins(f.departure.time);
-  let arrMin = twelveHToMins(f.arrival.time);
-  if (arrMin < depMin) arrMin += 24 * 60; // overnight arrival
-  const total = arrMin - depMin;
-
-  // Deterministic per-flight layovers so the breakdown is stable across renders
-  const hash = f.code.charCodeAt(0) + f.code.length * 13;
-  const layovers = viaList.map((_, i) => 10 + ((hash + i * 17) % 40));
-  const flightMins = Math.max(total - layovers.reduce((a, b) => a + b, 0), 20);
-
-  const stops = [airportCodeOf(f.departure.airport), ...viaList, airportCodeOf(f.arrival.airport)];
-  const depTerm = terminalOf(f.departure.airport);
-  const arrTerm = terminalOf(f.arrival.airport);
-
-  const legs: ItineraryLeg[] = [];
-  let t = depMin;
-  for (let i = 0; i < n; i++) {
-    const legFlight = Math.round((flightMins * (i + 1)) / n) - Math.round((flightMins * i) / n);
-    const arr = t + legFlight;
-    legs.push({
-      code: legFlightCode(f, i),
-      depTime: minsToTwelveH(t),
-      arrTime: minsToTwelveH(arr),
-      depCode: stops[i],
-      depCity: cityNameOf(stops[i]),
-      depTerm: i === 0 ? `Terminal ${depTerm}` : 'Terminal 1',
-      arrCode: stops[i + 1],
-      arrCity: cityNameOf(stops[i + 1]),
-      arrTerm: i === n - 1 ? `Terminal ${arrTerm}` : 'Terminal 1',
-      layoverMin: i < n - 1 ? layovers[i] : undefined,
-    });
-    t = arr + (layovers[i] ?? 0);
-  }
-  return legs;
-};
-
-/* ---------- Price breakdown (expanded card) ---------- */
-
-const PriceBreakdown = ({ base, baggage }: { base: number; baggage: string }) => {
-  const rows = [
-    { icon: <UserIcon />, label: 'Base fare', sub: '1 × Adult', value: inr(base - 730) },
-    { icon: <SettingsIcon />, label: 'Taxes & fees', sub: 'Includes GST', value: inr(730) },
-    { icon: <SeatIcon />, label: 'Seat selection', sub: 'Standard seat', value: inr(500) },
-    { icon: <SuitcaseIcon />, label: 'Baggage', sub: baggage.replace(/baggage/i, 'check-in'), value: inr(0) },
-    { icon: <GlobeIcon />, label: 'Service fee', sub: 'Platform fee', value: inr(100) },
-  ];
-  const total = base + 600;
-  return (
-    <div className="flex flex-col rounded-[12px] border border-[#29466e] bg-[#0d1b2a] p-2.5">
-      <div className="text-[10px] font-semibold tracking-[0.12em] text-[#7CC0FF]">PRICE BREAKDOWN</div>
-      <div className="mt-1.5 space-y-1">
-        {rows.map((r) => (
-          <div key={r.label} className="flex items-center justify-between gap-2 rounded-[8px] bg-white/[0.03] px-1.5 py-0.5">
-            <div className="flex min-w-0 items-center gap-1.5">
-              <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-[5px] bg-[#1b2b47] text-[#7CC0FF]">{r.icon}</span>
-              <div className="min-w-0">
-                <div className="text-[10px] font-semibold leading-tight text-white">{r.label}</div>
-                <div className="text-[8.5px] leading-tight text-[#7e93b3]">{r.sub}</div>
-              </div>
-            </div>
-            <span className="shrink-0 text-[11px] font-bold text-white">{r.value}</span>
-          </div>
-        ))}
-      </div>
-      <div className="mt-1.5 border-t border-dashed border-[#73869e] pt-1.5">
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="text-[10px] font-bold tracking-wide leading-tight text-white">TOTAL</div>
-            <div className="text-[8.5px] leading-tight text-[#7e93b3]">Per person</div>
-          </div>
-          <div className="text-[16px] font-bold leading-none text-[#3B9CFF]">{inr(total)}</div>
-        </div>
-      </div>
-      <button className="mt-2 flex h-8 w-full cursor-pointer items-center justify-center gap-1.5 rounded-full bg-[#2593fc] text-[12.5px] font-bold text-white shadow-[0_6px_18px_rgba(37,147,252,0.45)] transition-all duration-300 hover:bg-[#d4af37] hover:shadow-[0_0_20px_rgba(212,175,55,0.7),0_0_45px_rgba(212,175,55,0.4)] active:bg-[#f0c265]">
-        Continue
-        <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M5 12h14" />
-          <path d="m12 5 7 7-7 7" />
-        </svg>
-      </button>
-    </div>
-  );
-};
 
 const SelectButton = ({ selected, onSelect }: { selected: boolean; onSelect?: () => void }) => (
   <button
@@ -419,7 +286,7 @@ const CompactPriceCol = ({
   selected: boolean;
   onSelect?: () => void;
 }) => (
-  <div className="flex w-full shrink-0 flex-col items-center border-t border-dotted border-[#73869e] pt-3 text-center lg:w-[150px] lg:border-t-0 lg:pl-3 lg:pt-0">
+  <div className="flex w-full shrink-0 flex-col items-center border-t border-dotted border-[#73869e] pt-3 text-center lg:w-[150px] lg:border-t-0 lg:border-l lg:pl-3 lg:pt-0">
     <div className="text-[10.5px] font-semibold tracking-[0.1em] text-[#9baec7]">TRIP FIT</div>
     <div className="mt-0.5 text-[19px] font-bold leading-tight tracking-tight text-white">{inr(f.price + dayDelta)}</div>
     <div className="mt-1.5 flex items-center gap-1.5 text-[12px] text-[#b6c3d5]">
@@ -605,7 +472,7 @@ export const FlightCard = ({
     </div>
 
     {/* Right section: pricing & action */}
-    <div className="flex w-full shrink-0 flex-col items-center border-t border-dotted border-[#73869e] pt-4 text-center lg:w-[210px] lg:border-t-0 lg:pl-6 lg:pt-0">
+    <div className="flex w-full shrink-0 flex-col items-center border-t border-dotted border-[#73869e] pt-4 text-center lg:w-[210px] lg:border-t-0 lg:border-l lg:pl-6 lg:pt-0">
       <div className="text-[10.5px] font-semibold tracking-[0.1em] text-[#9baec7]">TRIP FIT</div>
       <div className="mt-0.5 text-[21px] font-bold leading-tight tracking-tight text-white">{inr(f.price + dayDelta)}</div>
       <div className="mt-1.5 flex items-center gap-1.5 text-[12px] text-[#b6c3d5]">
@@ -625,22 +492,17 @@ export const FlightCard = ({
         className="mt-4 border-t border-dotted border-[#73869e] pt-4 pb-4"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="mt-4 grid grid-cols-1 gap-3 xl:grid-cols-2">
-          <div className="min-w-0">
-            <ItineraryDetails f={f} />
-          </div>
-          <div className="min-w-0">
-            <PriceBreakdown base={base} baggage={f.baggage} />
-          </div>
-        </div>
-        <div className="mt-4 "
-          style={{ overflowX: 'auto', scrollbarWidth: 'thin', scrollbarColor: '#2593fc #122844', WebkitOverflowScrolling: 'touch' }}
-        >
-          <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="flex items-start gap-3">
+          <div className="flex min-w-0 flex-1 gap-3 overflow-x-auto pb-2"
+            style={{ scrollbarWidth: 'thin', scrollbarColor: '#2593fc #122844', WebkitOverflowScrolling: 'touch' }}
+          >
             {fareTiers(base).map((tier) => (
-              <FareTierCard key={tier.name} tier={tier} />
+              <div key={tier.name} className="flex min-w-[220px] flex-1">
+                <FareTierCard tier={tier} />
+              </div>
             ))}
           </div>
+          <LayoverFlightCard f={f} />
         </div>
 
       </div>
