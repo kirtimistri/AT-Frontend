@@ -1,7 +1,7 @@
 const API_URL = import.meta.env.VITE_API_URL ?? '';
 
 // Prevents the UI from appearing frozen when the backend is slow/unreachable.
-const REQUEST_TIMEOUT_MS = 15000;
+const REQUEST_TIMEOUT_MS = 5000;
 
 function baseUrl(): string {
   if (!API_URL || API_URL === 'YOUR_API_BASE_URL') {

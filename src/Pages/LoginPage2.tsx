@@ -8,7 +8,6 @@ import logo from '../assets/Backgoundimages/rlogo.jpeg';
 import { useThemeStore } from '../store/themeStore';
 import { useAuthStore } from '../store/authStore';
 import { loginUser, ApiError } from '../services/authService';
-import { loadRecaptchaScript, executeRecaptcha } from '../services/captcha';
 import { toast } from '../components/toastStore';
 import { ThemeToggle } from '../components/ThemeToggle';
 
@@ -271,32 +270,6 @@ const LoginPage2 = () => {
   // haven't rendered yet (e.g. double-click before the re-render).
   const submitLock = useRef(false);
 
-  const siteKey = import.meta.env
-    .VITE_RECAPTCHA_SITE_KEY as string | undefined;
-
-  const generateCaptchaToken = (): Promise<string> => {
-    if (!siteKey) return Promise.resolve('');
-
-    return executeRecaptcha(siteKey, 'login').catch(
-      (error: unknown) => {
-        console.error('reCAPTCHA failed:', error);
-        return '';
-      }
-    );
-  };
-
-  useEffect(() => {
-    if (siteKey) {
-      loadRecaptchaScript(siteKey)
-        .then(() => {
-          // Pre-generate the token so it's cached and ready by the time the
-          // user clicks "Sign in" — avoids a serial Google round-trip at submit.
-          executeRecaptcha(siteKey, 'login').catch(() => {});
-        })
-        .catch(() => {});
-    }
-  }, [siteKey]);
-
   const isLight = theme === 'light';
 
   // ------------------------------------------
@@ -465,8 +438,7 @@ const LoginPage2 = () => {
     setIsSubmitting(true);
 
     try {
-      const captcha = await generateCaptchaToken();
-      const res = await loginUser(trimmed, password, captcha);
+      const res = await loginUser(trimmed, password);
 
       if (res.success && res.data) {
         authLogin(res.data);
