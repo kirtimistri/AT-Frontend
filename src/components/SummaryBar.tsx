@@ -46,12 +46,12 @@ export const SummaryBar = ({ onward, ret, dayDelta }: { onward: Flight | null; r
   const any = !!onward || !!ret;
   return (
     <div className={`group fixed inset-x-0 bottom-0 z-40 border-t backdrop-blur transition-all duration-300 md:left-[300px] ${isLight ? 'bg-white/95 border-[#E5E7EB] shadow-[0_-10px_36px_rgba(0,0,0,0.08)] hover:border-[#2563EB]/50 hover:shadow-[0_-10px_36px_rgba(0,0,0,0.08),0_0_22px_rgba(37,99,235,0.15),0_0_60px_rgba(37,99,235,0.08)]' : 'bg-[#0F1B3A]/95 border-[rgba(124,192,255,0.25)] shadow-[0_-10px_36px_rgba(0,0,0,0.55)] hover:border-[#d4af37]/60 hover:shadow-[0_-10px_36px_rgba(0,0,0,0.55),0_0_22px_rgba(212,175,55,0.35),0_0_60px_rgba(212,175,55,0.16)]'}`}>
-    <div className="flex flex-wrap items-stretch">
-      <div className={`grid w-full grid-cols-2 divide-x ${isLight ? 'divide-[#E5E7EB]' : 'divide-white/10'} sm:w-auto sm:flex`}>
-        <FlightSummary label="ONWARD" f={onward} isLight={isLight} />
-        <FlightSummary label="RETURN" f={ret} isLight={isLight} />
-      </div>
-      <div className={`flex w-full shrink-0 items-center justify-between gap-4 px-4 py-2.5 sm:w-auto sm:justify-start sm:gap-5 sm:border-l sm:px-6 sm:py-3 ${isLight ? 'border-t border-[#E5E7EB]' : 'border-t border-white/10'}`}>
+      <div className="flex flex-wrap items-stretch">
+        <div className={`grid w-full grid-cols-2 divide-x ${isLight ? 'divide-[#E5E7EB]' : 'divide-white/10'} sm:w-auto sm:flex`}>
+          <FlightSummary label="ONWARD" f={onward} isLight={isLight} />
+          <FlightSummary label="RETURN" f={ret} isLight={isLight} />
+        </div>
+        <div className={`flex w-full shrink-0 items-center justify-between gap-4 px-4 py-2.5 sm:w-auto sm:justify-start sm:gap-5 sm:border-l sm:px-6 sm:py-3 ${isLight ? 'border-t border-[#E5E7EB]' : 'border-t border-white/10'}`}>
           <div className="text-right">
             <div className={`text-[10px] font-semibold sm:text-[11px] transition-colors duration-300 ${isLight ? 'text-[#F59E0B]' : 'text-[#ff8533]'}`}>Flight Details &gt;</div>
             <div className={`mt-0.5 text-[18px] font-bold leading-none sm:mt-1 sm:text-[22px] transition-colors duration-300 ${isLight ? 'text-[#111827]' : 'text-white'}`}>{inr(total)}</div>

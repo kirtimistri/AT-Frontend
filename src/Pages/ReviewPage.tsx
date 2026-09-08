@@ -5,6 +5,7 @@ import { inr } from '../lib/format';
 import { parseFlightParam } from '../lib/review';
 import { AirlineLogo } from '../components/Logos';
 import { BrandLogo } from '../components/BrandLogo';
+import { ThemeToggle } from '../components/ThemeToggle';
 import { Clock, ArrowLeftRight, PlaneFill, PlaneTakeoff } from '../components/icons';
 
 const AIRPORT_NAMES: Record<string, string> = {
@@ -215,6 +216,7 @@ const ReviewPage = () => {
             <BrandLogo size="sm" />
             Akbar Bizvoy
           </span>
+          <ThemeToggle size="sm" className="shrink-0" />
         </div>
       </div>
 

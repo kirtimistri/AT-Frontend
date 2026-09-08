@@ -4,12 +4,15 @@ import { FlightItinerary } from '../components/review/FlightItinerary';
 import { TravellerInformation } from '../components/review/TravellerInformation';
 import { GSTInformation } from '../components/review/GSTInformation';
 import { FareSummary } from '../components/review/FareSummary';
-import { AssistanceCard } from '../components/review/AssistanceCard';
 import { Footer } from '../components/review/Footer';
+import { ThemeToggle } from '../components/ThemeToggle';
+import { SeatMealCard } from '../components/SeatMealCard';
 import type { FlightCardProps } from '../components/review/FlightCard';
 import type { Flight } from '../store/flightStore';
+import { useThemeStore } from '../store/themeStore';
 import { cityNameOf } from '../lib/format';
 import type { BookingSelection } from '../lib/openReview';
+import { useNavigate } from 'react-router-dom';
 
 // Fallback demo data — shown only when no booking selection is available so the
 // page keeps its original content instead of showing an empty itinerary.
@@ -107,6 +110,9 @@ const readBooking = (): BookingSelection | null => {
 };
 
 const TripReviewPage = () => {
+  const { theme } = useThemeStore();
+  const isLight = theme === 'light';
+  const navigate = useNavigate();
   let onward: FlightCardProps | undefined;
   let ret: FlightCardProps | undefined;
   let onwardPrice: number | undefined;
@@ -135,8 +141,10 @@ const TripReviewPage = () => {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#FAF8F7]">
-      
+    <div className={`flex min-h-screen flex-col transition-colors duration-300 ${isLight ? 'bg-[#FAF8F7]' : 'bg-[#0B132B]'}`}>
+      <div className="sticky top-0 z-30 flex items-center justify-end px-5 py-3 lg:px-8">
+        <ThemeToggle size="sm" className="shrink-0" />
+      </div>
 
       <main className="mx-auto w-full max-w-[1200px] flex-1 px-5 py-6 lg:px-6">
         {/* Back link + Title + Booking Reference */}
@@ -164,7 +172,7 @@ const TripReviewPage = () => {
               fromCode={fromCode}
               toCode={toCode}
             />
-            <AssistanceCard />
+            <SeatMealCard onBack={() => navigate('/search')} />
           </div>
         </div>
       </main>

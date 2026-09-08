@@ -1,24 +1,23 @@
 import { ArrowLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useThemeStore } from '../../store/themeStore';
 import { BrandLogo } from '../BrandLogo';
 
 export const PageHeader = () => {
   const { theme } = useThemeStore();
   const isLight = theme === 'light';
+  const navigate = useNavigate();
 
   return (
     <div className="mb-6">
-      <a
-        href="/search"
-        onClick={(e) => {
-          e.preventDefault();
-          window.history.back();
-        }}
-        className={`mb-3 inline-flex items-center gap-1.5 text-[13px] hover:underline transition-colors duration-300 ${isLight ? 'text-[#004B7C]' : 'text-[#7CC0FF]'}`}
+      <button
+        type="button"
+        onClick={() => navigate('/search')}
+        className={`mb-3 inline-flex items-center gap-1.5 cursor-pointer border-none bg-transparent text-[13px] hover:underline transition-colors duration-300 ${isLight ? 'text-[#004B7C]' : 'text-[#7CC0FF]'}`}
       >
         <ArrowLeft className="h-3.5 w-3.5" />
         Back to Search Results
-      </a>
+      </button>
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
           <BrandLogo size="lg" />
