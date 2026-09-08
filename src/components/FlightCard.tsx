@@ -108,7 +108,7 @@ const SelectButton = ({ selected, onSelect, isLight }: { selected: boolean; onSe
       e.stopPropagation();
       onSelect?.();
     }}
-    className={`flex h-[36px] w-full cursor-pointer items-center justify-center gap-2 rounded-[10px] text-[13.5px] font-bold text-white transition-all duration-300 ${isLight ? 'bg-[#2563EB] hover:bg-[#1D4ED8] shadow-[0_4px_12px_rgba(37,99,235,0.25)] hover:shadow-[0_6px_16px_rgba(37,99,235,0.35)] active:bg-[#1D4ED8]' : selected ? 'bg-[#d4af37] shadow-[0_0_16px_rgba(212,175,55,0.5),0_0_30px_rgba(212,175,55,0.25)] hover:bg-[#f0c265] hover:shadow-[0_0_20px_rgba(212,175,55,0.7),0_0_40px_rgba(212,175,55,0.35)]' : 'bg-[#3b82f6] shadow-[0_4px_12px_rgba(59,130,246,0.25)] hover:bg-[#d4af37] hover:shadow-[0_0_16px_rgba(212,175,55,0.5),0_0_35px_rgba(212,175,55,0.25)] active:bg-[#d4af37] active:shadow-[0_0_22px_rgba(212,175,55,0.65),0_0_45px_rgba(212,175,55,0.35)]'}`}
+    className={`flex h-[32px] w-full cursor-pointer items-center justify-center gap-2 rounded-[10px] text-[13px] font-bold text-white transition-all duration-300 ${isLight ? 'bg-[#2563EB] hover:bg-[#1D4ED8] shadow-[0_4px_12px_rgba(37,99,235,0.25)] hover:shadow-[0_6px_16px_rgba(37,99,235,0.35)] active:bg-[#1D4ED8]' : selected ? 'bg-[#d4af37] shadow-[0_0_16px_rgba(212,175,55,0.5),0_0_30px_rgba(212,175,55,0.25)] hover:bg-[#f0c265] hover:shadow-[0_0_20px_rgba(212,175,55,0.7),0_0_40px_rgba(212,175,55,0.35)]' : 'bg-[#3b82f6] shadow-[0_4px_12px_rgba(59,130,246,0.25)] hover:bg-[#d4af37] hover:shadow-[0_0_16px_rgba(212,175,55,0.5),0_0_35px_rgba(212,175,55,0.25)] active:bg-[#d4af37] active:shadow-[0_0_22px_rgba(212,175,55,0.65),0_0_45px_rgba(212,175,55,0.35)]'}`}
   >
     <span>{selected ? 'Selected' : 'Select'}</span>
     {selected ? (
@@ -143,7 +143,7 @@ const CompactFlightLeft = ({
   const co2Pct = 8 + ((f.code.charCodeAt(f.code.length - 1) + f.code.length * 7) % 22);
   const co2Level = co2Pct < 15 ? 'low' : co2Pct < 22 ? 'mid' : 'high';
   return (
-    <div className="min-w-0 flex-1 pr-4 pb-4 lg:pb-0">
+    <div className="min-w-0 flex-1 pr-3 pb-3 lg:pb-0">
       {/* Airline header row */}
       <div className="flex items-center gap-2.5">
         <div className="flex shrink-0 flex-col items-center">
@@ -154,14 +154,14 @@ const CompactFlightLeft = ({
       </div>
 
       {/* Schedule row: departure — timeline — arrival (dedicated space so text never overlaps) */}
-      <div className="mt-3.5 flex items-center">
+      <div className="mt-2.5 flex items-center">
         <div className="w-[72px] shrink-0 text-right">
           <div className={`whitespace-nowrap text-[16px] font-bold leading-none transition-colors duration-300 ${isLight ? 'text-[#111827]' : 'text-white'}`}>{f.departure.time}</div>
           <div className={`mt-1 text-[10.5px] font-semibold leading-none transition-colors duration-300 ${isLight ? 'text-[#111827]' : 'text-white'}`}>{depCode}</div>
           <div className={`mt-0.5 text-[9.5px] leading-none transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#a0a8b8]'}`}>{depTerm}</div>
         </div>
 
-        <div className="relative mx-2 h-12 min-w-0 flex-1">
+        <div className="relative mx-2 h-9 min-w-0 flex-1">
           <div className={`absolute inset-x-0 top-[11px] border-t border-dotted transition-colors duration-300 ${isLight ? 'border-[#D1D5DB]' : 'border-[#8295ad]'}`} />
           {f.via ? (
             Array.from({ length: planeCount }, (_, i) => (
@@ -193,10 +193,10 @@ const CompactFlightLeft = ({
       </div>
 
       {/* Horizontal divider */}
-      <div className="mt-3 border-t border-dashed border-[#73869e]" />
+      <div className="mt-2 border-t border-dashed border-[#73869e]" />
 
       {/* Metadata: two sub-rows */}
-      <div className={`mt-2.5 text-[11.5px] transition-colors duration-300 ${isLight ? 'text-[#4B5563]' : 'text-white'}`}>
+      <div className={`mt-2 text-[11px] transition-colors duration-300 ${isLight ? 'text-[#4B5563]' : 'text-white'}`}>
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
           <span className="flex items-center gap-1.5">
             <Clock className={`h-[14px] w-[14px] transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#b6c3d5]'}`} />
@@ -218,7 +218,7 @@ const CompactFlightLeft = ({
           </span>
         </div>
 
-        <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
+        <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1">
           {f.via && (
             <>
               <span className="flex items-center gap-1.5">
@@ -258,7 +258,7 @@ const CompactPriceCol = ({
   isLight?: boolean;
   scope?: string;
 }) => (
-  <div className={`flex w-full shrink-0 flex-col items-center border-t border-dotted pt-3 text-center lg:w-[150px] lg:border-t-0 lg:border-l lg:pl-3 lg:pt-0 transition-colors duration-300 ${isLight ? 'border-[#E5E7EB]' : 'border-[#73869e]'}`}>
+  <div className={`flex w-full shrink-0 flex-col items-center border-t border-dotted pt-2 text-center lg:w-[150px] lg:border-t-0 lg:border-l lg:pl-3 lg:pt-0 transition-colors duration-300 ${isLight ? 'border-[#E5E7EB]' : 'border-[#73869e]'}`}>
     <div className={`text-[10.5px] font-semibold tracking-[0.1em] transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#9baec7]'}`}>TRIP FIT</div>
     <PriceBreakdownPopover
       id={`${scope ?? 'flight'}:${f.code}`}
@@ -311,15 +311,15 @@ export const FlightCard = ({
   <article
     onClick={onSelect}
     style={{ animationDelay: `${index * 90}ms` }}
-    className={`card-flash-in relative flex min-h-[168px] flex-col rounded-[12px] border p-4 pb-5 pt-8 shadow-[inset_0_1px_0_rgba(255,255,255,0.015)] transition-all duration-300 ${onSelect ? 'cursor-pointer' : ''} ${isLight ? 'bg-white border-[#E5E7EB] shadow-[0_2px_8px_rgba(0,0,0,0.06)] hover:border-[#D1D5DB] hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)]' : 'bg-[#0f172a] border-[#214b7e] hover:border-[#d4af37]/70 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.015),0_0_18px_rgba(212,175,55,0.28),0_0_45px_rgba(212,175,55,0.12)]'} ${selected ? (isLight ? 'border-[#DC2626] shadow-[0_0_0_2px_#DC2626,0_4px_12px_rgba(220,38,38,0.25)]' : 'border-[#d4af37] shadow-[inset_0_1px_0_rgba(255,255,255,0.015),0_0_18px_rgba(212,175,55,0.45),0_0_45px_rgba(212,175,55,0.18)]') : ''}`}
+    className={`card-flash-in relative flex min-h-[136px] flex-col rounded-[12px] border p-3 pb-3.5 pt-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.015)] transition-all duration-300 ${onSelect ? 'cursor-pointer' : ''} ${isLight ? 'bg-white border-[#E5E7EB] shadow-[0_2px_8px_rgba(0,0,0,0.06)] hover:border-[#D1D5DB] hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)]' : 'bg-[#0f172a] border-[#214b7e] hover:border-[#d4af37]/70 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.015),0_0_18px_rgba(212,175,55,0.28),0_0_45px_rgba(212,175,55,0.12)]'} ${selected ? (isLight ? 'border-[#DC2626] shadow-[0_0_0_2px_#DC2626,0_4px_12px_rgba(220,38,38,0.25)]' : 'border-[#d4af37] shadow-[inset_0_1px_0_rgba(255,255,255,0.015),0_0_18px_rgba(212,175,55,0.45),0_0_45px_rgba(212,175,55,0.18)]') : ''}`}
   >
     {/* Badge (solid pill, overlapping top-left edge) */}
-    <div className={`absolute left-[15px] top-2 flex h-[20px] min-w-[88px] items-center justify-center rounded-full px-3 ${f.badgeBg}`}>
-      <span className="text-[9px] font-bold tracking-[0.2px] text-white">{f.badge}</span>
+    <div className={`absolute left-[15px] top-1.5 flex h-[18px] min-w-[80px] items-center justify-center rounded-full px-2.5 ${f.badgeBg}`}>
+      <span className="text-[8px] font-bold tracking-[0.2px] text-white">{f.badge}</span>
     </div>
 
     {/* Top-right: selected check + expand/collapse chevron */}
-    <div className="absolute right-4 top-4 flex items-center gap-2">
+    <div className="absolute right-3 top-3 flex items-center gap-1.5">
       {selected && (
         <span className={`flex h-5 w-5 items-center justify-center rounded-full transition-colors duration-300 ${isLight ? 'bg-[#DC2626] shadow-[0_0_10px_rgba(220,38,38,0.8)]' : 'bg-[#d4af37] shadow-[0_0_10px_rgba(212,175,55,0.8)]'}`}>
           <svg viewBox="0 0 24 24" className="h-3 w-3" fill="none" stroke="#ffffff" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round">
@@ -410,7 +410,7 @@ export const FlightCard = ({
       </div>
 
       {/* Times row */}
-      <div className="mt-4 flex items-center">
+      <div className="mt-3 flex items-center">
         <div className="w-[92px] shrink-0 text-left sm:w-[120px]">
           <div className={`text-[17px] font-bold leading-tight transition-colors duration-300 ${isLight ? 'text-[#111827]' : 'text-white'}`}>{f.departure.time}</div>
           <div className={`mt-0.5 text-[11.5px] transition-colors duration-300 ${isLight ? 'text-[#4B5563]' : 'text-[#9baec7]'}`}>{fromLabel ?? f.departure.airport}</div>
@@ -455,20 +455,20 @@ export const FlightCard = ({
     </div>
 
     {/* Right section: pricing & action */}
-    <div className={`flex w-full shrink-0 flex-col items-center border-t border-dotted pt-4 text-center lg:w-[210px] lg:border-t-0 lg:border-l lg:pl-6 lg:pt-0 transition-colors duration-300 ${isLight ? 'border-[#E5E7EB]' : 'border-[#73869e]'}`}>
+    <div className={`flex w-full shrink-0 flex-col items-center border-t border-dotted pt-3 text-center lg:w-[210px] lg:border-t-0 lg:border-l lg:pl-6 lg:pt-0 transition-colors duration-300 ${isLight ? 'border-[#E5E7EB]' : 'border-[#73869e]'}`}>
       <div className={`text-[10.5px] font-semibold tracking-[0.1em] transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#9baec7]'}`}>TRIP FIT</div>
       <PriceBreakdownPopover
         id={`${scope ?? 'flight'}:${f.code}`}
         breakdown={priceBreakdownOf(f.price + dayDelta)}
-        className={`mt-0.5 text-[21px] font-bold leading-tight tracking-tight transition-colors duration-300 ${isLight ? 'text-[#111827]' : 'text-white'}`}
+        className={`mt-0.5 text-[19px] font-bold leading-tight tracking-tight transition-colors duration-300 ${isLight ? 'text-[#111827]' : 'text-white'}`}
       >
         {inr(f.price + dayDelta)}
       </PriceBreakdownPopover>
-      <div className={`mt-1.5 flex items-center gap-1.5 text-[12px] transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#b6c3d5]'}`}>
+      <div className={`mt-1 flex items-center gap-1.5 text-[11px] transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#b6c3d5]'}`}>
         <Clock className={`h-3.5 w-3.5 transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#b6c3d5]'}`} />
         {f.duration}
       </div>
-      <div className="mt-4 w-full lg:mt-auto">
+      <div className="mt-3 w-full lg:mt-auto">
         <SelectButton selected={!!selected} onSelect={onSelect} isLight={isLight} />
       </div>
     </div>

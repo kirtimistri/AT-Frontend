@@ -6,7 +6,8 @@ import { GSTInformation } from '../components/review/GSTInformation';
 import { FareSummary } from '../components/review/FareSummary';
 import { Footer } from '../components/review/Footer';
 import { ThemeToggle } from '../components/ThemeToggle';
-import { SeatMealCard } from '../components/SeatMealCard';
+import { AncillaryServicesCard } from '../components/AncillaryServicesCard';
+import type { AncillarySegment } from '../components/AncillaryServicesModal';
 import type { FlightCardProps } from '../components/review/FlightCard';
 import type { Flight } from '../store/flightStore';
 import { useThemeStore } from '../store/themeStore';
@@ -109,6 +110,30 @@ const readBooking = (): BookingSelection | null => {
   }
 };
 
+// Build a minimal Flight from the demo fallback card so the ancillary modal has
+// a stable source to derive its catalog from (mirrors how toReviewCard already
+// reconstructs display data when no booking is present).
+const toFlight = (card: FlightCardProps, price: number): Flight => ({
+  badge: card.type,
+  badgeBg: 'bg-[#7ac143]',
+  airline: card.airline.toUpperCase(),
+  code: card.flightNumber.replace('-', ' '),
+  departure: { time: card.departureTime, airport: `${card.departureCode} Terminal 1` },
+  arrival: { time: card.arrivalTime, airport: `${card.arrivalCode} Terminal 1` },
+  duration: card.duration,
+  stops: card.stops === 'Direct' ? 'Non-stop' : card.stops,
+  baggage: `${card.checkIn.replace(' kg', '')} kg baggage`,
+  price,
+  checkedAgo: '',
+});
+
+const formatSegmentDate = (date: string): string => {
+  const m = date.match(/(\d{1,2})\s+(\w+)\s+(\d{4})/);
+  if (!m) return date;
+  const [, d, mon] = m;
+  return `${mon} ${d}, ${m[3]}`;
+};
+
 const TripReviewPage = () => {
   const { theme } = useThemeStore();
   const isLight = theme === 'light';
@@ -138,6 +163,33 @@ const TripReviewPage = () => {
     ret = DEMO_RETURN;
     onwardPrice = 18450;
     returnPrice = 15200;
+  }
+
+  // Segments for the Ancillary / SSR modal. Each segment carries its real
+  // Flight (from the booking) or a minimal Flight derived from the demo card.
+  const bookingDate = booking?.date ?? '';
+  const segments: AncillarySegment[] = [];
+  if (onward && typeof onwardPrice === 'number') {
+    const real = booking?.onward ?? null;
+    segments.push({
+      id: 'onward',
+      label: `${fromCode} → ${toCode}`,
+      fromCode,
+      toCode,
+      date: formatSegmentDate(bookingDate || onward.date),
+      flight: real ?? toFlight(onward, onwardPrice),
+    });
+  }
+  if (ret && typeof returnPrice === 'number') {
+    const real = booking?.returnFlight ?? null;
+    segments.push({
+      id: 'return',
+      label: `${toCode} → ${fromCode}`,
+      fromCode: toCode,
+      toCode: fromCode,
+      date: formatSegmentDate(bookingDate || ret.date),
+      flight: real ?? toFlight(ret, returnPrice),
+    });
   }
 
   return (
@@ -172,7 +224,11 @@ const TripReviewPage = () => {
               fromCode={fromCode}
               toCode={toCode}
             />
-            <SeatMealCard onBack={() => navigate('/search')} />
+            <AncillaryServicesCard
+              segments={segments}
+              onHold={() => {}}
+              onBook={() => navigate('/search')}
+            />
           </div>
         </div>
       </main>
