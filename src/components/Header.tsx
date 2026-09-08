@@ -4,8 +4,7 @@ import { useThemeStore } from '../store/themeStore';
 import { ReturnCalendar } from './ReturnCalendar';
 import { ChevronDown, ChevronRight, ArrowLeftRight } from './icons';
 import { iconProps } from '../lib/iconProps';
-import { ThemeToggle } from './ThemeToggle';
-import { Logo } from './Logo';
+import { BrandLogo } from './BrandLogo';
 
 export const Header = () => {
   const [swapSpin, setSwapSpin] = useState(0);
@@ -37,7 +36,7 @@ export const Header = () => {
 
   const leftSection = (
     <div className="flex min-w-0 items-center gap-2 sm:gap-5">
-      <Logo size="md" textClassName="text-[14px] sm:text-[17px]" />
+      <BrandLogo size="md" />
     </div>
   );
 
@@ -59,7 +58,6 @@ export const Header = () => {
       <div className={`flex h-8 w-8 items-center justify-center rounded-full text-[12px] font-semibold transition-colors duration-300 ${isLight ? 'bg-[#EFF6FF] text-[#2563EB]' : 'bg-[#2B5BFF] text-white'}`}>
         AS
       </div>
-      <ThemeToggle className="shrink-0" />
     </div>
   );
 
@@ -149,7 +147,7 @@ export const Header = () => {
 
   return (
     <header className={`sticky top-0 z-30 shrink-0 border-b px-3 pb-2 pt-2 sm:px-6 sm:pb-4 sm:pt-3 transition-colors duration-300 ${isLight ? 'bg-white border-[#E5E7EB] shadow-sm' : 'bg-[#0E1833] border-white/10'}`}>
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex items-center justify-between gap-3 pr-[88px]">
         {leftSection}
         {rightSection}
       </div>

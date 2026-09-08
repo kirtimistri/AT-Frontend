@@ -1,4 +1,5 @@
 import { Plane } from 'lucide-react';
+import { useThemeStore } from '../../store/themeStore';
 
 type FlightTimelineProps = {
   duration: string;
@@ -8,12 +9,14 @@ type FlightTimelineProps = {
 };
 
 export const FlightTimeline = ({ duration, isDirect, stops, isReturn = false }: FlightTimelineProps) => {
-  const accentColor = isReturn ? '#B5122B' : '#004B7C';
-  const lineColor = isReturn ? '#E5B8BE' : '#D1D5DB';
+  const { theme } = useThemeStore();
+  const isLight = theme === 'light';
+  const accentColor = isReturn ? '#B5122B' : (isLight ? '#004B7C' : '#7CC0FF');
+  const lineColor = isReturn ? '#E5B8BE' : (isLight ? '#D1D5DB' : 'rgba(124,192,255,0.25)');
 
   return (
     <div className="flex min-w-0 flex-1 flex-col items-center">
-      <span className="mb-1.5 text-[11px] text-[#777]">{duration}</span>
+      <span className={`mb-1.5 text-[11px] transition-colors duration-300 ${isLight ? 'text-[#777]' : 'text-white/50'}`}>{duration}</span>
       <div className="flex w-full items-center gap-0">
         <span
           className="h-[8px] w-[8px] shrink-0 rounded-full"
@@ -38,7 +41,7 @@ export const FlightTimeline = ({ duration, isDirect, stops, isReturn = false }: 
       </div>
       <span
         className="mt-1.5 text-[11px] font-medium"
-        style={{ color: isDirect ? accentColor : accentColor }}
+        style={{ color: accentColor }}
       >
         {isDirect ? 'Direct' : stops}
       </span>

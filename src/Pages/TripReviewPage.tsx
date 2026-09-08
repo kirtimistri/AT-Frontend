@@ -1,15 +1,14 @@
-import { ReviewHeader } from '../components/review/Header';
 import { PageHeader } from '../components/review/PageHeader';
 import { BookingReference } from '../components/review/BookingReference';
 import { FlightItinerary } from '../components/review/FlightItinerary';
 import { TravellerInformation } from '../components/review/TravellerInformation';
 import { GSTInformation } from '../components/review/GSTInformation';
 import { FareSummary } from '../components/review/FareSummary';
-import { AssistanceCard } from '../components/review/AssistanceCard';
 import { Footer } from '../components/review/Footer';
 import type { FlightCardProps } from '../components/review/FlightCard';
 import type { Flight } from '../store/flightStore';
 import { cityNameOf } from '../lib/format';
+import { useThemeStore } from '../store/themeStore';
 
 type BookingSelection = {
   onward?: Flight | null;
@@ -65,6 +64,9 @@ const toReviewCard = (f: Flight, type: 'OUTBOUND' | 'RETURN', date: string): Fli
 };
 
 const TripReviewPage = () => {
+  const { theme } = useThemeStore();
+  const isLight = theme === 'light';
+
   let onward: FlightCardProps | undefined;
   let ret: FlightCardProps | undefined;
   let onwardPrice: number | undefined;
@@ -94,9 +96,7 @@ const TripReviewPage = () => {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#FAF8F7]">
-      <ReviewHeader />
-
+    <div className={`flex min-h-screen flex-col transition-colors duration-300 ${isLight ? 'bg-[#FAF8F7]' : 'bg-[#060d1a]'}`}>
       <main className="mx-auto w-full max-w-[1200px] flex-1 px-5 py-6 lg:px-6">
         {/* Back link + Title + Booking Reference */}
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
@@ -123,7 +123,6 @@ const TripReviewPage = () => {
               fromCode={fromCode}
               toCode={toCode}
             />
-            <AssistanceCard />
           </div>
         </div>
       </main>

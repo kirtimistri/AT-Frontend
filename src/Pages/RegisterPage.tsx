@@ -3,13 +3,12 @@ import { useNavigate } from 'react-router-dom';
 
 import bg2 from '../assets/Backgoundimages/bg2.png';
 import lightBg from '../assets/Backgoundimages/backgroundlight.jpeg';
-import logo from '../assets/Backgoundimages/rlogo.jpeg';
+import logo from '../assets/Backgoundimages/logo2.svg';
 
 import { useThemeStore } from '../store/themeStore';
 import { signupUser, ApiError } from '../services/authService';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { toast } from '../components/toastStore';
-import { ThemeToggle } from '../components/ThemeToggle';
 
 // Geometry of the earth limb (horizon) in bg2.png (1672x941).
 const BG_W = 1672;
@@ -796,14 +795,6 @@ const RegisterPage = () => {
         )}
 
         {/* -------------------------------- */}
-        {/* THEME TOGGLE */}
-        {/* -------------------------------- */}
-
-        <div className="absolute right-4 top-4 z-[60]">
-          <ThemeToggle />
-        </div>
-
-        {/* -------------------------------- */}
         {/* LEFT PANEL */}
         {/* -------------------------------- */}
 
@@ -834,7 +825,7 @@ const RegisterPage = () => {
               <img
                 src={logo}
                 alt="Akbar Bizvoy Logo"
-                className="h-[44px] w-[44px] rounded-full border-2 border-[rgba(40,120,240,0.3)] object-cover"
+                className="h-[44px] w-auto"
               />
             </div>
 
@@ -1231,7 +1222,7 @@ const RegisterPage = () => {
                   <img
                     src={logo}
                     alt="Akbar Bizvoy Logo"
-                    className="h-[70px] w-[70px] rounded-full border-2 border-[rgba(40,120,240,0.3)] object-cover"
+                    className="h-[70px] w-auto"
                   />
                 </div>
               </div>

@@ -1,264 +1,24 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import bg2 from '../assets/Backgoundimages/bg2.png';
 import lightBg from '../assets/Backgoundimages/backgroundlight.jpeg';
-import logo from '../assets/Backgoundimages/rlogo.jpeg';
+import logo from '../assets/Backgoundimages/logo2.svg';
 
 import { useThemeStore } from '../store/themeStore';
 import { useAuthStore } from '../store/authStore';
 import { loginUser, ApiError } from '../services/authService';
 import { loadRecaptchaScript, executeRecaptcha } from '../services/captcha';
 import { toast } from '../components/toastStore';
-import { ThemeToggle } from '../components/ThemeToggle';
-
-// Geometry of the earth limb (horizon) in bg2.png (1672x941).
-const BG_W = 1672;
-const BG_H = 941;
-
-const PLANET = {
-  cx: 929,
-  cy: 1575,
-  r: 1413,
-};
 
 const DEMO_EMAIL = 'demo@akbarbizvoy.com';
 const DEMO_PASSWORD = 'demo123';
-
-const HorizonGlow = ({
-  imgRef,
-}: {
-  imgRef: React.RefObject<HTMLImageElement | null>;
-}) => {
-  const [box, setBox] = useState<{
-    left: number;
-    top: number;
-    width: number;
-    height: number;
-  } | null>(null);
-
-  useEffect(() => {
-    const img = imgRef.current;
-
-    if (!img) return;
-
-    let raf = 0;
-
-    const update = () => {
-      raf = 0;
-
-      const rect = img.getBoundingClientRect();
-
-      if (rect.width === 0 || rect.height === 0) return;
-
-      const scale = Math.max(
-        rect.width / BG_W,
-        rect.height / BG_H
-      );
-
-      const cw = BG_W * scale;
-      const ch = BG_H * scale;
-
-      const pos =
-        getComputedStyle(img).objectPosition.match(/-?[\d.]+%/g) ?? [];
-
-      const px =
-        pos.length > 0
-          ? parseFloat(pos[0] as string) / 100
-          : 0;
-
-      const py =
-        pos.length > 1
-          ? parseFloat(pos[1] as string) / 100
-          : 0.5;
-
-      setBox({
-        left: rect.left + (rect.width - cw) * px,
-        top: rect.top + (rect.height - ch) * py,
-        width: cw,
-        height: ch,
-      });
-    };
-
-    const schedule = () => {
-      if (!raf) {
-        raf = requestAnimationFrame(update);
-      }
-    };
-
-    schedule();
-
-    window.addEventListener('resize', schedule);
-
-    const ro = new ResizeObserver(schedule);
-    ro.observe(img);
-
-    return () => {
-      window.removeEventListener('resize', schedule);
-      ro.disconnect();
-
-      if (raf) {
-        cancelAnimationFrame(raf);
-      }
-    };
-  }, [imgRef]);
-
-  if (!box) return null;
-
-  return (
-    <svg
-      aria-hidden="true"
-      className="pointer-events-none"
-      style={{
-        position: 'fixed',
-        left: box.left,
-        top: box.top,
-        width: box.width,
-        height: box.height,
-        zIndex: 2,
-      }}
-      viewBox={`0 0 ${BG_W} ${BG_H}`}
-    >
-      <defs>
-        <linearGradient
-          id="horizonFade"
-          x1="0"
-          y1="0"
-          x2="1"
-          y2="0"
-        >
-          <stop
-            offset="0"
-            stopColor="#fff"
-            stopOpacity="0"
-          />
-
-          <stop
-            offset="0.22"
-            stopColor="#fff"
-            stopOpacity="0.4"
-          />
-
-          <stop
-            offset="0.5"
-            stopColor="#fff"
-            stopOpacity="1"
-          />
-
-          <stop
-            offset="0.78"
-            stopColor="#fff"
-            stopOpacity="0.4"
-          />
-
-          <stop
-            offset="1"
-            stopColor="#fff"
-            stopOpacity="0"
-          />
-        </linearGradient>
-
-        <mask id="horizonMask">
-          <rect
-            width={BG_W}
-            height={BG_H}
-            fill="url(#horizonFade)"
-          />
-        </mask>
-
-        <filter
-          id="glowHalo"
-          x="-80%"
-          y="-80%"
-          width="260%"
-          height="260%"
-        >
-          <feGaussianBlur stdDeviation="55" />
-        </filter>
-
-        <filter
-          id="glowOuter"
-          x="-80%"
-          y="-80%"
-          width="260%"
-          height="260%"
-        >
-          <feGaussianBlur stdDeviation="24" />
-        </filter>
-
-        <filter
-          id="glowMid"
-          x="-80%"
-          y="-80%"
-          width="260%"
-          height="260%"
-        >
-          <feGaussianBlur stdDeviation="9" />
-        </filter>
-
-        <filter
-          id="glowRim"
-          x="-80%"
-          y="-80%"
-          width="260%"
-          height="260%"
-        >
-          <feGaussianBlur stdDeviation="3" />
-        </filter>
-      </defs>
-
-      <g mask="url(#horizonMask)">
-        <circle
-          cx={PLANET.cx}
-          cy={PLANET.cy}
-          r={PLANET.r}
-          fill="none"
-          stroke="rgba(70,150,255,0.30)"
-          strokeWidth="360"
-          filter="url(#glowHalo)"
-        />
-
-        <circle
-          cx={PLANET.cx}
-          cy={PLANET.cy}
-          r={PLANET.r}
-          fill="none"
-          stroke="rgba(110,185,255,0.55)"
-          strokeWidth="150"
-          filter="url(#glowOuter)"
-        />
-
-        <circle
-          cx={PLANET.cx}
-          cy={PLANET.cy}
-          r={PLANET.r}
-          fill="none"
-          stroke="rgba(160,215,255,0.80)"
-          strokeWidth="50"
-          filter="url(#glowMid)"
-        />
-
-        <circle
-          cx={PLANET.cx}
-          cy={PLANET.cy}
-          r={PLANET.r}
-          fill="none"
-          stroke="rgba(232,246,255,0.95)"
-          strokeWidth="11"
-          filter="url(#glowRim)"
-        />
-      </g>
-    </svg>
-  );
-};
 
 const LoginPage2 = () => {
   const navigate = useNavigate();
 
   const { theme } = useThemeStore();
   const authLogin = useAuthStore((s) => s.login);
-
-  const bgRef = useRef<HTMLImageElement>(null);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -774,7 +534,6 @@ const LoginPage2 = () => {
         {/* -------------------------------- */}
 
         <img
-          ref={bgRef}
           src={bg2}
           alt=""
           className={`
@@ -811,14 +570,6 @@ const LoginPage2 = () => {
         />
 
         {/* -------------------------------- */}
-        {/* EARTH HORIZON GLOW */}
-        {/* -------------------------------- */}
-
-        {!isLight && (
-          <HorizonGlow imgRef={bgRef} />
-        )}
-
-        {/* -------------------------------- */}
         {/* GOLDEN DOTS */}
         {/* -------------------------------- */}
 
@@ -848,14 +599,6 @@ const LoginPage2 = () => {
             ))}
           </div>
         )}
-
-        {/* -------------------------------- */}
-        {/* THEME TOGGLE */}
-        {/* -------------------------------- */}
-
-        <div className="absolute right-4 top-4 z-[60]">
-          <ThemeToggle />
-        </div>
 
         {/* -------------------------------- */}
         {/* LEFT PANEL */}
@@ -888,9 +631,8 @@ const LoginPage2 = () => {
               <img
                 src={logo}
                 alt="Akbar Bizvoy Logo"
-                className="h-[44px] w-[44px] rounded-full border-2 border-[rgba(40,120,240,0.3)] object-cover"
-              />
-            </div>
+                className="h-[44px] w-auto"
+              />            </div>
 
             <p
               className={`
@@ -1152,12 +894,12 @@ const LoginPage2 = () => {
                 sub: 'Journeys',
 
                 bgColor: isLight
-                  ? 'bg-[#fff3e0]'
-                  : 'bg-[rgba(212,175,55,0.15)]',
+                  ? 'bg-[#e0edff]'
+                  : 'bg-[rgba(50,120,220,0.15)]',
 
                 iconColor: isLight
-                  ? 'text-[#f59e0b]'
-                  : 'text-[#f0c265]',
+                  ? 'text-[#2563eb]'
+                  : 'text-[#4aa3ff]',
               },
 
               {
@@ -1173,12 +915,12 @@ const LoginPage2 = () => {
                 sub: 'Support',
 
                 bgColor: isLight
-                  ? 'bg-[#fff3e0]'
-                  : 'bg-[rgba(212,175,55,0.15)]',
+                  ? 'bg-[#e0edff]'
+                  : 'bg-[rgba(50,120,220,0.15)]',
 
                 iconColor: isLight
-                  ? 'text-[#f59e0b]'
-                  : 'text-[#f0c265]',
+                  ? 'text-[#2563eb]'
+                  : 'text-[#4aa3ff]',
               },
             ].map((f, i) => (
               <div
@@ -1297,7 +1039,7 @@ const LoginPage2 = () => {
                   <img
                     src={logo}
                     alt="Akbar Bizvoy Logo"
-                    className="h-[70px] w-[70px] rounded-full border-2 border-[rgba(40,120,240,0.3)] object-cover"
+                    className="h-[70px] w-auto"
                   />
                 </div>
               </div>
