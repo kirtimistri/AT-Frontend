@@ -1,4 +1,5 @@
 import logo2 from '../assets/Backgoundimages/logo2.svg';
+import { useThemeStore } from '../store/themeStore';
 
 interface LogoProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
@@ -29,7 +30,9 @@ export const Logo = ({
   withText = true,
   withTagline = false,
   textClassName = '',
-}: LogoProps) => (
+}: LogoProps) => {
+  const { theme } = useThemeStore();
+  return (
   <div className={`akbar-logo ${className}`}>
     <div className="flex items-center gap-2">
       <LogoIcon size={size} />
@@ -37,13 +40,13 @@ export const Logo = ({
         <div className="flex flex-col leading-none">
           <span
             className={`font-extrabold tracking-tight text-[#242365] ${textClassName || 'text-[17px]'}`}
-            style={{ fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif" }}
+            style={{ fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif", color: theme === 'light' ? '#111827' : '#ffffff' }}
           >
             Akbar
           </span>
           <span
             className={`font-extrabold tracking-tight text-[#242365] ${textClassName || 'text-[17px]'}`}
-            style={{ fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif" }}
+            style={{ fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif", color: theme === 'light' ? '#111827' : '#ffffff' }}
           >
             Bizvoy
           </span>
@@ -62,6 +65,7 @@ export const Logo = ({
       </div>
     )}
   </div>
-);
+  );
+};
 
 export default Logo;

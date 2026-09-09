@@ -94,7 +94,7 @@ export const Header = () => {
   );
 
   const searchBar = (
-    <div className={`group relative mt-1.5 flex flex-wrap items-stretch overflow-hidden rounded-[26px] border transition-all duration-300 hover:border-[#d4af37]/70 sm:mt-2 sm:rounded-l-[16px] sm:rounded-r-[26px] ${isLight ? 'bg-white border-[#E5E7EB] shadow-[0_4px_12px_rgba(0,0,0,0.08)]' : 'bg-[#0F1B3A] border-[rgba(124,192,255,0.22)] shadow-[0_10px_30px_rgba(0,0,0,0.35)] hover:shadow-[0_0_18px_rgba(212,175,55,0.3),0_0_50px_rgba(212,175,55,0.14)]'}`}>
+    <div className={`group relative mt-1.5 flex flex-wrap items-stretch overflow-hidden rounded-[26px] border transition-all duration-300 hover:border-[#d4af37]/70 sm:rounded-l-[16px] sm:rounded-r-[26px] lg:mt-0 ${isLight ? 'bg-white border-[#E5E7EB] shadow-[0_4px_12px_rgba(0,0,0,0.08)]' : 'bg-[#0F1B3A] border-[rgba(124,192,255,0.22)] shadow-[0_10px_30px_rgba(0,0,0,0.35)] hover:shadow-[0_0_18px_rgba(212,175,55,0.3),0_0_50px_rgba(212,175,55,0.14)]'}`}>
       {/* From + To (swap button overlaps the divider) */}
       <div className="relative flex w-full min-w-0 border-b border-white/10 sm:w-auto sm:flex-1 sm:border-b-0">
         <div className={`relative flex min-w-0 flex-1 items-center px-3 py-1.5 sm:px-5 sm:py-2.5 border-l transition-colors duration-300 ${isLight ? 'border-l-[#E5E7EB]' : 'border-l-white/10'}`}>
@@ -179,11 +179,11 @@ export const Header = () => {
 
   return (
     <header className={`sticky top-0 z-30 shrink-0 border-b px-3 pb-1.5 pt-1.5 sm:px-6 sm:pb-3 sm:pt-2 transition-colors duration-300 ${isLight ? 'bg-white border-[#E5E7EB] shadow-sm' : 'bg-[#0E1833] border-white/10'}`}>
-      <div className="flex items-center justify-between gap-3">
-        {leftSection}
-        {rightSection}
+      <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:gap-4">
+        <div className="flex shrink-0 items-center">{leftSection}</div>
+        <div className="min-w-0 flex-1">{searchBar}</div>
+        <div className="flex shrink-0 items-center">{rightSection}</div>
       </div>
-      {searchBar}
       {returnOpen && (
         <div className="relative z-50 mt-2 w-full lg:absolute lg:left-1/2 lg:top-full lg:mt-2 lg:w-max lg:max-w-[94vw] lg:-translate-x-1/2">
           <div className="pointer-events-none absolute -top-[9px] left-1/2 hidden h-0 w-0 -translate-x-1/2 border-x-[10px] border-b-[10px] border-x-transparent border-b-[rgba(124,192,255,0.35)] lg:block" />
