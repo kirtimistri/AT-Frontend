@@ -45,6 +45,10 @@ const CITY_NAMES: Record<string, string> = {
   LKO: 'Lucknow',
   BLR: 'Bengaluru',
   HYD: 'Hyderabad',
+  NAG: 'Nagpur',
+  IDR: 'Indore',
+  JAI: 'Jaipur',
+  AMD: 'Ahmedabad',
 };
 
 export const cityNameOf = (code: string) => CITY_NAMES[code] ?? code;
