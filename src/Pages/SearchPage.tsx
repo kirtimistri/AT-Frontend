@@ -63,7 +63,7 @@ const SearchPage = () => {
         <SidebarFilters />
 
         {/* ---- Results ---- */}
-        <main className={`pretty-scroll min-w-0 flex-1 overflow-x-hidden overflow-y-scroll p-3 sm:p-6 ${barVisible ? 'pb-[128px] md:pb-[124px]' : ''}`}>
+        <main className={`pretty-scroll min-w-0 flex-1 overflow-x-hidden overflow-y-scroll p-3 sm:p-4 ${barVisible ? 'pb-[128px] md:pb-[124px]' : ''}`}>
           {!searched ? (
             <div className="flex h-full flex-col items-center justify-center text-center">
               <div className={`flex h-16 w-16 items-center justify-center rounded-full border transition-colors duration-300 ${isLight ? 'bg-white border-[#E5E7EB] text-[#2563EB] shadow-[0_2px_8px_rgba(0,0,0,0.06)]' : 'bg-[#0F1B3A] border-[rgba(124,192,255,0.4)] text-[#7CC0FF]'}`}>
@@ -93,7 +93,7 @@ const SearchPage = () => {
                           <div key={p} className={`h-[24px] w-[58px] animate-pulse rounded-full transition-colors duration-300 ${isLight ? 'bg-[#F3F4F6]' : 'bg-[#16304f]'}`} />
                         ))}
                       </div>
-                      <div className="space-y-5 pt-4">
+                      <div className="space-y-3 pt-4">
                         {[0, 1, 2].map((i) => (
                           <SkeletonCard key={i} index={i} />
                         ))}
@@ -103,7 +103,7 @@ const SearchPage = () => {
                 </div>
               ) : (
                 /* One way: single column of skeleton cards */
-                <div className="space-y-6 pt-5">
+                <div className="space-y-3 pt-4">
                   {[0, 1, 2].map((i) => (
                     <SkeletonCard key={i} index={i} />
                   ))}
@@ -164,7 +164,7 @@ const SearchPage = () => {
                 canNext={stripStart < datePool.length - STRIP_WINDOW}
               />
 
-              <div className="space-y-6 pt-5">
+              <div className="space-y-3 pt-4">
                 {flights.map((f, i) => (
                   <FlightCard
                     key={i}

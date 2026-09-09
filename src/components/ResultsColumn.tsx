@@ -39,11 +39,11 @@ export const ResultsColumn = ({ title, scope, flights, dayDelta, selected, onSel
         <span className={`text-[15px] font-bold transition-colors duration-300 ${isLight ? 'text-[#111827]' : 'text-white'}`}>{title}</span>
         <span className={`text-[12px] transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#9baec7]'}`}>{flights.length} Flights Available</span>
       </div>
-      <div className={`mt-2 flex items-center gap-1 border-b pb-2 transition-colors duration-300 ${isLight ? 'border-[#E5E7EB]' : 'border-white/10'}`}>
+      <div className={`mt-1.5 flex items-center gap-1 border-b pb-1.5 transition-colors duration-300 ${isLight ? 'border-[#E5E7EB]' : 'border-white/10'}`}>
         <SortTabs active={sort} onChange={onSort} isLight={isLight} />
         <span className={`ml-auto text-[11px] transition-colors duration-300 ${isLight ? 'text-[#2563EB]' : 'text-[#7CC0FF]'}`}>Smart</span>
       </div>
-      <div className="space-y-5 pt-4">
+      <div className="space-y-3 pt-2">
         {sortFlights(flights, sort).map((f, i) => (
           <FlightCard
             key={f.code}

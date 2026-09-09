@@ -6,7 +6,7 @@ export const SkeletonCard = ({ index }: { index: number }) => {
   const isLight = theme === 'light';
   return (
     <div
-      className={`card-shimmer relative flex min-h-[136px] animate-pulse flex-col overflow-hidden rounded-[12px] border p-3 pt-6 lg:flex-row transition-colors duration-300 ${isLight ? 'bg-white border-[#E5E7EB] shadow-[0_2px_8px_rgba(0,0,0,0.06)]' : 'bg-[#0f172a] border-[#214b7e]'}`}
+      className={`card-shimmer relative flex min-h-[104px] animate-pulse flex-col overflow-hidden rounded-[12px] border p-2 pt-6 lg:flex-row transition-colors duration-300 ${isLight ? 'bg-white border-[#E5E7EB] shadow-[0_2px_8px_rgba(0,0,0,0.06)]' : 'bg-[#0f172a] border-[#214b7e]'}`}
     style={{ '--shimmer-delay': `${index * 180}ms`, animationDelay: `${index * 180}ms` } as CSSProperties}
   >
     {/* Badge placeholder */}
@@ -36,7 +36,7 @@ export const SkeletonCard = ({ index }: { index: number }) => {
           <div className={`h-[16px] w-[70px] rounded transition-colors duration-300 ${isLight ? 'bg-[#D1D5DB]' : 'bg-[#1d3f69]'}`} />
           <div className={`mt-1.5 h-[10px] w-[88px] rounded transition-colors duration-300 ${isLight ? 'bg-[#E5E7EB]' : 'bg-[#122844]'}`} />
         </div>
-        <div className="relative mx-2 h-10 min-w-[56px] flex-1 sm:min-w-[80px]">
+        <div className="relative mx-2 h-8 min-w-[56px] flex-1 sm:min-w-[80px]">
           <div className="absolute inset-x-0 top-1/2 border-t border-dotted border-[#8295ad]/40" />
         </div>
         <div className="w-[92px] text-right sm:w-[120px]">
@@ -50,7 +50,7 @@ export const SkeletonCard = ({ index }: { index: number }) => {
       <div className={`mt-1 h-[10px] w-[48px] rounded transition-colors duration-300 ${isLight ? 'bg-[#E5E7EB]' : 'bg-[#122844]'}`} />
       <div className={`mt-1.5 h-[18px] w-[70px] rounded transition-colors duration-300 ${isLight ? 'bg-[#D1D5DB]' : 'bg-[#1c3a5f]'}`} />
       <div className={`mt-2 h-[10px] w-[56px] rounded transition-colors duration-300 ${isLight ? 'bg-[#E5E7EB]' : 'bg-[#122844]'}`} />
-      <div className={`mt-3 h-[32px] w-full rounded-[10px] lg:mt-auto transition-colors duration-300 ${isLight ? 'bg-[#2563EB]' : 'bg-[#1b4aa0]'}`} />
+      <div className={`mt-3 h-[28px] w-full rounded-[10px] lg:mt-auto transition-colors duration-300 ${isLight ? 'bg-[#2563EB]' : 'bg-[#1b4aa0]'}`} />
     </div>
   </div>
   );

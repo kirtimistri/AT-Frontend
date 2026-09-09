@@ -862,7 +862,7 @@ const RegisterPage = () => {
                 }
               `}
             >
-              AKBAR TRAVELS
+              AKBAR BIZVOY
             </p>
           </div>
 
@@ -1262,7 +1262,7 @@ const RegisterPage = () => {
                   }
                 `}
               >
-                AKBAR TRAVELS
+                AKBAR BIZVOY
               </p>
 
               {/* Heading */}
