@@ -789,3 +789,92 @@
 .light-theme .login-footer-text {
   color: var(--text-muted) !important;
 }
+
+/* Review / Trip Review Page - Light Theme */
+.light-theme .review-page {
+  background: #FAF8F7 !important;
+  color: #171717 !important;
+}
+
+.light-theme .review-card {
+  background: #FFFFFF !important;
+  border-color: #EEEEEE !important;
+  color: #171717 !important;
+}
+
+.light-theme .review-card-title {
+  color: #171717 !important;
+}
+
+.light-theme .review-card-text {
+  color: #555555 !important;
+}
+
+.light-theme .review-card-muted {
+  color: #999999 !important;
+}
+
+.light-theme .review-form-input {
+  background: #FFFFFF !important;
+  border-color: #DEDEDE !important;
+  color: #171717 !important;
+}
+
+.light-theme .review-form-label {
+  color: #555555 !important;
+}
+
+.light-theme .review-fare-label {
+  color: #555555 !important;
+}
+
+.light-theme .review-fare-value {
+  color: #171717 !important;
+}
+
+.light-theme .review-total-value {
+  color: #004B7C !important;
+}
+
+.light-theme .review-flight-card {
+  background: #F7F4F3 !important;
+  color: #171717 !important;
+}
+
+.light-theme .review-flight-time {
+  color: #171717 !important;
+}
+
+.light-theme .review-flight-airport {
+  color: #555555 !important;
+}
+
+.light-theme .review-flight-terminal {
+  color: #999999 !important;
+}
+
+.light-theme .review-badge-text {
+  color: #171717 !important;
+}
+
+.light-theme .review-section-heading {
+  color: #171717 !important;
+}
+
+.light-theme .review-detail-value {
+  color: #171717 !important;
+}
+
+.light-theme .review-footer {
+  background: #F7F5F4 !important;
+  border-color: #EEEEEE !important;
+  color: #999999 !important;
+}
+
+.light-theme .review-footer a {
+  color: #999999 !important;
+}
+
+.light-theme .review-footer a:hover {
+  color: #555555 !important;
+}

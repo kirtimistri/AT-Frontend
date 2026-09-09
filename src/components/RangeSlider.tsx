@@ -9,7 +9,7 @@ export const RangeSlider = ({ from, to, lit = false }: SliderSpec) => {
 
   return (
     <div
-      className={`mt-1 cursor-pointer px-0.5 transition-all duration-300 ${on ? 'opacity-100' : 'opacity-50'}`}
+      className={`mt-0.5 cursor-pointer px-0.5 transition-all duration-300 ${on ? 'opacity-100' : 'opacity-50'}`}
       onPointerDown={() => setActive(true)}
       onMouseEnter={() => setActive(true)}
       onMouseLeave={() => setActive(false)}

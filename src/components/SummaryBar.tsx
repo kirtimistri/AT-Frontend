@@ -4,10 +4,9 @@ import { AirlineLogo } from './Logos';
 import { inr } from '../lib/format';
 import { useThemeStore } from '../store/themeStore';
 import { prepareReview } from '../lib/openReview';
-import { useNavigate } from 'react-router-dom';
 
 const FlightSummary = ({ label, f, isLight }: { label: 'ONWARD' | 'RETURN'; f: Flight | null; isLight?: boolean }) => (
-  <div className={`flex min-w-0 items-center gap-2.5 px-3 py-2.5 sm:w-auto sm:flex-1 sm:gap-3.5 sm:px-6 sm:py-3 transition-colors duration-300 ${isLight ? 'text-[#111827]' : 'text-white/90'}`}>
+  <div className={`flex min-w-0 items-center gap-2.5 px-3 py-2 sm:w-auto sm:flex-1 sm:gap-3.5 sm:px-6 sm:py-2 transition-colors duration-300 ${isLight ? 'text-[#111827]' : 'text-white/90'}`}>
     <span className={`shrink-0 text-[10px] font-bold tracking-[0.12em] transition-colors duration-300 sm:text-[10.5px] ${isLight ? 'text-[#2563EB]' : 'text-[#7CC0FF]'}`}>{label}</span>
     {f ? (
       <div className="flex min-w-0 flex-1 items-center gap-2.5">
@@ -33,7 +32,6 @@ const FlightSummary = ({ label, f, isLight }: { label: 'ONWARD' | 'RETURN'; f: F
 
 export const SummaryBar = ({ onward, ret, dayDelta }: { onward: Flight | null; ret: Flight | null; dayDelta: number }) => {
   const { theme } = useThemeStore();
-  const navigate = useNavigate();
   const isLight = theme === 'light';
   const datePool = useFlightStore((s) => s.datePool);
   const stripStart = useFlightStore((s) => s.stripStart);
@@ -48,15 +46,15 @@ export const SummaryBar = ({ onward, ret, dayDelta }: { onward: Flight | null; r
   const any = !!onward || !!ret;
   return (
     <div className={`group fixed inset-x-0 bottom-0 z-40 border-t backdrop-blur transition-all duration-300 md:left-[300px] ${isLight ? 'bg-white/95 border-[#E5E7EB] shadow-[0_-10px_36px_rgba(0,0,0,0.08)] hover:border-[#2563EB]/50 hover:shadow-[0_-10px_36px_rgba(0,0,0,0.08),0_0_22px_rgba(37,99,235,0.15),0_0_60px_rgba(37,99,235,0.08)]' : 'bg-[#0F1B3A]/95 border-[rgba(124,192,255,0.25)] shadow-[0_-10px_36px_rgba(0,0,0,0.55)] hover:border-[#d4af37]/60 hover:shadow-[0_-10px_36px_rgba(0,0,0,0.55),0_0_22px_rgba(212,175,55,0.35),0_0_60px_rgba(212,175,55,0.16)]'}`}>
-    <div className="flex flex-wrap items-stretch">
-      <div className={`grid w-full grid-cols-2 divide-x ${isLight ? 'divide-[#E5E7EB]' : 'divide-white/10'} sm:w-auto sm:flex`}>
-        <FlightSummary label="ONWARD" f={onward} isLight={isLight} />
-        <FlightSummary label="RETURN" f={ret} isLight={isLight} />
-      </div>
-      <div className={`flex w-full shrink-0 items-center justify-between gap-4 px-4 py-2.5 sm:w-auto sm:justify-start sm:gap-5 sm:border-l sm:px-6 sm:py-3 ${isLight ? 'border-t border-[#E5E7EB]' : 'border-t border-white/10'}`}>
+      <div className="flex flex-wrap items-stretch">
+        <div className={`grid w-full grid-cols-2 divide-x ${isLight ? 'divide-[#E5E7EB]' : 'divide-white/10'} sm:w-auto sm:flex`}>
+          <FlightSummary label="ONWARD" f={onward} isLight={isLight} />
+          <FlightSummary label="RETURN" f={ret} isLight={isLight} />
+        </div>
+        <div className={`flex w-full shrink-0 items-center justify-between gap-4 px-4 py-2 sm:w-auto sm:justify-start sm:gap-5 sm:border-l sm:px-6 sm:py-2 ${isLight ? 'border-t border-[#E5E7EB]' : 'border-t border-white/10'}`}>
           <div className="text-right">
             <div className={`text-[10px] font-semibold sm:text-[11px] transition-colors duration-300 ${isLight ? 'text-[#F59E0B]' : 'text-[#ff8533]'}`}>Flight Details &gt;</div>
-            <div className={`mt-0.5 text-[18px] font-bold leading-none sm:mt-1 sm:text-[22px] transition-colors duration-300 ${isLight ? 'text-[#111827]' : 'text-white'}`}>{inr(total)}</div>
+            <div className={`mt-0.5 text-[17px] font-bold leading-none sm:mt-1 sm:text-[20px] transition-colors duration-300 ${isLight ? 'text-[#111827]' : 'text-white'}`}>{inr(total)}</div>
             <div className={`mt-0.5 text-[10px] font-semibold sm:mt-1 sm:text-[11px] transition-colors duration-300 ${any ? (isLight ? 'text-[#16A34A]' : 'text-[#34d399]') : (isLight ? 'text-[#9CA3AF]' : 'text-white/40')}`}>
               {both ? 'Extra ₹697 Off' : (ret ? 'Select onward to combine fares' : 'Select return for round-trip')}
             </div>
@@ -75,7 +73,7 @@ export const SummaryBar = ({ onward, ret, dayDelta }: { onward: Flight | null; r
               }
             }}
             disabled={!any}
-            className={`flex h-9 shrink-0 cursor-pointer items-center rounded-[10px] px-4 text-[13px] font-bold text-white transition-all duration-300 sm:h-[44px] sm:px-8 sm:text-[14.5px] ${isLight ? 'bg-[#2563EB] shadow-[0_4px_12px_rgba(37,99,235,0.3)] hover:bg-[#1D4ED8] hover:shadow-[0_0_20px_rgba(37,99,235,0.4)] active:bg-[#1D4ED8] active:shadow-[0_0_26px_rgba(37,99,235,0.5)] disabled:opacity-50 disabled:cursor-not-allowed' : 'bg-[#2593fc] shadow-[0_6px_18px_rgba(37,147,252,0.45)] hover:bg-[#d4af37] hover:shadow-[0_0_20px_rgba(212,175,55,0.7),0_0_45px_rgba(212,175,55,0.4)] active:bg-[#f0c265] active:shadow-[0_0_26px_rgba(212,175,55,0.85),0_0_55px_rgba(212,175,55,0.5)] disabled:opacity-50 disabled:cursor-not-allowed'}`}
+            className={`flex h-8 shrink-0 cursor-pointer items-center rounded-[10px] px-4 text-[13px] font-bold text-white transition-all duration-300 sm:h-9 sm:px-6 sm:text-[14px] ${isLight ? 'bg-[#2563EB] shadow-[0_4px_12px_rgba(37,99,235,0.3)] hover:bg-[#1D4ED8] hover:shadow-[0_0_20px_rgba(37,99,235,0.4)] active:bg-[#1D4ED8] active:shadow-[0_0_26px_rgba(37,99,235,0.5)] disabled:opacity-50 disabled:cursor-not-allowed' : 'bg-[#2593fc] shadow-[0_6px_18px_rgba(37,147,252,0.45)] hover:bg-[#d4af37] hover:shadow-[0_0_20px_rgba(212,175,55,0.7),0_0_45px_rgba(212,175,55,0.4)] active:bg-[#f0c265] active:shadow-[0_0_26px_rgba(212,175,55,0.85),0_0_55px_rgba(212,175,55,0.5)] disabled:opacity-50 disabled:cursor-not-allowed'}`}
           >
             Book
           </button>

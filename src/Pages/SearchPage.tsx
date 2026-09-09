@@ -63,7 +63,7 @@ const SearchPage = () => {
         <SidebarFilters />
 
         {/* ---- Results ---- */}
-        <main className={`pretty-scroll min-w-0 flex-1 overflow-x-hidden overflow-y-scroll p-3 sm:p-6 ${barVisible ? 'pb-[128px] md:pb-[124px]' : ''}`}>
+        <main className={`pretty-scroll min-w-0 flex-1 overflow-x-hidden overflow-y-scroll p-3 pt-1 sm:p-4 sm:pt-2 ${barVisible ? 'pb-[128px] md:pb-[124px]' : ''}`}>
           {!searched ? (
             <div className="flex h-full flex-col items-center justify-center text-center">
               <div className={`flex h-16 w-16 items-center justify-center rounded-full border transition-colors duration-300 ${isLight ? 'bg-white border-[#E5E7EB] text-[#2563EB] shadow-[0_2px_8px_rgba(0,0,0,0.06)]' : 'bg-[#0F1B3A] border-[rgba(124,192,255,0.4)] text-[#7CC0FF]'}`}>
@@ -75,7 +75,7 @@ const SearchPage = () => {
               </p>
             </div>
           ) : searching ? (
-            <div className="pt-1">
+            <div className="pt-0">
               {/* Date & price strip skeleton */}
               <div className={`card-shimmer h-[52px] animate-pulse overflow-hidden rounded-[14px] border transition-colors duration-300 ${isLight ? 'bg-white border-[#E5E7EB] shadow-[0_2px_8px_rgba(0,0,0,0.06)]' : 'bg-[#0F1B3A] border-[rgba(124,192,255,0.22)]'}`} />
 
@@ -93,7 +93,7 @@ const SearchPage = () => {
                           <div key={p} className={`h-[24px] w-[58px] animate-pulse rounded-full transition-colors duration-300 ${isLight ? 'bg-[#F3F4F6]' : 'bg-[#16304f]'}`} />
                         ))}
                       </div>
-                      <div className="space-y-5 pt-4">
+                      <div className="space-y-3 pt-4">
                         {[0, 1, 2].map((i) => (
                           <SkeletonCard key={i} index={i} />
                         ))}
@@ -103,7 +103,7 @@ const SearchPage = () => {
                 </div>
               ) : (
                 /* One way: single column of skeleton cards */
-                <div className="space-y-6 pt-5">
+                <div className="space-y-3 pt-4">
                   {[0, 1, 2].map((i) => (
                     <SkeletonCard key={i} index={i} />
                   ))}
@@ -111,7 +111,7 @@ const SearchPage = () => {
               )}
             </div>
           ) : returnDate ? (
-            <div className="pt-1">
+            <div className="pt-0">
               {/* Date & price strip */}
               <PriceStrip
                 dates={stripDates}
@@ -124,13 +124,14 @@ const SearchPage = () => {
               />
 
               {/* Round trip: onward (left) + return (right) columns */}
-              <div className="grid grid-cols-1 items-start gap-6 pt-5 xl:grid-cols-2">
+              <div className="grid grid-cols-1 items-start gap-6 pt-2 xl:grid-cols-2">
                 <ResultsColumn
                   title={`${fromCode} - ${toCode}`}
+                  scope="onward"
                   flights={flights}
                   dayDelta={dayDelta}
                   selected={selectedOnward}
-                  onSelect={setSelectedOnward}
+                  onSelect={(f) => setSelectedOnward(selectedOnward?.code === f.code ? null : f)}
                   fromLabel={(f) => relabel(f.departure.airport, fromCode)}
                   toLabel={(f) => relabel(f.arrival.airport, toCode)}
                   sort={onwardSort}
@@ -138,10 +139,11 @@ const SearchPage = () => {
                 />
                 <ResultsColumn
                   title={`${toCode} - ${fromCode}`}
+                  scope="return"
                   flights={returnFlights}
                   dayDelta={dayDelta}
                   selected={selectedReturn}
-                  onSelect={setSelectedReturn}
+                  onSelect={(f) => setSelectedReturn(selectedReturn?.code === f.code ? null : f)}
                   fromLabel={(f) => relabel(f.departure.airport, toCode)}
                   toLabel={(f) => relabel(f.arrival.airport, fromCode)}
                   sort={returnSort}
@@ -150,7 +152,7 @@ const SearchPage = () => {
               </div>
             </div>
           ) : (
-            <div className="pt-1">
+            <div className="pt-0">
               {/* Date & price strip */}
               <PriceStrip
                 dates={stripDates}
@@ -162,7 +164,7 @@ const SearchPage = () => {
                 canNext={stripStart < datePool.length - STRIP_WINDOW}
               />
 
-              <div className="space-y-6 pt-5">
+              <div className="space-y-3 pt-2">
                 {flights.map((f, i) => (
                   <FlightCard
                     key={i}
@@ -170,7 +172,7 @@ const SearchPage = () => {
                     dayDelta={dayDelta}
                     index={i}
                     selected={selectedOnward?.code === f.code}
-                    onSelect={() => setSelectedOnward(f)}
+                    onSelect={() => setSelectedOnward(selectedOnward?.code === f.code ? null : f)}
                   />
                 ))}
               </div>

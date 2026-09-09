@@ -6,8 +6,11 @@ import { GSTInformation } from '../components/review/GSTInformation';
 import { FareSummary } from '../components/review/FareSummary';
 import { SeatMealPricingPanel, type ConfirmedSelections } from '../components/SeatMealPricingPanel';
 import { Footer } from '../components/review/Footer';
+import { ThemeToggle } from '../components/ThemeToggle';
+import type { AncillarySegment } from '../components/AncillaryServicesModal';
 import type { FlightCardProps } from '../components/review/FlightCard';
 import type { Flight } from '../store/flightStore';
+import { useThemeStore } from '../store/themeStore';
 import { cityNameOf } from '../lib/format';
 import type { BookingSelection } from '../lib/openReview';
 import { useState } from 'react';
@@ -107,8 +110,34 @@ const readBooking = (): BookingSelection | null => {
   }
 };
 
+// Build a minimal Flight from the demo fallback card so the ancillary modal has
+// a stable source to derive its catalog from (mirrors how toReviewCard already
+// reconstructs display data when no booking is present).
+const toFlight = (card: FlightCardProps, price: number): Flight => ({
+  badge: card.type,
+  badgeBg: 'bg-[#7ac143]',
+  airline: card.airline.toUpperCase(),
+  code: card.flightNumber.replace('-', ' '),
+  departure: { time: card.departureTime, airport: `${card.departureCode} Terminal 1` },
+  arrival: { time: card.arrivalTime, airport: `${card.arrivalCode} Terminal 1` },
+  duration: card.duration,
+  stops: card.stops === 'Direct' ? 'Non-stop' : card.stops,
+  baggage: `${card.checkIn.replace(' kg', '')} kg baggage`,
+  price,
+  checkedAgo: '',
+});
+
+const formatSegmentDate = (date: string): string => {
+  const m = date.match(/(\d{1,2})\s+(\w+)\s+(\d{4})/);
+  if (!m) return date;
+  const [, d, mon] = m;
+  return `${mon} ${d}, ${m[3]}`;
+};
+
 const TripReviewPage = () => {
   const [confirmed, setConfirmed] = useState<ConfirmedSelections | null>(null);
+  const { theme } = useThemeStore();
+  const isLight = theme === 'light';
   let onward: FlightCardProps | undefined;
   let ret: FlightCardProps | undefined;
   let onwardPrice: number | undefined;
@@ -136,9 +165,38 @@ const TripReviewPage = () => {
     returnPrice = 15200;
   }
 
+  // Segments for the Ancillary / SSR modal. Each segment carries its real
+  // Flight (from the booking) or a minimal Flight derived from the demo card.
+  const bookingDate = booking?.date ?? '';
+  const segments: AncillarySegment[] = [];
+  if (onward && typeof onwardPrice === 'number') {
+    const real = booking?.onward ?? null;
+    segments.push({
+      id: 'onward',
+      label: `${fromCode} → ${toCode}`,
+      fromCode,
+      toCode,
+      date: formatSegmentDate(bookingDate || onward.date),
+      flight: real ?? toFlight(onward, onwardPrice),
+    });
+  }
+  if (ret && typeof returnPrice === 'number') {
+    const real = booking?.returnFlight ?? null;
+    segments.push({
+      id: 'return',
+      label: `${toCode} → ${fromCode}`,
+      fromCode: toCode,
+      toCode: fromCode,
+      date: formatSegmentDate(bookingDate || ret.date),
+      flight: real ?? toFlight(ret, returnPrice),
+    });
+  }
+
   return (
-    <div className="flex min-h-screen flex-col bg-[#FAF8F7]">
-      
+    <div className={`flex min-h-screen flex-col transition-colors duration-300 ${isLight ? 'bg-[#FAF8F7]' : 'bg-[#0B132B]'}`}>
+      <div className="sticky top-0 z-30 flex items-center justify-end px-5 py-3 lg:px-8">
+        <ThemeToggle size="sm" className="shrink-0" />
+      </div>
 
       <main className="mx-auto w-full max-w-[1200px] flex-1 px-5 py-6 lg:px-6">
         {/* Back link + Title + Booking Reference */}

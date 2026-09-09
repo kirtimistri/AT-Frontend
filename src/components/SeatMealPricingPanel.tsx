@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Armchair,
   UtensilsCrossed,
@@ -9,8 +9,6 @@ import {
   Check,
   ChevronDown,
   ShieldCheck,
-  ChevronLeft,
-  ChevronRight,
   Accessibility,
   ConciergeBell,
   Eye,
@@ -320,19 +318,6 @@ export const SeatMealPricingPanel: React.FC<SeatMealPricingPanelProps> = ({ onBa
     setError('');
   };
 
-  /* --- Seat helpers --- */
-  const openSeatDraft = () => setDraftSeat(activePassenger.seat ? { ...activePassenger.seat } : null);
-  const confirmSeat = () => {
-    if (draftSeat) {
-      updateActivePassenger({ seat: draftSeat });
-      setDraftSeat(null);
-    }
-  };
-  const removeSeat = () => {
-    updateActivePassenger({ seat: null });
-    setDraftSeat(null);
-  };
-
   /* --- Meal helpers --- */
   const openMealDraft = () => setDraftMeals([...activePassenger.meals]);
   const toggleDraftMeal = (meal: AncillaryMeal) => {
@@ -341,22 +326,11 @@ export const SeatMealPricingPanel: React.FC<SeatMealPricingPanelProps> = ({ onBa
       return exists ? prev.filter((m) => m.id !== meal.id) : [...prev, meal];
     });
   };
-  const confirmMeals = () => {
-    if (draftMeals.length > 0) {
-      updateActivePassenger({ meals: draftMeals });
-      setDraftMeals([]);
-    }
-  };
   const removeMeal = (id: string) => {
     updateActivePassenger({ meals: activePassenger.meals.filter((m) => m.id !== id) });
   };
 
   /* --- Baggage helpers --- */
-  const openBaggageDraft = () => setDraftBaggage(activePassenger.baggage ? { ...activePassenger.baggage } : null);
-  const confirmBaggage = () => {
-    updateActivePassenger({ baggage: draftBaggage });
-    setDraftBaggage(null);
-  };
   const removeBaggage = () => {
     updateActivePassenger({ baggage: null });
     setDraftBaggage(null);
@@ -422,7 +396,6 @@ export const SeatMealPricingPanel: React.FC<SeatMealPricingPanelProps> = ({ onBa
   const currentSeat = draftSeat ?? activePassenger.seat;
   const currentMeals = draftMeals.length > 0 ? draftMeals : activePassenger.meals;
   const currentBaggage = draftBaggage ?? activePassenger.baggage;
-  const currentSsr = activePassenger.ssr;
 
   const rowsOf = (row: number) => SEAT_MAP.filter((s) => s.row === row);
 

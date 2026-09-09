@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { inr } from '../../lib/format';
+import { useThemeStore } from '../../store/themeStore';
 import type { ConfirmedSelections } from '../SeatMealPricingPanel';
 
 type FareSummaryProps = {
@@ -34,6 +35,8 @@ const ancillaryItemsOf = (ancillary: ConfirmedSelections | null | undefined): An
 };
 
 export const FareSummary = ({ onwardPrice, returnPrice, fromCode, toCode, ancillary }: FareSummaryProps) => {
+  const { theme } = useThemeStore();
+  const isLight = theme === 'light';
   const [ancillaryOpen, setAncillaryOpen] = useState(false);
 
   const hasOnward = typeof onwardPrice === 'number';
@@ -51,31 +54,31 @@ export const FareSummary = ({ onwardPrice, returnPrice, fromCode, toCode, ancill
   const total = (hasOnward ? onwardPrice : 0) + (hasReturn ? returnPrice : 0) + 5840 + 199 + ancillaryTotal;
 
   return (
-    <div className="w-full rounded-lg border border-[#EEEEEE] bg-white p-6">
-      <h3 className="mb-4 text-[20px] font-medium text-[#171717]">Fare Summary</h3>
+    <div className={`w-full rounded-lg border p-6 transition-colors duration-300 ${isLight ? 'border-[#EEEEEE] bg-white' : 'border-[#29466e] bg-[#0f172a]'}`}>
+      <h3 className={`mb-4 text-[20px] font-medium transition-colors duration-300 ${isLight ? 'text-[#171717]' : 'text-white'}`}>Fare Summary</h3>
 
-      <div className="mb-4 space-y-3 border-b border-[#EEEEEE] pb-4">
+      <div className={`mb-4 space-y-3 border-b pb-4 transition-colors duration-300 ${isLight ? 'border-[#EEEEEE]' : 'border-[#29466e]'}`}>
         {fareRows.map((row) => (
           <div key={row.key} className="flex items-center justify-between">
-            <span className="text-[12px] text-[#555]">{row.label}</span>
-            <span className="text-[12px] font-medium text-[#171717]">{row.price}</span>
+            <span className={`review-fare-label text-[12px] transition-colors duration-300 ${isLight ? 'text-[#555]' : 'text-[#9baec7]'}`}>{row.label}</span>
+            <span className={`review-fare-value text-[12px] font-medium transition-colors duration-300 ${isLight ? 'text-[#171717]' : 'text-white'}`}>{row.price}</span>
           </div>
         ))}
       </div>
 
       {ancillaryItems.length > 0 && (
-        <div className="mb-4 border-b border-[#EEEEEE] pb-4">
+        <div className={`mb-4 border-b pb-4 transition-colors duration-300 ${isLight ? 'border-[#EEEEEE]' : 'border-[#29466e]'}`}>
           <button
             type="button"
             onClick={() => setAncillaryOpen((o) => !o)}
             aria-expanded={ancillaryOpen}
             className="flex w-full cursor-pointer items-center justify-between"
           >
-            <span className="text-[13px] font-medium text-[#171717]">Ancillary Services</span>
+            <span className={`text-[13px] font-medium transition-colors duration-300 ${isLight ? 'text-[#171717]' : 'text-white'}`}>Ancillary Services</span>
             <span className="flex items-center gap-1.5">
-              <span className="text-[12px] font-medium text-[#171717]">{inr(ancillaryTotal)}</span>
+              <span className={`text-[12px] font-medium transition-colors duration-300 ${isLight ? 'text-[#171717]' : 'text-white'}`}>{inr(ancillaryTotal)}</span>
               <ChevronDown
-                className={`h-4 w-4 text-[#888] transition-transform duration-200 ${ancillaryOpen ? 'rotate-180' : ''}`}
+                className={`h-4 w-4 transition-transform duration-200 ${isLight ? 'text-[#888]' : 'text-[#9baec7]'} ${ancillaryOpen ? 'rotate-180' : ''}`}
               />
             </span>
           </button>
@@ -84,8 +87,8 @@ export const FareSummary = ({ onwardPrice, returnPrice, fromCode, toCode, ancill
             <div className="mt-3 space-y-2">
               {ancillaryItems.map((item, idx) => (
                 <div key={idx} className="flex items-center justify-between gap-2">
-                  <span className="text-[11.5px] text-[#777]">{item.label}</span>
-                  <span className="shrink-0 text-[11.5px] font-medium text-[#171717]">{inr(item.price)}</span>
+                  <span className={`text-[11.5px] transition-colors duration-300 ${isLight ? 'text-[#777]' : 'text-[#9baec7]'}`}>{item.label}</span>
+                  <span className={`shrink-0 text-[11.5px] font-medium transition-colors duration-300 ${isLight ? 'text-[#171717]' : 'text-white'}`}>{inr(item.price)}</span>
                 </div>
               ))}
             </div>
@@ -94,11 +97,11 @@ export const FareSummary = ({ onwardPrice, returnPrice, fromCode, toCode, ancill
       )}
 
       {/* Combined Total */}
-      <div className="mb-4 flex items-center justify-between border-b border-[#EEEEEE] pb-4">
-        <span className="text-[14px] font-medium text-[#171717]">Combined Total</span>
-        <span className="text-[26px] font-semibold text-[#004B7C]">{inr(total)}</span>
+      <div className={`mb-4 flex items-center justify-between border-b pb-4 transition-colors duration-300 ${isLight ? 'border-[#EEEEEE]' : 'border-[#29466e]'}`}>
+        <span className={`text-[14px] font-medium transition-colors duration-300 ${isLight ? 'text-[#171717]' : 'text-white'}`}>Combined Total</span>
+        <span className={`text-[26px] font-semibold transition-colors duration-300 ${isLight ? 'text-[#004B7C]' : 'text-[#3B9CFF]'}`}>{inr(total)}</span>
       </div>
-      <p className="mb-4 text-[11px] text-[#999]">Inclusive of all taxes</p>
+      <p className={`text-[11px] transition-colors duration-300 ${isLight ? 'text-[#999]' : 'text-[#7e93b3]'}`}>Inclusive of all taxes</p>
     </div>
   );
 };
