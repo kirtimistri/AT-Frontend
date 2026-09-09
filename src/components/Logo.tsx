@@ -1,10 +1,17 @@
+// Logo.tsx – Full brand logo: image icon plus "Akbar Bizvoy" text and an optional tagline.
+import logo2 from '../assets/Backgoundimages/logo2.svg';
+import { useThemeStore } from '../store/themeStore';
+
+// Props for the Logo component.
 interface LogoProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
   className?: string;
   withText?: boolean;
+  withTagline?: boolean;
   textClassName?: string;
 }
 
+// Maps each size keyword to its Tailwind height/width classes.
 const SIZE_CLASSES: Record<NonNullable<LogoProps['size']>, string> = {
   sm: 'h-8 w-8',
   md: 'h-10 w-10',
@@ -12,38 +19,61 @@ const SIZE_CLASSES: Record<NonNullable<LogoProps['size']>, string> = {
   xl: 'h-[70px] w-[70px]',
 };
 
-export const LogoIcon = ({ size = 'md', className = '' }: Omit<LogoProps, 'withText' | 'textClassName'>) => (
-  <svg
-    viewBox="0 0 100 100"
-    role="img"
-    aria-label="Akbar Bizvoy"
-    focusable="false"
+// Component that just shows the logo image icon on its own.
+export const LogoIcon = ({ size = 'md', className = '' }: Omit<LogoProps, 'withText' | 'textClassName' | 'withTagline'>) => (
+  <img
+    src={logo2}
+    alt="Akbar Bizvoy"
     className={`akbar-logo-icon block ${SIZE_CLASSES[size]} ${className}`}
-  >
-    <g className="akbar-logo-sections">
-      <path d="M50 50 L50 2 A48 48 0 0 1 98 50 Z" fill="var(--logo-blue)" />
-      <path d="M50 50 L98 50 A48 48 0 0 1 50 98 Z" fill="var(--logo-green)" />
-      <path d="M50 50 L50 98 A48 48 0 0 1 2 50 Z" fill="var(--logo-orange)" />
-      <path d="M50 50 L2 50 A48 48 0 0 1 50 2 Z" fill="var(--logo-pink)" />
-    </g>
-    <circle cx="50" cy="50" r="38" fill="var(--logo-inner)" />
-    <circle cx="50" cy="50" r="38" fill="none" stroke="var(--logo-inner-ring)" strokeWidth="4" />
-    <circle cx="50" cy="50" r="22" fill="var(--logo-pink)" />
-  </svg>
+  />
 );
 
+// Full Logo component: icon + text, plus an optional tagline below.
 export const Logo = ({
   size = 'md',
   className = '',
   withText = true,
+  withTagline = false,
   textClassName = '',
-}: LogoProps) => (
-  <div className={`akbar-logo flex items-center gap-2 ${className}`}>
-    <LogoIcon size={size} />
-    {withText && (
-      <span className={`akbar-logo-text ${textClassName}`}>akbar bizvoy</span>
+}: LogoProps) => {
+  // Get the current theme so the text color matches it.
+  const { theme } = useThemeStore();
+  return (
+  <div className={`akbar-logo ${className}`}>
+    <div className="flex items-center gap-2">
+      <LogoIcon size={size} />
+      {/* Show the "Akbar Bizvoy" text next to the icon when requested. */}
+      {withText && (
+        <div className="flex flex-col leading-none">
+          <span
+            className={`font-extrabold tracking-tight text-[#242365] ${textClassName || 'text-[17px]'}`}
+            style={{ fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif", color: theme === 'light' ? '#111827' : '#ffffff' }}
+          >
+            Akbar
+          </span>
+          <span
+            className={`font-extrabold tracking-tight text-[#242365] ${textClassName || 'text-[17px]'}`}
+            style={{ fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif", color: theme === 'light' ? '#111827' : '#ffffff' }}
+          >
+            Bizvoy
+          </span>
+        </div>
+      )}
+    </div>
+
+    {/* Optionally show the "An Enterprise Travel Solution" tagline badge below the name. */}
+    {withTagline && (
+      <div className="mt-2 flex w-full items-center justify-center rounded bg-[#F20D59] px-4 py-1.5">
+        <span
+          className="text-[11px] font-semibold tracking-[0.08em] text-white"
+          style={{ fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif" }}
+        >
+          An Enterprise Travel Solution
+        </span>
+      </div>
     )}
   </div>
-);
+  );
+};
 
 export default Logo;

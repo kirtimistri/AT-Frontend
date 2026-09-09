@@ -1,34 +1,59 @@
+// Logos.tsx – Collection of small airline logo tiles shown next to flight results.
 import type { ReactNode } from 'react';
 
-const IndigoLogo = () => (
-  <div className="flex h-10 w-10 items-center justify-center rounded-md bg-[#0B5CAB]">
-    <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
+// Allowed size options for the logo tiles.
+export type LogoSize = 'md' | 'sm';
+
+// Maps each size to the box and svg Tailwind classes.
+const LOGO_SIZE_CLASSES: Record<LogoSize, { box: string; svg: string }> = {
+  md: { box: 'h-8 w-8', svg: 'h-5 w-5' },
+  sm: { box: 'h-6 w-6', svg: 'h-4 w-4' },
+};
+
+// Indigo airline logo tile.
+const IndigoLogo = ({ size = 'md' }: { size?: LogoSize }) => {
+  const cls = LOGO_SIZE_CLASSES[size];
+  return (
+  <div className={`flex ${cls.box} items-center justify-center rounded-md bg-[#0B5CAB]`}>
+    <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={cls.svg}>
       <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z" />
     </svg>
   </div>
 );
+};
 
-const AirIndiaLogo = () => (
-  <div className="flex h-10 w-10 items-center justify-center rounded-md bg-[#A6192E]">
-    <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
+// Air India airline logo tile.
+const AirIndiaLogo = ({ size = 'md' }: { size?: LogoSize }) => {
+  const cls = LOGO_SIZE_CLASSES[size];
+  return (
+  <div className={`flex ${cls.box} items-center justify-center rounded-md bg-[#A6192E]`}>
+    <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className={cls.svg}>
       <path d="M4 14.5c4.5-1.6 9.5-2.1 17-3.3-.6 4.7-3.4 8-8.6 9.4-1.7.5-3.4.3-4.6-.4-1-.6-2.5-2.5-3.8-5.7Z" />
       <path d="M4 14.5c1.2-4.6 3.7-7.6 7-9.5" />
     </svg>
   </div>
 );
+};
 
-const AkasaLogo = () => (
-  <div className="flex h-10 w-10 items-center justify-center rounded-md bg-[#2A1650]">
-    <svg viewBox="0 0 24 24" fill="none" className="h-6 w-6">
+// Akasa airline logo tile.
+const AkasaLogo = ({ size = 'md' }: { size?: LogoSize }) => {
+  const cls = LOGO_SIZE_CLASSES[size];
+  return (
+  <div className={`flex ${cls.box} items-center justify-center rounded-md bg-[#2A1650]`}>
+    <svg viewBox="0 0 24 24" fill="none" className={cls.svg}>
       <path d="M12 4 20 19H4L12 4Z" fill="#F97316" />
       <path d="M12 8.5 17 19H7L12 8.5Z" fill="#FB923C" />
     </svg>
   </div>
 );
+};
 
-const SpiceJetLogo = () => (
-  <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-md bg-[#D81E2B]">
-    <svg viewBox="0 0 24 24" className="h-6 w-6">
+// SpiceJet airline logo tile.
+const SpiceJetLogo = ({ size = 'md' }: { size?: LogoSize }) => {
+  const cls = LOGO_SIZE_CLASSES[size];
+  return (
+  <div className={`flex ${cls.box} items-center justify-center overflow-hidden rounded-md bg-[#D81E2B]`}>
+    <svg viewBox="0 0 24 24" className={cls.svg}>
       <circle cx="6" cy="6" r="1.3" fill="#1B1B1B" />
       <circle cx="13" cy="5" r="1.3" fill="#1B1B1B" />
       <circle cx="19" cy="7" r="1.3" fill="#1B1B1B" />
@@ -41,16 +66,19 @@ const SpiceJetLogo = () => (
     </svg>
   </div>
 );
-
-const LOGO_BY_AIRLINE: Record<string, ReactNode> = {
-  INDIGO: <IndigoLogo />,
-  'AIR INDIA': <AirIndiaLogo />,
-  AKASA: <AkasaLogo />,
-  SPICEJET: <SpiceJetLogo />,
 };
 
+// Map airline names to their logo tile components.
+const LOGO_BY_AIRLINE: (size?: LogoSize) => Record<string, ReactNode> = (size) => ({
+  INDIGO: <IndigoLogo size={size} />,
+  'AIR INDIA': <AirIndiaLogo size={size} />,
+  AKASA: <AkasaLogo size={size} />,
+  SPICEJET: <SpiceJetLogo size={size} />,
+});
+
 /** Renders the airline logo tile for a flight's airline name. */
-export const AirlineLogo = ({ airline }: { airline: string }) =>
-  LOGO_BY_AIRLINE[airline] ?? <IndigoLogo />;
+// Falls back to the Indigo logo if the airline name is unknown.
+export const AirlineLogo = ({ airline, size = 'md' }: { airline: string; size?: LogoSize }) =>
+  LOGO_BY_AIRLINE(size)[airline] ?? <IndigoLogo size={size} />;
 
 export { IndigoLogo, AirIndiaLogo, AkasaLogo, SpiceJetLogo };

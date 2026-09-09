@@ -1,13 +1,16 @@
+// LoginPage3.tsx – Alternate full-screen sign-in page with email, password, and reCAPTCHA.
 import React, { useState } from 'react';
 import bg3 from '../assets/Backgoundimages/bg3.png';
-import { LogoIcon } from './Logo';
+import { Logo } from './Logo';
 
 const LoginPage3 = () => {
+  // Form state for the email, password, and reCAPTCHA checkbox.
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isRobotChecked, setIsRobotChecked] = useState(false);
 
+  // Runs when the form is submitted (currently only logs the values).
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log('Sign in attempted with:', { email, password, isRobotChecked });
@@ -22,15 +25,8 @@ const LoginPage3 = () => {
       <div className="relative z-10 w-[92%] max-w-[400px] rounded-[18px] border border-[rgba(80,140,220,0.15)] bg-[rgba(10,20,45,0.7)] px-5 py-[22px] pb-[18px] text-center shadow-[0_20px_60px_rgba(0,0,0,0.4)] backdrop-blur-[20px] sm:px-8">
         {/* Logo */}
         <div className="mb-3 flex justify-center">
-          <div className="relative flex h-[85px] w-[85px] items-center justify-center">
-            <div className="absolute inset-[-5px] rounded-full border-[2.5px] border-[rgba(40,140,255,0.6)] shadow-[0_0_20px_rgba(40,140,255,0.3),0_0_40px_rgba(40,140,255,0.15),inset_0_0_20px_rgba(40,140,255,0.1)]" />
-            <div className="absolute inset-[-12px] -z-10 rounded-full bg-[radial-gradient(circle,rgba(40,140,255,0.12)_0%,transparent_70%)]" />
-            <LogoIcon size="xl" />
-          </div>
+          <Logo size="xl" withText withTagline className="items-center" textClassName="text-[20px] text-white" />
         </div>
-
-        {/* Brand name */}
-        <p className="m-0 mb-1 text-center text-[13px] font-semibold tracking-[6px] uppercase text-[rgba(200,215,235,0.65)]">AKBAR TRAVELS</p>
 
         {/* Title */}
         <h1 className="m-0 mb-[20px] text-[24px] font-bold text-white">Welcome back.</h1>

@@ -18,7 +18,38 @@ export type Flight = {
 
 export type SortKey = 'price' | 'fastest' | 'departure';
 
+// Traveller counts for a search, split by age category.
+export type Travellers = { adults: number; children: number; infants: number };
+
+export const DEFAULT_TRAVELLERS: Travellers = { adults: 1, children: 0, infants: 0 };
+
+// Total travellers across all categories.
+export const travellersTotal = (t: Travellers): number => t.adults + t.children + t.infants;
+
+// "1 Traveller" / "3 Travellers" label helper.
+export const travellersLabel = (t: Travellers): string => {
+  const total = travellersTotal(t);
+  return `${total} ${total === 1 ? 'Traveller' : 'Travellers'}`;
+};
+
 export type StripDay = { label: string; price: number };
+
+export type SearchSnapshot = {
+  searched: boolean;
+  selectedOnward: Flight | null;
+  selectedReturn: Flight | null;
+  fromCity: string;
+  toCity: string;
+  returnDate: string | null;
+  returnOpen: boolean;
+  onwardSort: SortKey;
+  returnSort: SortKey;
+  stripStart: number;
+  stripSel: number;
+  monthOffset: number;
+  filtersOpen: boolean;
+  travellers: Travellers;
+};
 
 // ── Client-side dummy data ────────────────────────────────────────────────
 // These arrays live inside the zustand store (see useFlightStore) so all
@@ -145,6 +176,76 @@ const onwardFlights: Flight[] = [
     price: 5460,
     checkedAgo: 'Price checked 9 sec ago.',
   },
+  {
+    badge: 'VALUE HOP',
+    badgeBg: 'bg-[#1aa6e4]',
+    airline: 'AIR INDIA',
+    code: 'AI 854',
+    departure: { time: '8:50 AM', airport: 'BOM Terminal 2' },
+    arrival: { time: '1:05 PM', airport: 'DEL Terminal 3' },
+    via: 'via PNQ',
+    duration: '4h 15m',
+    stops: '1 Stop',
+    baggage: '23 kg baggage',
+    price: 6890,
+    checkedAgo: 'Price checked 14 sec ago.',
+  },
+  {
+    badge: 'BUDGET 2 STOP',
+    badgeBg: 'bg-[#f39200]',
+    airline: 'SPICEJET',
+    code: 'SG 947',
+    departure: { time: '9:35 AM', airport: 'BOM Terminal 1' },
+    arrival: { time: '2:20 PM', airport: 'DEL Terminal 2' },
+    via: 'via HYD, LKO',
+    duration: '4h 45m',
+    stops: '2 Stops',
+    baggage: '15 kg baggage',
+    price: 4630,
+    checkedAgo: 'Price checked 27 sec ago.',
+  },
+  {
+    badge: '3 STOPS',
+    badgeBg: 'bg-[#e4007c]',
+    airline: 'AKASA',
+    code: 'QP 1712',
+    departure: { time: '5:45 AM', airport: 'BOM Terminal 1' },
+    arrival: { time: '12:40 PM', airport: 'DEL Terminal 1' },
+    via: 'via PNQ, HYD, LKO',
+    duration: '6h 55m',
+    stops: '3 Stops',
+    baggage: '15 kg baggage',
+    price: 4350,
+    checkedAgo: 'Price checked 16 sec ago.',
+  },
+  {
+    badge: 'EVENING HOP',
+    badgeBg: 'bg-[#7ac143]',
+    airline: 'INDIGO',
+    code: '6E 638',
+    departure: { time: '6:40 PM', airport: 'BOM Terminal 1' },
+    arrival: { time: '10:55 PM', airport: 'DEL Terminal 2' },
+    via: 'via PNQ',
+    duration: '4h 15m',
+    stops: '1 Stop',
+    baggage: '15 kg baggage',
+    price: 5290,
+    checkedAgo: 'Price checked 21 sec ago.',
+  },
+  {
+    badge: 'LONG HAUL',
+    badgeBg: 'bg-[#f39200]',
+    airline: 'AIR INDIA',
+    code: 'AI 953',
+    departure: { time: '7:20 AM', airport: 'BOM Terminal 2' },
+    arrival: { time: '3:05 PM', airport: 'DEL Terminal 3' },
+    via: 'via BLR, PNQ, HYD, LKO',
+    duration: '7h 45m',
+    stops: '4 Stops',
+    baggage: '23 kg baggage',
+    price: 4950,
+    checkedAgo: 'Price checked 35 sec ago.',
+  },
 ];
 
 const returnFlightData: Flight[] = [
@@ -213,6 +314,48 @@ const returnFlightData: Flight[] = [
     baggage: '15 kg baggage',
     price: 4980,
     checkedAgo: 'Price checked 42 sec ago.',
+  },
+  {
+    badge: '2 STOPS',
+    badgeBg: 'bg-[#f39200]',
+    airline: 'SPICEJET',
+    code: 'SG 733',
+    departure: { time: '2:45 PM', airport: 'BOM Terminal 1' },
+    arrival: { time: '7:10 PM', airport: 'DEL Terminal 2' },
+    via: 'via PNQ, LKO',
+    duration: '4h 25m',
+    stops: '2 Stops',
+    baggage: '15 kg baggage',
+    price: 4560,
+    checkedAgo: 'Price checked 19 sec ago.',
+  },
+  {
+    badge: '3 STOPS',
+    badgeBg: 'bg-[#e4007c]',
+    airline: 'AKASA',
+    code: 'QP 1877',
+    departure: { time: '10:10 AM', airport: 'BOM Terminal 1' },
+    arrival: { time: '5:05 PM', airport: 'DEL Terminal 1' },
+    via: 'via PNQ, HYD, LKO',
+    duration: '6h 55m',
+    stops: '3 Stops',
+    baggage: '20 kg baggage',
+    price: 4290,
+    checkedAgo: 'Price checked 24 sec ago.',
+  },
+  {
+    badge: 'EVENING 2 STOP',
+    badgeBg: 'bg-[#1aa6e4]',
+    airline: 'AIR INDIA',
+    code: 'AI 774',
+    departure: { time: '5:55 PM', airport: 'BOM Terminal 2' },
+    arrival: { time: '10:40 PM', airport: 'DEL Terminal 3' },
+    via: 'via HYD, LKO',
+    duration: '4h 45m',
+    stops: '2 Stops',
+    baggage: '23 kg baggage',
+    price: 6140,
+    checkedAgo: 'Price checked 37 sec ago.',
   },
 ];
 
@@ -315,11 +458,15 @@ type FlightStore = {
   searched: boolean;
   selectedOnward: Flight | null;
   selectedReturn: Flight | null;
+  selectedOnwardTier: string | null;
+  selectedReturnTier: string | null;
   onwardSort: SortKey;
   returnSort: SortKey;
   stripStart: number;
   stripSel: number;
   openFilters: boolean[];
+  activePriceBreakdownId: string | null;
+  travellers: Travellers;
   setReturnOpen: (v: boolean) => void;
   setFiltersOpen: (v: boolean) => void;
   toggleFilterGroup: (i: number) => void;
@@ -328,12 +475,17 @@ type FlightStore = {
   pickReturnDate: (label: string) => void;
   setSelectedOnward: (f: Flight | null) => void;
   setSelectedReturn: (f: Flight | null) => void;
+  setSelectedOnwardTier: (t: string | null) => void;
+  setSelectedReturnTier: (t: string | null) => void;
   setOnwardSort: (k: SortKey) => void;
   setReturnSort: (k: SortKey) => void;
   setStripSel: (i: number) => void;
   shiftStrip: (dir: -1 | 1) => void;
+  setActivePriceBreakdownId: (id: string | null) => void;
+  setTravellers: (t: Travellers) => void;
   swapCities: () => void;
   doSearch: () => void;
+  restoreSearch: (snapshot: SearchSnapshot) => void;
 };
 
 export const useFlightStore = create<FlightStore>()((set, get) => ({
@@ -351,11 +503,26 @@ export const useFlightStore = create<FlightStore>()((set, get) => ({
   searched: false,
   selectedOnward: null,
   selectedReturn: null,
+  selectedOnwardTier: null,
+  selectedReturnTier: null,
   onwardSort: 'price',
   returnSort: 'price',
   stripStart: STRIP_DEFAULT_START,
   stripSel: STRIP_DEFAULT_SEL,
   openFilters: Array(8).fill(false),
+  activePriceBreakdownId: null,
+  travellers: { ...DEFAULT_TRAVELLERS },
+
+  setTravellers: (t) =>
+    set(() => ({
+      travellers: {
+        // Adults must never go below 1 (capped at 9), children capped at 8,
+        // and infants can never exceed the number of adults.
+        adults: Math.min(9, Math.max(1, t.adults)),
+        children: Math.min(8, Math.max(0, t.children)),
+        infants: Math.min(Math.min(9, Math.max(1, t.adults)), Math.max(0, t.infants)),
+      },
+    })),
 
   setReturnOpen: (v) => set({ returnOpen: v }),
   setFiltersOpen: (v) => set({ filtersOpen: v }),
@@ -367,6 +534,8 @@ export const useFlightStore = create<FlightStore>()((set, get) => ({
       returnDate: null,
       selectedOnward: null,
       selectedReturn: null,
+      selectedOnwardTier: null,
+      selectedReturnTier: null,
       onwardSort: 'price',
       returnSort: 'price',
       monthOffset: 0,
@@ -380,9 +549,12 @@ export const useFlightStore = create<FlightStore>()((set, get) => ({
   pickReturnDate: (label) => set({ returnDate: label, returnOpen: false }),
   setSelectedOnward: (f) => set({ selectedOnward: f }),
   setSelectedReturn: (f) => set({ selectedReturn: f }),
+  setSelectedOnwardTier: (t) => set({ selectedOnwardTier: t }),
+  setSelectedReturnTier: (t) => set({ selectedReturnTier: t }),
   setOnwardSort: (k) => set({ onwardSort: k }),
   setReturnSort: (k) => set({ returnSort: k }),
   setStripSel: (i) => set({ stripSel: i }),
+  setActivePriceBreakdownId: (id) => set({ activePriceBreakdownId: id }),
   shiftStrip: (dir) =>
     set((s) => ({
       stripStart:
@@ -392,8 +564,26 @@ export const useFlightStore = create<FlightStore>()((set, get) => ({
     })),
   swapCities: () => set((s) => ({ fromCity: s.toCity, toCity: s.fromCity })),
 
+  restoreSearch: (snapshot) =>
+    set({
+      searched: snapshot.searched,
+      selectedOnward: snapshot.selectedOnward,
+      selectedReturn: snapshot.selectedReturn,
+      fromCity: snapshot.fromCity,
+      toCity: snapshot.toCity,
+      returnDate: snapshot.returnDate,
+      returnOpen: snapshot.returnOpen,
+      onwardSort: snapshot.onwardSort,
+      returnSort: snapshot.returnSort,
+      stripStart: snapshot.stripStart,
+      stripSel: snapshot.stripSel,
+      monthOffset: snapshot.monthOffset,
+      filtersOpen: snapshot.filtersOpen,
+      travellers: snapshot.travellers ?? { ...DEFAULT_TRAVELLERS },
+    }),
+
   doSearch: () => {
-    const { searching, fromCity, toCity, returnDate } = get();
+    const { searching, fromCity, toCity, returnDate, travellers } = get();
     if (searching) return;
     const fromCode = fromCity.split(' - ')[0];
     const toCode = toCity.split(' - ')[0];
@@ -404,11 +594,19 @@ export const useFlightStore = create<FlightStore>()((set, get) => ({
     if (!returnDate) {
       toast({ kind: 'warning', code: 400, title: 'No Return Date', message: 'Showing one-way results — select a return date for round-trip pricing.' });
     }
+    // Build the flight-search request payload, including the selected traveller
+    // counts (adults / children / infants) so the API receives them.
+    const searchRequest = {
+      fromCode,
+      toCode,
+      returnDate,
+      travellers: { ...travellers },
+    };
     set({ selectedOnward: null, selectedReturn: null, searching: true });
     window.setTimeout(() => {
       set({ searching: false, searched: true });
       const { fromCity: fc, toCity: tc } = get();
-      toast({ kind: 'success', code: 200, title: 'Search Complete', message: `${fc} → ${tc} flights loaded.` });
+      toast({ kind: 'success', code: 200, title: 'Search Complete', message: `${fc} → ${tc} flights loaded for ${travellersLabel(searchRequest.travellers).toLowerCase()}.` });
     }, 1400);
   },
 }));

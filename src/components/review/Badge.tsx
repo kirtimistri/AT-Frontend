@@ -1,3 +1,5 @@
+// Badge – Small, coloured label component used to tag status or category (e.g. "Round Trip", "Refundable").
+
 import type { ReactNode } from 'react';
 
 type BadgeProps = {
@@ -6,6 +8,7 @@ type BadgeProps = {
   className?: string;
 };
 
+// Maps each variant name to its background + text colour classes
 const variantStyles: Record<NonNullable<BadgeProps['variant']>, string> = {
   blue: 'bg-[#E1EFFB] text-[#004B7C]',
   orange: 'bg-[#FDE9DC] text-[#98552F]',
@@ -14,6 +17,7 @@ const variantStyles: Record<NonNullable<BadgeProps['variant']>, string> = {
   default: 'bg-[#F3F4F6] text-[#374151]',
 };
 
+// Renders a styled inline badge with optional extra class names
 export const Badge = ({ children, variant = 'default', className = '' }: BadgeProps) => (
   <span
     className={`inline-flex items-center gap-1 rounded px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${variantStyles[variant]} ${className}`}

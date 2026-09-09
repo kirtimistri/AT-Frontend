@@ -1,6 +1,10 @@
+// AssistanceCard – Displays a help prompt with a phone number and chat option for corporate travellers.
+
+import { LogoIcon } from '../Logo';
 import { useThemeStore } from '../../store/themeStore';
 
 export const AssistanceCard = () => {
+  // Theme for light / dark mode styling
   const { theme } = useThemeStore();
   const isLight = theme === 'light';
 

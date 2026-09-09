@@ -1,38 +1,45 @@
+// FormInput – Reusable, theme-aware form field components (text input and dropdown select) used across review forms.
+
 import type { InputHTMLAttributes, SelectHTMLAttributes } from 'react';
 import { useThemeStore } from '../../store/themeStore';
 
+// Shared props for both input and select
 type BaseProps = {
   label: string;
   className?: string;
   wrapperClassName?: string;
 };
 
+// Props for the text input component
 type InputProps = BaseProps & InputHTMLAttributes<HTMLInputElement>;
 
+// Themed text input with a label
 export const FormInput = ({ label, className = '', wrapperClassName = '', ...props }: InputProps) => {
-  const { theme } = useThemeStore();
+  const theme = useThemeStore((s) => s.theme);
   const isLight = theme === 'light';
   return (
     <div className={`flex flex-col gap-1 ${wrapperClassName}`}>
-      <label className={`text-[10.5px] font-medium transition-colors duration-300 ${isLight ? 'text-[#555]' : 'text-white/60'}`}>{label}</label>
+      <label className={`text-[10.5px] font-medium transition-colors duration-300 ${isLight ? 'text-[#555]' : 'text-[#9baec7]'}`}>{label}</label>
       <input
-        className={`h-[36px] rounded-[3px] border px-3 text-[11.5px] outline-none transition-colors ${isLight ? 'border-[#DEDEDE] bg-white text-[#171717] focus:border-[#004B7C]' : 'border-[#214b7e] bg-[#0d1b2a] text-white focus:border-[#7CC0FF] placeholder:text-white/30'} ${className}`}
+        className={`h-[36px] rounded-[3px] border px-3 text-[11.5px] outline-none transition-colors focus:border-[#004B7C] ${isLight ? 'border-[#DEDEDE] bg-white text-[#171717]' : 'border-[#315073] bg-[#0d1b2a] text-white'} ${className}`}
         {...props}
       />
     </div>
   );
 };
 
+// Props for the select component
 type SelectProps = BaseProps & SelectHTMLAttributes<HTMLSelectElement>;
 
+// Themed dropdown select with a label
 export const FormSelect = ({ label, children, className = '', wrapperClassName = '', ...props }: SelectProps) => {
-  const { theme } = useThemeStore();
+  const theme = useThemeStore((s) => s.theme);
   const isLight = theme === 'light';
   return (
     <div className={`flex flex-col gap-1 ${wrapperClassName}`}>
-      <label className={`text-[10.5px] font-medium transition-colors duration-300 ${isLight ? 'text-[#555]' : 'text-white/60'}`}>{label}</label>
+      <label className={`text-[10.5px] font-medium transition-colors duration-300 ${isLight ? 'text-[#555]' : 'text-[#9baec7]'}`}>{label}</label>
       <select
-        className={`h-[36px] rounded-[3px] border px-3 text-[11.5px] outline-none transition-colors ${isLight ? 'border-[#DEDEDE] bg-white text-[#171717] focus:border-[#004B7C]' : 'border-[#214b7e] bg-[#0d1b2a] text-white focus:border-[#7CC0FF]'} ${className}`}
+        className={`h-[36px] rounded-[3px] border px-3 text-[11.5px] outline-none transition-colors focus:border-[#004B7C] ${isLight ? 'border-[#DEDEDE] bg-white text-[#171717]' : 'border-[#315073] bg-[#0d1b2a] text-white'} ${className}`}
         {...props}
       >
         {children}

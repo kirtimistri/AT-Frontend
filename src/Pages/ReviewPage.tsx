@@ -1,11 +1,16 @@
+// Flight review page: shows the selected flight(s), traveller details and a
+// fare summary so the user can confirm before going to payment.
 import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import type { Flight } from '../store/flightStore';
 import { inr } from '../lib/format';
 import { parseFlightParam } from '../lib/review';
 import { AirlineLogo } from '../components/Logos';
+import { BrandLogo } from '../components/BrandLogo';
+import { ThemeToggle } from '../components/ThemeToggle';
 import { Clock, ArrowLeftRight, PlaneFill, PlaneTakeoff } from '../components/icons';
 
+// Lookup of airport codes to readable names.
 const AIRPORT_NAMES: Record<string, string> = {
   PNQ: 'Pune Airport',
   BOM: 'Mumbai Intl',
@@ -15,10 +20,12 @@ const AIRPORT_NAMES: Record<string, string> = {
   LKO: 'Lucknow Intl',
 };
 
+// Small helpers: pull the airport code, terminal number, and pretty label.
 const airportCode = (airport: string) => airport.split(' ')[0];
 const terminalOf = (airport: string) => (airport.match(/Terminal (\d+)/)?.[1] ?? '1');
 const airportLabel = (airport: string) => `${AIRPORT_NAMES[airportCode(airport)] ?? airportCode(airport)}${airport.match(/Terminal (\d+)/) ? `, T${terminalOf(airport)}` : ''}`;
 
+// Price helpers: break a fare into base, taxes, airline fee and insurance.
 const fareOf = (f: Flight) => {
   const base = f.price;
   const taxes = Math.round((base * 0.18) / 10) * 10;
@@ -27,6 +34,7 @@ const fareOf = (f: Flight) => {
   return { base, taxes, airlineFee, insurance, total: base + taxes + airlineFee + insurance };
 };
 
+// Add up the fare parts across all segments.
 const sumFares = (list: ReturnType<typeof fareOf>[]) =>
   list.reduce(
     (acc, f) => ({
@@ -39,14 +47,18 @@ const sumFares = (list: ReturnType<typeof fareOf>[]) =>
     { base: 0, taxes: 0, airlineFee: 0, insurance: 0, total: 0 }
   );
 
+// How long the price is "held" for the user (in seconds).
 const holdingSeconds = 585;
 
+// Banner that counts down how long the current price is guaranteed.
 const HoldingPriceBar = () => {
   const [secs, setSecs] = useState(holdingSeconds);
+  // Tick down every second while this component is mounted.
   useEffect(() => {
     const t = window.setInterval(() => setSecs((s) => (s <= 0 ? 0 : s - 1)), 1000);
     return () => window.clearInterval(t);
   }, []);
+  // Format remaining time as MM:SS.
   const mm = String(Math.floor(secs / 60)).padStart(2, '0');
   const ss = String(secs % 60).padStart(2, '0');
   return (
@@ -67,6 +79,7 @@ const HoldingPriceBar = () => {
   );
 };
 
+// Banner explaining the booking complies with corporate travel policy.
 const PolicyBar = () => (
   <div className="flex flex-col items-start gap-2 rounded-[12px] border border-[#1e8e5a] bg-[rgba(34,197,94,0.09)] px-4 py-3 sm:flex-row sm:items-center">
     <div className="flex min-w-0 items-center gap-2.5">
@@ -84,6 +97,7 @@ const PolicyBar = () => (
   </div>
 );
 
+// One row of the fare summary (label + value).
 const FareRow = ({ label, sub, value }: { label: string; sub?: string; value: string }) => (
   <div className="flex items-center justify-between gap-3 px-3.5 py-1.5">
     <div className="min-w-0">
@@ -94,6 +108,7 @@ const FareRow = ({ label, sub, value }: { label: string; sub?: string; value: st
   </div>
 );
 
+// Small service badge (e.g. Check-in, Cabin, Meal).
 const ServiceChip = ({ label, value }: { label: string; value: string }) => (
   <div className="flex min-w-[96px] flex-col items-center rounded-[10px] border border-[#29466e] bg-white/[0.03] px-3 py-2">
     <span className="text-[9.5px] font-semibold uppercase tracking-wide text-[#7e93b3]">{label}</span>
@@ -101,6 +116,7 @@ const ServiceChip = ({ label, value }: { label: string; value: string }) => (
   </div>
 );
 
+// Read-only text field used for displaying traveller details.
 const Field = ({ label, value }: { label: string; value: string }) => (
   <label className="block">
     <span className="text-[11px] font-semibold text-[#9baec7]">{label}</span>
@@ -112,7 +128,9 @@ const Field = ({ label, value }: { label: string; value: string }) => (
   </label>
 );
 
+// Card that shows one flight's details (airline, times, airports, dates).
 const FlightSegment = ({ f, date, label }: { f: Flight; date: string; label?: string }) => {
+  // Is this a direct or connecting flight?
   const nonStop = /non-?stop/i.test(f.stops);
   const direct = nonStop ? 'Direct Flight' : 'Connecting Flight';
   return (
@@ -173,6 +191,7 @@ const FlightSegment = ({ f, date, label }: { f: Flight; date: string; label?: st
 };
 
 const ReviewPage = () => {
+  // Read the selected flight(s) from the URL query params.
   const [params] = useSearchParams();
   const f = parseFlightParam(params.get('flight'));
   const onward = parseFlightParam(params.get('onward'));
@@ -180,6 +199,7 @@ const ReviewPage = () => {
   const date = params.get('date') ?? '';
   const retDate = params.get('retDate') ?? '';
 
+  // If no flight was selected, show a friendly "go back" screen.
   if (!f && !onward && !ret) {
     return (
       <div className="flex min-h-[100dvh] flex-col items-center justify-center gap-4 bg-[#0B132B] px-6 text-center text-white">
@@ -191,6 +211,7 @@ const ReviewPage = () => {
     );
   }
 
+  // Build the list of segments to show: one for one-way, two for round-trip.
   const roundTrip = !!(onward && ret);
   const segments = roundTrip
     ? [
@@ -199,6 +220,7 @@ const ReviewPage = () => {
       ]
     : [{ f: (f ?? onward ?? ret) as Flight, date, label: undefined }];
 
+  // Total fare across all segments.
   const fare = sumFares(segments.map((s) => fareOf(s.f)));
 
   return (
@@ -210,7 +232,11 @@ const ReviewPage = () => {
             <ArrowLeftRight className="h-4 w-4 rotate-180" />
             Back to Search Results
           </Link>
-          <span className="text-[12px] font-semibold text-[#9baec7]">Akbar Bizvoy</span>
+          <span className="flex items-center gap-2 text-[12px] font-semibold text-[#9baec7]">
+            <BrandLogo size="sm" />
+            Akbar Bizvoy
+          </span>
+          <ThemeToggle size="sm" className="shrink-0" />
         </div>
       </div>
 

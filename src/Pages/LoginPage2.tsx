@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+// Login page: lets the user sign in with email + password, or use the demo
+// account, and redirects to the search page after a successful login.
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import bg2 from '../assets/Backgoundimages/bg2.png';
@@ -8,44 +10,32 @@ import logo from '../assets/Backgoundimages/logo2.svg';
 import { useThemeStore } from '../store/themeStore';
 import { useAuthStore } from '../store/authStore';
 import { loginUser, ApiError } from '../services/authService';
-import { loadRecaptchaScript, executeRecaptcha } from '../services/captcha';
 import { toast } from '../components/toastStore';
+import { ThemeToggle } from '../components/ThemeToggle';
 
+// Pre-filled credentials for the demo login button.
 const DEMO_EMAIL = 'demo@akbarbizvoy.com';
 const DEMO_PASSWORD = 'demo123';
 
 const LoginPage2 = () => {
   const navigate = useNavigate();
 
+  // Theme + auth store setup.
   const { theme } = useThemeStore();
   const authLogin = useAuthStore((s) => s.login);
 
+  // Form state.
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  // Whether the password is visible (toggle) and if the form is submitting.
   const [showPassword, setShowPassword] = useState(false);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const siteKey = import.meta.env
-    .VITE_RECAPTCHA_SITE_KEY as string | undefined;
-
-  const generateCaptchaToken = (): Promise<string> => {
-    if (!siteKey) return Promise.resolve('');
-
-    return executeRecaptcha(siteKey, 'login').catch(
-      (error: unknown) => {
-        console.error('reCAPTCHA failed:', error);
-        return '';
-      }
-    );
-  };
-
-  useEffect(() => {
-    if (siteKey) {
-      loadRecaptchaScript(siteKey).catch(() => {});
-    }
-  }, [siteKey]);
+  // Synchronous lock that prevents duplicate submissions even if state updates
+  // haven't rendered yet (e.g. double-click before the re-render).
+  const submitLock = useRef(false);
 
   const isLight = theme === 'light';
 
@@ -206,15 +196,16 @@ const LoginPage2 = () => {
   ) => {
     e.preventDefault();
 
-    if (isSubmitting) return;
+    if (isSubmitting || submitLock.current) return;
+
+    submitLock.current = true;
 
     const trimmed = email.trim();
 
     setIsSubmitting(true);
 
     try {
-      const captcha = await generateCaptchaToken();
-      const res = await loginUser(trimmed, password, captcha);
+      const res = await loginUser(trimmed, password);
 
       if (res.success && res.data) {
         authLogin(res.data);
@@ -245,10 +236,12 @@ const LoginPage2 = () => {
               title:
                 err.status === 0
                   ? 'Network Error'
-                  : err.status === 401 ||
-                      err.status === 403
-                    ? 'Unauthorized'
-                    : 'Server Error',
+                  : err.status === 408
+                    ? 'Request Timed Out'
+                    : err.status === 401 ||
+                        err.status === 403
+                      ? 'Unauthorized'
+                      : 'Server Error',
               code:
                 err.status === 0
                   ? 0
@@ -271,6 +264,7 @@ const LoginPage2 = () => {
         message,
       });
     } finally {
+      submitLock.current = false;
       setIsSubmitting(false);
     }
   };
@@ -601,6 +595,14 @@ const LoginPage2 = () => {
         )}
 
         {/* -------------------------------- */}
+        {/* THEME TOGGLE */}
+        {/* -------------------------------- */}
+
+        <div className="absolute right-4 top-4 z-[60]">
+          <ThemeToggle size="sm" />
+        </div>
+
+        {/* -------------------------------- */}
         {/* LEFT PANEL */}
         {/* -------------------------------- */}
 
@@ -649,7 +651,7 @@ const LoginPage2 = () => {
                 }
               `}
             >
-              AKBAR TRAVELS
+              AKBAR BIZVOY
             </p>
           </div>
 
@@ -1061,7 +1063,7 @@ const LoginPage2 = () => {
                   }
                 `}
               >
-                AKBAR TRAVELS
+                AKBAR BIZVOY
               </p>
 
               {/* Heading */}

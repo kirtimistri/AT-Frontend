@@ -1,5 +1,8 @@
 const API_URL = import.meta.env.VITE_API_URL ?? '';
 
+// Prevents the UI from appearing frozen when the backend is slow/unreachable.
+const REQUEST_TIMEOUT_MS = 0;
+
 function baseUrl(): string {
   if (!API_URL || API_URL === 'YOUR_API_BASE_URL') {
     throw new ApiError(
@@ -41,6 +44,9 @@ async function post<T>(
   path: string,
   payload: unknown
 ): Promise<ApiResponse<T>> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
   let res: Response;
 
   try {
@@ -48,14 +54,25 @@ async function post<T>(
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
+      signal: controller.signal,
     });
-  } catch {
+  } catch (err) {
+    clearTimeout(timer);
+    if (err instanceof Error && err.name === 'AbortError') {
+      throw new ApiError(
+        'The request timed out. Please try again.',
+        408,
+        null
+      );
+    }
     throw new ApiError(
       'Unable to reach the server. Check your connection and try again.',
       0,
       null
     );
   }
+
+  clearTimeout(timer);
 
   const body = await res.json().catch(() => null);
 
