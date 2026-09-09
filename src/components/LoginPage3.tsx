@@ -1,13 +1,16 @@
+// LoginPage3.tsx – Alternate full-screen sign-in page with email, password, and reCAPTCHA.
 import React, { useState } from 'react';
 import bg3 from '../assets/Backgoundimages/bg3.png';
 import { Logo } from './Logo';
 
 const LoginPage3 = () => {
+  // Form state for the email, password, and reCAPTCHA checkbox.
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isRobotChecked, setIsRobotChecked] = useState(false);
 
+  // Runs when the form is submitted (currently only logs the values).
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log('Sign in attempted with:', { email, password, isRobotChecked });

@@ -1,13 +1,17 @@
+// GSTInformation – Optional form section for entering company GST details to claim corporate tax credit.
+
 import { FileText, PlusCircle } from 'lucide-react';
 import { FormInput } from './FormInput';
 import { useThemeStore } from '../../store/themeStore';
 
 export const GSTInformation = () => {
+  // Theme for light / dark mode styling
   const { theme } = useThemeStore();
   const isLight = theme === 'light';
 
   return (
     <div className={`rounded-lg border p-6 lg:p-7 transition-colors duration-300 ${isLight ? 'border-[#EEEEEE] bg-white' : 'border-[#29466e] bg-[#0f172a]'}`}>
+      {/* Section header with title and "Add New GST" button */}
       <div className="mb-2 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <FileText className={`h-5 w-5 transition-colors duration-300 ${isLight ? 'text-[#004B7C]' : 'text-[#7CC0FF]'}`} />
@@ -19,18 +23,22 @@ export const GSTInformation = () => {
         </button>
       </div>
 
+      {/* Description text */}
       <p className={`mb-4 text-[12px] transition-colors duration-300 ${isLight ? 'text-[#777]' : 'text-[#7e93b3]'}`}>
         Claim corporate input tax credit by providing your company GST details below.
       </p>
 
+      {/* GST number and company name */}
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <FormInput label="GST Number" defaultValue="27AAACB1234C1ZU" />
         <FormInput label="Company Name" defaultValue="Bizvoy Technologies Pvt Ltd" />
       </div>
+      {/* Company email and phone */}
       <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
         <FormInput label="Company Email" defaultValue="accounts@bizvoyenterprise.com" />
         <FormInput label="Company Phone" defaultValue="+91 20 6655 4400" />
       </div>
+      {/* Company address (full width) */}
       <div className="mt-3 grid grid-cols-1 gap-3">
         <FormInput label="Company Address" defaultValue="Bizvoy House, 78 Corporate Boulevard, Nariman Point, Mumbai 400021" />
       </div>

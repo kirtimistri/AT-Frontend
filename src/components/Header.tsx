@@ -1,3 +1,4 @@
+// Main app header: logo, search bar, city swap, return date picker, and theme toggle.
 import { useState } from 'react';
 import { useFlightStore } from '../store/flightStore';
 import { useThemeStore } from '../store/themeStore';
@@ -8,9 +9,12 @@ import { ThemeToggle } from './ThemeToggle';
 import { Logo } from './Logo';
 
 export const Header = () => {
+  // Local state for swap animation, cabin class dropdown, and return date calendar
   const [swapSpin, setSwapSpin] = useState(0);
   const [cabin, setCabin] = useState('Economy');
   const [cabinOpen, setCabinOpen] = useState(false);
+
+  // Flight store values needed for the search bar and return calendar
   const fromCity = useFlightStore((s) => s.fromCity);
   const toCity = useFlightStore((s) => s.toCity);
   const datePool = useFlightStore((s) => s.datePool);
@@ -28,21 +32,27 @@ export const Header = () => {
   const doSearch = useFlightStore((s) => s.doSearch);
   const searching = useFlightStore((s) => s.searching);
 
+  // Theme for light/dark mode styling
   const { theme } = useThemeStore();
   const isLight = theme === 'light';
+
+  // Current departure day based on the selected date strip position
   const stripDay = datePool[stripStart + stripSel];
 
+  // Swap the from/to cities and trigger a small rotation animation
   const handleSwap = () => {
     swapCities();
     setSwapSpin((s) => s + 1);
   };
 
+  // Left section: just the app logo
   const leftSection = (
     <div className="flex min-w-0 items-center gap-2 sm:gap-5">
       <Logo size="md" textClassName="text-[14px] sm:text-[17px]" />
     </div>
   );
 
+  // Right section: filters toggle, avatar badge, theme toggle, and cabin class dropdown
   const rightSection = (
     <div className={`flex shrink-0 flex-col items-end gap-0.5 transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-white/85'}`}>
       <div className="flex items-center gap-1.5 sm:gap-4">
@@ -69,6 +79,7 @@ export const Header = () => {
         >
           {cabin} <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-300 ${isLight ? 'text-[#9CA3AF]' : 'text-white/50'} ${cabinOpen ? 'rotate-180' : ''}`} />
         </button>
+        {/* Cabin class dropdown menu */}
         {cabinOpen && (
           <>
             <div className="fixed inset-0 z-40" onClick={() => setCabinOpen(false)} />
@@ -93,6 +104,7 @@ export const Header = () => {
     </div>
   );
 
+  // Search bar: From/To cities, dates, travellers, and the Search button
   const searchBar = (
     <div className={`group relative mt-1.5 flex flex-wrap items-stretch overflow-hidden rounded-[26px] border transition-all duration-300 hover:border-[#d4af37]/70 sm:rounded-l-[16px] sm:rounded-r-[26px] lg:mt-0 ${isLight ? 'bg-white border-[#E5E7EB] shadow-[0_4px_12px_rgba(0,0,0,0.08)]' : 'bg-[#0F1B3A] border-[rgba(124,192,255,0.22)] shadow-[0_10px_30px_rgba(0,0,0,0.35)] hover:shadow-[0_0_18px_rgba(212,175,55,0.3),0_0_50px_rgba(212,175,55,0.14)]'}`}>
       {/* From + To (swap button overlaps the divider) */}
@@ -104,6 +116,7 @@ export const Header = () => {
           </div>
         </div>
 
+        {/* Swap button — reverses From and To */}
         <button
           type="button"
           onClick={handleSwap}
@@ -177,6 +190,7 @@ export const Header = () => {
     </div>
   );
 
+  // Render the header with logo, search bar, and controls
   return (
     <header className={`sticky top-0 z-30 shrink-0 border-b px-3 pb-0.5 pt-0.5 sm:px-6 sm:pb-1.5 sm:pt-1 transition-colors duration-300 ${isLight ? 'bg-white border-[#E5E7EB] shadow-sm' : 'bg-[#0E1833] border-white/10'}`}>
       <div className="flex flex-col gap-1 lg:flex-row lg:items-center lg:gap-4">
@@ -184,6 +198,7 @@ export const Header = () => {
         <div className="min-w-0 flex-1">{searchBar}</div>
         <div className="flex shrink-0 items-center">{rightSection}</div>
       </div>
+      {/* Return date calendar dropdown shown below the header when open */}
       {returnOpen && (
         <div className="relative z-50 mt-2 w-full lg:absolute lg:left-1/2 lg:top-full lg:mt-2 lg:w-max lg:max-w-[94vw] lg:-translate-x-1/2">
           <div className="pointer-events-none absolute -top-[9px] left-1/2 hidden h-0 w-0 -translate-x-1/2 border-x-[10px] border-b-[10px] border-x-transparent border-b-[rgba(124,192,255,0.35)] lg:block" />

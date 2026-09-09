@@ -1,8 +1,10 @@
+// Horizontal strip of selectable date cards showing prices, with prev/next week arrows.
 import type { StripDay } from '../store/flightStore';
 import { useThemeStore } from '../store/themeStore';
 import { stripInr } from '../lib/format';
 import { iconProps } from '../lib/iconProps';
 
+// Props that let the parent control the dates shown and handle user choices
 type PriceStripProps = {
   dates: StripDay[];
   selected: number;
@@ -14,6 +16,7 @@ type PriceStripProps = {
 };
 
 export const PriceStrip = ({ dates, selected, onPick, onPrev, onNext, canPrev, canNext }: PriceStripProps) => {
+  // Theme determines the light or dark styling
   const { theme } = useThemeStore();
   const isLight = theme === 'light';
   return (
@@ -29,7 +32,7 @@ export const PriceStrip = ({ dates, selected, onPick, onPrev, onNext, canPrev, c
       <svg {...iconProps('h-4 w-4 transition-colors duration-300 group-hover:text-[#f0c265]')}><path d="m15 18-6-6 6-6" /></svg>
     </button>
 
-    {/* Date cards */}
+    {/* Date cards — one button per day with its label and price */}
     <div className={`relative flex min-w-0 flex-1 overflow-x-auto transition-colors duration-300 ${isLight ? 'divide-[#E5E7EB]' : 'divide-white/10'}`}>
       {dates.map((d, i) => {
         const isSel = i === selected;
@@ -48,7 +51,7 @@ export const PriceStrip = ({ dates, selected, onPick, onPrev, onNext, canPrev, c
           </button>
         );
       })}
-      {/* Sliding selection indicator */}
+      {/* Thin highlighted bar that slides under the currently selected date */}
       <span
         aria-hidden
         className={`pointer-events-none absolute bottom-0 h-[3px] rounded-full transition-[left] duration-300 ease-out ${isLight ? 'bg-[#2563EB] shadow-[0_0_8px_rgba(37,99,235,0.4)]' : 'bg-[#3B9CFF] shadow-[0_0_10px_rgba(59,156,255,0.75)]'}`}

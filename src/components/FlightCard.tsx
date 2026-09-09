@@ -1,3 +1,5 @@
+// FlightCard.tsx
+// Displays a single flight option with airline info, schedule, pricing, and expandable fare tiers.
 import { useEffect, useRef, useState } from 'react';
 import type { Flight } from '../store/flightStore';
 import { useFlightStore } from '../store/flightStore';
@@ -11,6 +13,7 @@ import { tierAdjustedPrice } from '../lib/fare';
 import { openReview } from '../lib/openReview';
 
 /* ---------- Fare option tiers (expandable card details) ---------- */
+// Returns the three fare tiers (SAVER, FLEX, PREMIUM) with their prices and feature rows.
 
 type FareRow = { label: string; sub: string; kind: 'text' | 'no' | 'yes'; value?: string };
 
@@ -58,6 +61,7 @@ const fareTiers = (price: number): { name: string; tagline: string; price: numbe
   },
 ];
 
+// Displays a single fare tier card with its name, tagline, price rows, and a select button.
 const FareTierCard = ({
   tier,
   tierId,
@@ -125,6 +129,7 @@ const FareTierCard = ({
 );
 
 
+// Small button used to select or view a flight; shows a checkmark when selected.
 const SelectButton = ({ selected, onSelect, isLight }: { selected: boolean; onSelect?: () => void; isLight?: boolean }) => (
   <button
     onClick={(e) => {
@@ -144,6 +149,7 @@ const SelectButton = ({ selected, onSelect, isLight }: { selected: boolean; onSe
   </button>
 );
 
+// Left side of the compact card: airline logo, stops info, departure/arrival times, and a flight timeline.
 const CompactFlightLeft = ({
   f,
   fromLabel,
@@ -235,6 +241,7 @@ const CompactFlightLeft = ({
   );
 };
 
+// Right side of the compact card: price, select button, duration, baggage, and CO2 info.
 const CompactPriceCol = ({
   f,
   dayDelta,
@@ -296,6 +303,7 @@ const CompactPriceCol = ({
   );
 };
 
+// Main flight card component: shows flight details, pricing, and an expandable fare-tier section.
 export const FlightCard = ({
   f,
   dayDelta,
@@ -326,6 +334,7 @@ export const FlightCard = ({
   const [tierCanLeft, setTierCanLeft] = useState(false);
   const [tierCanRight, setTierCanRight] = useState(true);
 
+  // Check whether the tier list can scroll left or right when expanded.
   useEffect(() => {
     if (!expanded) return;
     const el = tierScrollRef.current;
@@ -335,6 +344,7 @@ export const FlightCard = ({
     }
   }, [expanded]);
 
+  // Smoothly scroll the tier list left or right by 220px.
   const scrollTiers = (dir: 'left' | 'right') => {
     const el = tierScrollRef.current;
     if (!el) return;
@@ -355,6 +365,7 @@ export const FlightCard = ({
   const selTier = isReturn ? selectedReturnTier : selectedOnwardTier;
   const setSelTier = isReturn ? setSelectedReturnTier : setSelectedOnwardTier;
   const selFlight = isReturn ? setSelectedReturn : setSelectedOnward;
+  // When a fare tier is selected, update the store and open the review screen.
   const pickTier = (tier: ReturnType<typeof fareTiers>[number]) => {
     const s = useFlightStore.getState();
     const adjusted = { ...f, price: tierAdjustedPrice(base, tier.name) };

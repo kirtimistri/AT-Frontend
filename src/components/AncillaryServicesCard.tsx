@@ -1,3 +1,5 @@
+// AncillaryServicesCard.tsx
+// Summary card for ancillary services (meals, seats, baggage, SSR) shown in the flight review sidebar.
 import { useState } from 'react';
 import { Sparkles } from 'lucide-react';
 import { useThemeStore } from '../store/themeStore';
@@ -12,6 +14,7 @@ type PricingField = {
   onChange: (val: string) => void;
 };
 
+// Reusable input field for entering a rupee amount.
 const PricingInput = ({ label, value, onChange, isLight }: PricingField & { isLight: boolean }) => (
   <label className="block">
     <span className={`mb-1.5 block text-[11px] font-medium transition-colors duration-300 ${isLight ? 'text-[#555]' : 'text-[#9baec7]'}`}>{label}</span>
@@ -31,6 +34,7 @@ const PricingInput = ({ label, value, onChange, isLight }: PricingField & { isLi
 /* The "Ancillary / SSR" entry card that replaces the legacy Seat / Meal card in
    the Flight Review (trip review) right sidebar. It opens the
    AncillaryServicesModal and reflects the currently selected services. */
+// Main card component that shows selected ancillary services and pricing controls.
 export const AncillaryServicesCard = ({
   segments,
   onBack,

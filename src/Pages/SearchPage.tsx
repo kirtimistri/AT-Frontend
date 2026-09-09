@@ -1,3 +1,5 @@
+// Search results page: shows available flights (one-way or round-trip),
+// lets the user pick flights, and shows a price summary bar.
 import { useEffect } from 'react';
 import { useFlightStore, STRIP_WINDOW, STRIP_DEFAULT_START, STRIP_DEFAULT_SEL } from '../store/flightStore';
 import { useThemeStore } from '../store/themeStore';
@@ -12,9 +14,11 @@ import { PlaneTakeoff } from '../components/icons';
 import { readSearchSnapshot, clearSearchSnapshot } from '../lib/openReview';
 
 const SearchPage = () => {
+  // Theme: picks light vs dark colors.
   const { theme } = useThemeStore();
   const isLight = theme === 'light';
 
+  // Read flight data and actions from the global store.
   const flights = useFlightStore((s) => s.flights);
   const returnFlights = useFlightStore((s) => s.returnFlights);
   const datePool = useFlightStore((s) => s.datePool);
@@ -37,6 +41,7 @@ const SearchPage = () => {
   const shiftStrip = useFlightStore((s) => s.shiftStrip);
   const restoreSearch = useFlightStore((s) => s.restoreSearch);
 
+  // On mount: if a saved search exists (e.g. from "open review" flow), restore it.
   useEffect(() => {
     const snapshot = readSearchSnapshot();
     if (snapshot) {
@@ -45,14 +50,17 @@ const SearchPage = () => {
     }
   }, [restoreSearch]);
 
+  // Derived data: the date strip window and price difference from the base date.
   const stripDates = datePool.slice(stripStart, stripStart + STRIP_WINDOW);
   const stripDay = datePool[stripStart + stripSel];
   const baseStripDay = datePool[STRIP_DEFAULT_START + STRIP_DEFAULT_SEL];
   const dayDelta = stripDay.price - baseStripDay.price;
 
+  // Derived data: short city codes and helpers used for labels.
   const fromCode = fromCity.split(' - ')[0];
   const toCode = toCity.split(' - ')[0];
   const relabel = (airport: string, code: string) => `${code}${airport.replace(/^[A-Z]{3}/, '')}`;
+  // Show the sticky price summary bar only after searching and picking a flight.
   const barVisible = searched && (!!selectedOnward || !!selectedReturn);
 
   return (
@@ -64,6 +72,7 @@ const SearchPage = () => {
 
         {/* ---- Results ---- */}
         <main className={`pretty-scroll min-w-0 flex-1 overflow-x-hidden overflow-y-scroll p-3 pt-1 sm:p-4 sm:pt-2 ${barVisible ? 'pb-[128px] md:pb-[124px]' : ''}`}>
+          {/* Before a search: show a friendly "search flights" message. */}
           {!searched ? (
             <div className="flex h-full flex-col items-center justify-center text-center">
               <div className={`flex h-16 w-16 items-center justify-center rounded-full border transition-colors duration-300 ${isLight ? 'bg-white border-[#E5E7EB] text-[#2563EB] shadow-[0_2px_8px_rgba(0,0,0,0.06)]' : 'bg-[#0F1B3A] border-[rgba(124,192,255,0.4)] text-[#7CC0FF]'}`}>
@@ -76,6 +85,7 @@ const SearchPage = () => {
             </div>
           ) : searching ? (
             <div className="pt-0">
+              {/* While searching: show loading skeleton placeholders. */}
               {/* Date & price strip skeleton */}
               <div className={`card-shimmer h-[52px] animate-pulse overflow-hidden rounded-[14px] border transition-colors duration-300 ${isLight ? 'bg-white border-[#E5E7EB] shadow-[0_2px_8px_rgba(0,0,0,0.06)]' : 'bg-[#0F1B3A] border-[rgba(124,192,255,0.22)]'}`} />
 
@@ -112,6 +122,7 @@ const SearchPage = () => {
             </div>
           ) : returnDate ? (
             <div className="pt-0">
+              {/* After search, round trip: date strip + onward and return columns. */}
               {/* Date & price strip */}
               <PriceStrip
                 dates={stripDates}
@@ -153,6 +164,7 @@ const SearchPage = () => {
             </div>
           ) : (
             <div className="pt-0">
+              {/* After search, one way: date strip + single list of flight cards. */}
               {/* Date & price strip */}
               <PriceStrip
                 dates={stripDates}

@@ -1,15 +1,19 @@
+// PageHeader – Shows the page title ("Review your trip") and a back-to-search link at the top of the review page.
+
 import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useThemeStore } from '../../store/themeStore';
 import { BrandLogo } from '../BrandLogo';
 
 export const PageHeader = () => {
+  // Theme and navigation helpers
   const { theme } = useThemeStore();
   const isLight = theme === 'light';
   const navigate = useNavigate();
 
   return (
     <div className="mb-6">
+      {/* Back button – returns the user to the search results page */}
       <button
         type="button"
         onClick={() => navigate('/search')}
@@ -18,6 +22,7 @@ export const PageHeader = () => {
         <ArrowLeft className="h-3.5 w-3.5" />
         Back to Search Results
       </button>
+      {/* Brand logo, page title, and subtitle */}
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
           <BrandLogo size="lg" />

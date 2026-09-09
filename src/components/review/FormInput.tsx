@@ -1,14 +1,19 @@
+// FormInput – Reusable, theme-aware form field components (text input and dropdown select) used across review forms.
+
 import type { InputHTMLAttributes, SelectHTMLAttributes } from 'react';
 import { useThemeStore } from '../../store/themeStore';
 
+// Shared props for both input and select
 type BaseProps = {
   label: string;
   className?: string;
   wrapperClassName?: string;
 };
 
+// Props for the text input component
 type InputProps = BaseProps & InputHTMLAttributes<HTMLInputElement>;
 
+// Themed text input with a label
 export const FormInput = ({ label, className = '', wrapperClassName = '', ...props }: InputProps) => {
   const theme = useThemeStore((s) => s.theme);
   const isLight = theme === 'light';
@@ -23,8 +28,10 @@ export const FormInput = ({ label, className = '', wrapperClassName = '', ...pro
   );
 };
 
+// Props for the select component
 type SelectProps = BaseProps & SelectHTMLAttributes<HTMLSelectElement>;
 
+// Themed dropdown select with a label
 export const FormSelect = ({ label, children, className = '', wrapperClassName = '', ...props }: SelectProps) => {
   const theme = useThemeStore((s) => s.theme);
   const isLight = theme === 'light';

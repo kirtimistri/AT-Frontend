@@ -1,3 +1,6 @@
+// Trip review page: shows the full booking summary (flights, travellers, GST,
+// fare breakdown, and the Ancillary/SSR services modal). Uses saved booking
+// data, or falls back to demo data if none was saved.
 import { PageHeader } from '../components/review/PageHeader';
 import { BookingReference } from '../components/review/BookingReference';
 import { FlightItinerary } from '../components/review/FlightItinerary';
@@ -68,6 +71,7 @@ const airportParts = (airport: string) => {
 const titleCase = (s: string) =>
   s.toLowerCase().replace(/(^|\s)\S/g, (c) => c.toUpperCase());
 
+// Convert a Flight (from the store) into the display format used by FlightCard.
 const toReviewCard = (f: Flight, type: 'OUTBOUND' | 'RETURN', date: string): FlightCardProps => {
   const dep = airportParts(f.departure.airport);
   const arr = airportParts(f.arrival.airport);
@@ -99,6 +103,7 @@ const toReviewCard = (f: Flight, type: 'OUTBOUND' | 'RETURN', date: string): Fli
   };
 };
 
+// Load and parse the saved booking selection from the browser's storage.
 const readBooking = (): BookingSelection | null => {
   const raw =
     sessionStorage.getItem('bookingSelection') ?? localStorage.getItem('bookingSelection');
@@ -135,9 +140,12 @@ const formatSegmentDate = (date: string): string => {
 };
 
 const TripReviewPage = () => {
+  // Theme and navigation setup.
   const { theme } = useThemeStore();
   const isLight = theme === 'light';
   const navigate = useNavigate();
+
+  // Local display data for this page.
   let onward: FlightCardProps | undefined;
   let ret: FlightCardProps | undefined;
   let onwardPrice: number | undefined;
@@ -145,6 +153,7 @@ const TripReviewPage = () => {
   let fromCode = 'PNQ';
   let toCode = 'GAU';
 
+  // Use the saved booking when available; otherwise fall back to demo data.
   const booking = readBooking();
   if (booking && (booking.onward || booking.returnFlight)) {
     const date = booking.date ?? '';
@@ -193,6 +202,7 @@ const TripReviewPage = () => {
   }
 
   return (
+    // Page uses light or dark background depending on the active theme.
     <div className={`flex min-h-screen flex-col transition-colors duration-300 ${isLight ? 'bg-[#FAF8F7]' : 'bg-[#0B132B]'}`}>
       <div className="sticky top-0 z-30 flex items-center justify-end px-5 py-3 lg:px-8">
         <ThemeToggle size="sm" className="shrink-0" />

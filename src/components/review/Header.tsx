@@ -1,16 +1,21 @@
+// Header – The sticky site-wide navigation bar for the review page (logo, nav links, theme toggle, profile).
+
 import { BrandLogo } from '../BrandLogo';
 import { ThemeToggle } from '../ThemeToggle';
 import { useThemeStore } from '../../store/themeStore';
 
+// Navigation tab labels
 const navItems = ['Flights', 'Hotels', 'Visa', 'Holidays', 'Bus', 'Cruise', 'Cabs'];
 
 export const ReviewHeader = () => {
+  // Theme for light / dark mode styling
   const { theme } = useThemeStore();
   const isLight = theme === 'light';
 
   return (
     <header className={`sticky top-0 z-30 flex h-[75px] w-full items-center border-b px-5 lg:px-8 transition-colors duration-300 ${isLight ? 'border-[#EEEEEE] bg-white' : 'border-[#1c3a5f] bg-[#0B132B]'}`}>
       <div className="mx-auto flex w-full max-w-[1200px] items-center justify-between">
+        {/* Left: Brand logo and name */}
         <div className="flex items-center gap-2.5">
           <BrandLogo size="md" />
           <div className="flex flex-col">
@@ -35,7 +40,7 @@ export const ReviewHeader = () => {
           ))}
         </nav>
 
-        {/* Right: Theme toggle + profile */}
+        {/* Right: Theme toggle + profile icon */}
         <div className="flex items-center gap-3">
           <ThemeToggle size="sm" className="shrink-0" />
           <div className={`flex h-8 w-8 items-center justify-center rounded-full text-white ${isLight ? 'bg-[#004B7C]' : 'bg-[#2593fc]'}`}>

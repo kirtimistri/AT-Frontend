@@ -1,9 +1,12 @@
+// FlightCard – Displays all details for a single flight leg (departure/arrival, timeline, baggage, meals, and expandable info).
+
 import { useState } from 'react';
 import { Luggage, Briefcase, UtensilsCrossed, ChevronDown } from 'lucide-react';
 import { FlightTimeline } from './FlightTimeline';
 import { AirlineLogo } from '../Logos';
 import { useThemeStore } from '../../store/themeStore';
 
+// Props that define every piece of data a flight card can show
 export type FlightCardProps = {
   type: 'OUTBOUND' | 'RETURN';
   date: string;
@@ -47,10 +50,13 @@ export const FlightCard = ({
   cancellation0to24,
   cancellationAbove24,
 }: FlightCardProps) => {
+  // Theme for light / dark mode styling
   const { theme } = useThemeStore();
   const isLight = theme === 'light';
+  // Derive display flags from props
   const isReturn = type === 'RETURN';
   const isDirect = stops === 'Direct';
+  // Controls whether the expanded detail panel is visible
   const [expanded, setExpanded] = useState(false);
 
   return (

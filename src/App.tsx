@@ -1,3 +1,4 @@
+// Top-level component: sets up all the app routes (pages) and navigation.
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import LoginPage2 from './Pages/LoginPage2'
 import RegisterPage from './Pages/RegisterPage'
@@ -11,8 +12,11 @@ import './theme.css' // Light theme styles
 
 function App() {
   return (
+    // BrowserRouter enables navigation between pages using the browser URL.
     <BrowserRouter>
+      {/* Overlay where toast messages (notifications) appear. */}
       <ToastViewport />
+      {/* Routes: each <Route> maps a URL path to the page component to show. */}
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<LoginPage2 />} />

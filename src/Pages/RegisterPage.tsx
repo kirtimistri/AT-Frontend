@@ -1,3 +1,5 @@
+// Registration page: creates a new user account (via the auth service) and
+// redirects to the login page on success. Includes a CAPTCHA check.
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -15,17 +17,20 @@ import { ThemeToggle } from '../components/ThemeToggle';
 const BG_W = 1672;
 const BG_H = 941;
 
+// Center point and radius of the planet in the background image.
 const PLANET = {
   cx: 929,
   cy: 1575,
   r: 1413,
 };
 
+// Draws a soft glowing horizon over the rounded edge of the earth image.
 const HorizonGlow = ({
   imgRef,
 }: {
   imgRef: React.RefObject<HTMLImageElement | null>;
 }) => {
+  // Bounds of the visible earth area, recalculated when the image resizes.
   const [box, setBox] = useState<{
     left: number;
     top: number;
@@ -33,6 +38,7 @@ const HorizonGlow = ({
     height: number;
   } | null>(null);
 
+  // Work out the visible part of the image and where the horizon sits.
   useEffect(() => {
     const img = imgRef.current;
 
@@ -47,6 +53,7 @@ const HorizonGlow = ({
 
       if (rect.width === 0 || rect.height === 0) return;
 
+      // Scale factor between the real image size and its on-screen size.
       const scale = Math.max(
         rect.width / BG_W,
         rect.height / BG_H
@@ -55,6 +62,7 @@ const HorizonGlow = ({
       const cw = BG_W * scale;
       const ch = BG_H * scale;
 
+      // Read the CSS object-position so the glow lines up with the earth.
       const pos =
         getComputedStyle(img).objectPosition.match(/-?[\d.]+%/g) ?? [];
 
@@ -76,6 +84,7 @@ const HorizonGlow = ({
       });
     };
 
+    // Batch updates into a single animation frame to avoid layout thrash.
     const schedule = () => {
       if (!raf) {
         raf = requestAnimationFrame(update);
@@ -84,11 +93,13 @@ const HorizonGlow = ({
 
     schedule();
 
+    // Recompute on window resize and when the image element changes size.
     window.addEventListener('resize', schedule);
 
     const ro = new ResizeObserver(schedule);
     ro.observe(img);
 
+    // Clean up listeners when the component unmounts.
     return () => {
       window.removeEventListener('resize', schedule);
       ro.disconnect();
@@ -99,9 +110,11 @@ const HorizonGlow = ({
     };
   }, [imgRef]);
 
+  // Until we know the box, render nothing.
   if (!box) return null;
 
   return (
+    // Glowing circles drawn to follow the earth's horizon curve.
     <svg
       aria-hidden="true"
       className="pointer-events-none"
@@ -199,20 +212,25 @@ const HorizonGlow = ({
 const RegisterPage = () => {
   const navigate = useNavigate();
 
+  // Theme + a ref to the background image (used by the HorizonGlow).
   const { theme } = useThemeStore();
 
   const bgRef = useRef<HTMLImageElement>(null);
 
+  // Form field values.
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
+  // Whether the password inputs show their text.
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  // Token returned by the reCAPTCHA widget.
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
 
+  // Site key for reCAPTCHA (from an env variable).
   const RECAPTCHA_SITE_KEY = import.meta.env
     .VITE_RECAPTCHA_SITE_KEY as string | undefined;
 

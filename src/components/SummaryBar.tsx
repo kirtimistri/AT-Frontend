@@ -1,3 +1,4 @@
+// Fixed bar at the bottom showing the selected flights and total price with a Book button.
 import type { Flight } from '../store/flightStore';
 import { useFlightStore } from '../store/flightStore';
 import { AirlineLogo } from './Logos';
@@ -6,6 +7,7 @@ import { useThemeStore } from '../store/themeStore';
 import { openReview } from '../lib/openReview';
 import { tierAdjustedPrice } from '../lib/fare';
 
+// Small block that shows one leg (onward or return) of the chosen trip
 const FlightSummary = ({ label, f, isLight }: { label: 'ONWARD' | 'RETURN'; f: Flight | null; isLight?: boolean }) => (
   <div className={`flex min-w-0 items-center gap-2 px-3 py-1.5 sm:w-auto sm:flex-1 sm:gap-3.5 sm:px-6 sm:py-1.5 transition-colors duration-300 ${isLight ? 'text-[#111827]' : 'text-white/90'}`}>
     <span className={`shrink-0 text-[10px] font-bold tracking-[0.12em] transition-colors duration-300 sm:text-[10.5px] ${isLight ? 'text-[#2563EB]' : 'text-[#7CC0FF]'}`}>{label}</span>
@@ -32,6 +34,7 @@ const FlightSummary = ({ label, f, isLight }: { label: 'ONWARD' | 'RETURN'; f: F
 );
 
 export const SummaryBar = ({ onward, ret, dayDelta }: { onward: Flight | null; ret: Flight | null; dayDelta: number }) => {
+  // Theme and store values used to build the bar contents
   const { theme } = useThemeStore();
   const isLight = theme === 'light';
   const datePool = useFlightStore((s) => s.datePool);
@@ -41,12 +44,15 @@ export const SummaryBar = ({ onward, ret, dayDelta }: { onward: Flight | null; r
   const toCity = useFlightStore((s) => s.toCity);
   const onwardTier = useFlightStore((s) => s.selectedOnwardTier);
   const returnTier = useFlightStore((s) => s.selectedReturnTier);
+  // Derived values: current date, city codes, and the combined flight price
   const date = datePool[stripStart + stripSel]?.label ?? '';
   const fromCode = fromCity.split(' - ')[0];
   const toCode = toCity.split(' - ')[0];
   const total = (onward ? tierAdjustedPrice(onward.price + dayDelta, onwardTier) : 0) + (ret ? tierAdjustedPrice(ret.price + dayDelta, returnTier) : 0);
   const both = !!onward && !!ret;
   const any = !!onward || !!ret;
+
+  // Render the two flight summaries, the total price, and the Book button
   return (
     <div className={`group fixed inset-x-0 bottom-0 z-40 border-t backdrop-blur transition-all duration-300 md:left-[200px] ${isLight ? 'bg-white/95 border-[#E5E7EB] shadow-[0_-10px_36px_rgba(0,0,0,0.08)] hover:border-[#2563EB]/50 hover:shadow-[0_-10px_36px_rgba(0,0,0,0.08),0_0_22px_rgba(37,99,235,0.15),0_0_60px_rgba(37,99,235,0.08)]' : 'bg-[#0F1B3A]/95 border-[rgba(124,192,255,0.25)] shadow-[0_-10px_36px_rgba(0,0,0,0.55)] hover:border-[#d4af37]/60 hover:shadow-[0_-10px_36px_rgba(0,0,0,0.55),0_0_22px_rgba(212,175,55,0.35),0_0_60px_rgba(212,175,55,0.16)]'}`}>
       <div className="flex flex-wrap items-stretch">
@@ -62,6 +68,7 @@ export const SummaryBar = ({ onward, ret, dayDelta }: { onward: Flight | null; r
               {both ? 'Extra ₹697 Off' : (ret ? 'Select onward to combine fares' : 'Select return for round-trip')}
             </div>
           </div>
+          {/* Book button — opens the review page when a flight is selected */}
           <button
             onClick={() => {
               if (any) {

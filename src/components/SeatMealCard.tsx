@@ -1,3 +1,5 @@
+// SeatMealCard.tsx
+// Allows the user to pick a seat and meal, adjust pricing overrides, and proceed to booking.
 import { useState } from 'react';
 import { SeatIcon } from './icons';
 import { useThemeStore } from '../store/themeStore';
@@ -8,6 +10,7 @@ type PricingField = {
   onChange: (val: string) => void;
 };
 
+// Reusable input field for entering a rupee amount.
 const PricingInput = ({ label, value, onChange, isLight }: PricingField & { isLight: boolean }) => (
   <label className="block">
     <span className={`mb-1.5 block text-[11px] font-medium transition-colors duration-300 ${isLight ? 'text-[#555]' : 'text-[#9baec7]'}`}>{label}</span>

@@ -1,13 +1,16 @@
+// LoginPage.tsx – Full-screen sign-in page with email, password, and a "I'm not a robot" checkbox.
 import React, { useState } from 'react';
 import bg1 from '../assets/Backgoundimages/bg1.png';
 import { Logo } from './Logo';
 
 const LoginPage = () => {
+  // Form state for the email, password, and reCAPTCHA checkbox.
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isRobotChecked, setIsRobotChecked] = useState(false);
 
+  // Runs when the form is submitted (currently only logs the values).
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log('Sign in attempted with:', { email, password, isRobotChecked });

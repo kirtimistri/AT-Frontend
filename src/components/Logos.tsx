@@ -1,12 +1,16 @@
+// Logos.tsx – Collection of small airline logo tiles shown next to flight results.
 import type { ReactNode } from 'react';
 
+// Allowed size options for the logo tiles.
 export type LogoSize = 'md' | 'sm';
 
+// Maps each size to the box and svg Tailwind classes.
 const LOGO_SIZE_CLASSES: Record<LogoSize, { box: string; svg: string }> = {
   md: { box: 'h-10 w-10', svg: 'h-6 w-6' },
   sm: { box: 'h-8 w-8', svg: 'h-5 w-5' },
 };
 
+// Indigo airline logo tile.
 const IndigoLogo = ({ size = 'md' }: { size?: LogoSize }) => {
   const cls = LOGO_SIZE_CLASSES[size];
   return (
@@ -18,6 +22,7 @@ const IndigoLogo = ({ size = 'md' }: { size?: LogoSize }) => {
 );
 };
 
+// Air India airline logo tile.
 const AirIndiaLogo = ({ size = 'md' }: { size?: LogoSize }) => {
   const cls = LOGO_SIZE_CLASSES[size];
   return (
@@ -30,6 +35,7 @@ const AirIndiaLogo = ({ size = 'md' }: { size?: LogoSize }) => {
 );
 };
 
+// Akasa airline logo tile.
 const AkasaLogo = ({ size = 'md' }: { size?: LogoSize }) => {
   const cls = LOGO_SIZE_CLASSES[size];
   return (
@@ -42,6 +48,7 @@ const AkasaLogo = ({ size = 'md' }: { size?: LogoSize }) => {
 );
 };
 
+// SpiceJet airline logo tile.
 const SpiceJetLogo = ({ size = 'md' }: { size?: LogoSize }) => {
   const cls = LOGO_SIZE_CLASSES[size];
   return (
@@ -61,6 +68,7 @@ const SpiceJetLogo = ({ size = 'md' }: { size?: LogoSize }) => {
 );
 };
 
+// Map airline names to their logo tile components.
 const LOGO_BY_AIRLINE: (size?: LogoSize) => Record<string, ReactNode> = (size) => ({
   INDIGO: <IndigoLogo size={size} />,
   'AIR INDIA': <AirIndiaLogo size={size} />,
@@ -69,6 +77,7 @@ const LOGO_BY_AIRLINE: (size?: LogoSize) => Record<string, ReactNode> = (size) =
 });
 
 /** Renders the airline logo tile for a flight's airline name. */
+// Falls back to the Indigo logo if the airline name is unknown.
 export const AirlineLogo = ({ airline, size = 'md' }: { airline: string; size?: LogoSize }) =>
   LOGO_BY_AIRLINE(size)[airline] ?? <IndigoLogo size={size} />;
 
