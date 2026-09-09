@@ -45,24 +45,38 @@ const CITY_NAMES: Record<string, string> = {
   LKO: 'Lucknow',
   BLR: 'Bengaluru',
   HYD: 'Hyderabad',
+  NAG: 'Nagpur',
+  IDR: 'Indore',
+  JAI: 'Jaipur',
+  AMD: 'Ahmedabad',
 };
 
 export const cityNameOf = (code: string) => CITY_NAMES[code] ?? code;
 
 export const twelveHToMins = (t: string): number => {
-  const m = t.match(/(\d+):(\d+)\s*(AM|PM)/i);
+  const m = t.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)?$/i);
   if (!m) return 0;
-  const h = (parseInt(m[1], 10) % 12) + (m[3].toUpperCase() === 'PM' ? 12 : 0);
+  const ap = m[3]?.toUpperCase();
+  const h = ap ? (parseInt(m[1], 10) % 12) + (ap === 'PM' ? 12 : 0) : parseInt(m[1], 10) % 24;
   return h * 60 + parseInt(m[2], 10);
 };
 
-export const minsToTwelveH = (m: number): string => {
+// Convert a 12-hour time string like "10:30 PM" to 24-hour "22:30".
+// Strings already in 24-hour form (or unparseable) pass through unchanged.
+export const to24H = (t: string): string => {
+  const m = t.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)?$/i);
+  if (!m) return t;
+  const [, h, min, ap] = m;
+  if (!ap) return `${h.padStart(2, '0')}:${min}`;
+  const hh = (parseInt(h, 10) % 12) + (ap.toUpperCase() === 'PM' ? 12 : 0);
+  return `${String(hh).padStart(2, '0')}:${min}`;
+};
+
+export const minsTo24H = (m: number): string => {
   const h24 = ((m % 1440) + 1440) % 1440;
   const h = Math.floor(h24 / 60);
   const min = h24 % 60;
-  const period = h >= 12 ? 'PM' : 'AM';
-  const h12 = h % 12 === 0 ? 12 : h % 12;
-  return `${h12}:${String(min).padStart(2, '0')} ${period}`;
+  return `${String(h).padStart(2, '0')}:${String(min).padStart(2, '0')}`;
 };
 
 export const legFlightCode = (f: Flight, i: number): string => {

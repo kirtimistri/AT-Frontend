@@ -1,25 +1,34 @@
-// FilterGroup.tsx – Reusable filter group component that expands to show a range slider.
+// FilterGroup.tsx – Reusable filter card that can embed a range slider.
 import type { ReactNode } from 'react';
 import { useThemeStore } from '../store/themeStore';
 import { RangeSlider, type SliderSpec } from './RangeSlider';
-import { ChevronDown, ChevronRight } from './icons';
+import { ChevronDown } from './icons';
 
 /* Props for the FilterGroup component. */
 export type FilterGroupProps = {
   icon: ReactNode;
   label: string;
   value: string;
-  chevron?: 'right' | 'down';
   slider?: SliderSpec;
   active: boolean;
   onToggle: () => void;
 };
 
 // Main FilterGroup component.
-export const FilterGroup = ({ icon, label, value, chevron, slider, active, onToggle }: FilterGroupProps) => {
+export const FilterGroup = ({ icon, label, value, slider, active, onToggle }: FilterGroupProps) => {
   // Get current theme to adjust styling.
   const { theme } = useThemeStore();
   const isLight = theme === 'light';
+
+  // Card surface: standalone rounded card with hover lift and an active tint.
+  const cardCls = isLight
+    ? active
+      ? 'bg-[#EFF6FF] border-[#BFDBFE] shadow-[0_4px_14px_rgba(37,99,235,0.14)]'
+      : 'bg-white border-[#E5E7EB] shadow-[0_2px_8px_rgba(0,0,0,0.05)] hover:border-[#BFDBFE] hover:shadow-[0_4px_14px_rgba(37,99,235,0.1)]'
+    : active
+      ? 'bg-gradient-to-r from-[rgba(212,175,55,0.16)] via-[rgba(212,175,55,0.08)] to-transparent border-[rgba(212,175,55,0.45)] shadow-[0_0_16px_rgba(212,175,55,0.12)]'
+      : 'bg-[#0F1B3A] border-[rgba(124,192,255,0.22)] hover:border-[rgba(124,192,255,0.45)] hover:bg-[#12234A]';
+
   return (
     // Main clickable container for the filter group.
     <div
@@ -33,36 +42,40 @@ export const FilterGroup = ({ icon, label, value, chevron, slider, active, onTog
           onToggle();
         }
       }}
-      className={`group relative -mx-4 flex min-h-[72px] flex-none cursor-pointer select-none flex-col justify-center border-b px-4 py-2 transition-all duration-300 md:min-h-0 md:flex-1 md:py-1 last:border-b-0 ${isLight ? 'border-[#E5E7EB]' : 'border-[rgba(124,192,255,0.16)]'} ${active ? (isLight ? 'bg-[#EFF6FF]' : 'bg-gradient-to-r from-[rgba(212,175,55,0.38)] via-[rgba(212,175,55,0.24)] to-[rgba(212,175,55,0.14)]') : (isLight ? 'hover:bg-[#F9FAFB]' : 'hover:bg-gradient-to-r hover:from-[#f0c265] hover:via-[#d4af37] hover:to-[#a8842a]')}`}
+      className={`group relative flex min-h-0 flex-1 cursor-pointer select-none flex-col justify-center rounded-[14px] border px-2.5 py-1 transition-all duration-300 ${cardCls}`}
     >
-      <div className="relative flex items-center justify-between">
-        <div className="flex items-center gap-2">
+      {/* Header row: red icon chip (unchanged) + label/value stack + chevron. */}
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex min-w-0 items-center gap-2.5">
           <span
-            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] ring-1 transition-all duration-300 group-hover:scale-[1.06] group-active:scale-[1.06] ${isLight ? (active ? 'bg-[#DC2626] text-white ring-[#DC2626] group-hover:bg-[#B91C1C] group-hover:ring-[#B91C1C]' : 'bg-[#EF4444] text-white ring-[#EF4444] shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] group-hover:bg-[#DC2626] group-hover:ring-[#DC2626] group-active:bg-[#DC2626] group-active:ring-[#DC2626]') : (active ? 'bg-[#DC2626] text-white ring-[#DC2626]/70 group-hover:bg-[#B91C1C]' : 'bg-[#EF4444] text-white ring-[#EF4444]/60 shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] group-hover:bg-[#DC2626] group-active:bg-[#DC2626]')}`}
+            className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-[8px] ring-1 transition-all duration-300 group-hover:scale-[1.06] group-active:scale-[1.06] ${isLight ? (active ? 'bg-[#DC2626] text-white ring-[#DC2626] group-hover:bg-[#B91C1C] group-hover:ring-[#B91C1C]' : 'bg-[#EF4444] text-white ring-[#EF4444] shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] group-hover:bg-[#DC2626] group-hover:ring-[#DC2626] group-active:bg-[#DC2626] group-active:ring-[#DC2626]') : (active ? 'bg-[#DC2626] text-white ring-[#DC2626]/70 group-hover:bg-[#B91C1C]' : 'bg-[#EF4444] text-white ring-[#EF4444]/60 shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] group-hover:bg-[#DC2626] group-active:bg-[#DC2626]')}`}
           >
             <span className="flex items-center justify-center transition-all duration-300">
               {icon}
             </span>
           </span>
-          <span
-            className={`text-[13.5px] font-semibold transition-colors duration-300 ${isLight ? (active ? 'text-[#2563EB]' : 'text-[#111827]') : (active ? 'text-[#f5d67b]' : 'text-white group-hover:text-[#0E1833] group-active:text-[#f5d67b]')}`}
-          >
-            {label}
-          </span>
+          <div className="flex min-w-0 flex-col">
+            <span
+              className={`text-[12px] font-semibold leading-tight transition-colors duration-300 ${isLight ? (active ? 'text-[#2563EB]' : 'text-[#111827]') : (active ? 'text-[#f5d67b]' : 'text-white')}`}
+            >
+              {label}
+            </span>
+            <span
+              className={`truncate text-[10.5px] leading-tight transition-colors duration-300 ${isLight ? (active ? 'text-[#2563EB]/80' : 'text-[#6B7280]') : (active ? 'text-[rgba(240,194,101,0.9)]' : 'text-white/55')}`}
+            >
+              {value}
+            </span>
+          </div>
         </div>
-        {/* Show a chevron icon on the right side if needed. */}
-        {chevron === 'down' ? (
-          <ChevronDown className={`h-3 w-3 transition-colors duration-300 ${active ? 'text-[#f5d67b]' : 'text-white group-hover:text-[#0E1833] group-active:text-[#f5d67b]'}`} />
-        ) : chevron === 'right' ? (
-          <ChevronRight className={`h-3 w-3 transition-colors duration-300 ${active ? 'text-[#f5d67b]' : 'text-white group-hover:text-[#0E1833] group-active:text-[#f5d67b]'}`} />
-        ) : null}
+        {/* Chevron hints at the embedded slider/options. */}
+        <ChevronDown
+          className={`h-3.5 w-3.5 shrink-0 transition-colors duration-300 ${isLight ? (active ? 'text-[#2563EB]' : 'text-[#9CA3AF]') : (active ? 'text-[#f5d67b]' : 'text-white/40')}`}
+        />
       </div>
-      {/* Display the current filter value below the header row. */}
-      <p className={`relative mt-1 pl-[44px] text-[12px] leading-snug transition-colors duration-300 ${isLight ? (active ? 'text-[#2563EB]' : 'text-[#111827] group-hover:text-[#2563EB] group-active:text-[#2563EB]') : (active ? 'text-[rgba(240,194,101,0.95)]' : 'text-white/85 group-hover:text-[#2a2208]/90 group-active:text-[rgba(240,194,101,0.95)]')}`}>{value}</p>
-      {/* Render the range slider if one was provided. */}
+      {/* Range slider (if provided) — stop clicks from toggling the card. */}
       {slider && (
-        <div className="relative pl-[44px]" onClick={(e) => e.stopPropagation()}>
-          <RangeSlider {...slider} lit={active} />
+        <div className="pl-[34px] pt-1" onClick={(e) => e.stopPropagation()}>
+          <RangeSlider {...slider} />
         </div>
       )}
     </div>

@@ -1,7 +1,8 @@
 // FlightInfoPopover.tsx
-// A popover, visually matching PriceBreakdownPopover, that shows the flight code,
-// departure and arrival terminals plus a per-stop layover breakdown when a plane
-// icon on the flight timeline is hovered or clicked. The arrow always points at
+// A popover, visually matching PriceBreakdownPopover, that shows a compact
+// leg-by-leg itinerary when a plane icon on the flight timeline is hovered or
+// clicked: per-leg flight number, city times with terminals and duration.
+// The arrow always points at
 // the exact icon that was clicked, even when the popover body is clamped to the
 // viewport. While the popover is open, the plane icon animates from its tilted
 // resting angle to straight flight direction.
@@ -10,17 +11,19 @@ import { createPortal } from 'react-dom';
 import type { CSSProperties, ReactNode } from 'react';
 import { useFlightStore } from '../store/flightStore';
 import { useThemeStore } from '../store/themeStore';
-import { minutesToHm, twelveHToMins, minsToTwelveH, durationMinutes } from '../lib/format';
+import { minutesToHm, twelveHToMins, minsTo24H, durationMinutes, cityNameOf } from '../lib/format';
 
 const POPOVER_WIDTH = 250;
 const GAP = 10;
 const EDGE_PAD = 8;
 const ARROW_INSET = 16; // keep the arrow tip at least this far from the popover edges
-const EST_HEIGHT = 200; // provisional height; refined once the popover is measured
+const EST_HEIGHT = 300; // provisional height; refined once the popover is measured
 
 type Anchor = { top: number; left: number; placeAbove: boolean; arrowLeft: number; measured: boolean };
 
 export type StopDetail = { city: string; minutes: number };
+
+type Leg = { dep: string; arr: string; mins: number };
 
 type Props = {
   id: string;
@@ -29,34 +32,59 @@ type Props = {
   departure: string;
   arrTime: string;
   arrival: string;
-  /** Total trip duration, e.g. "5h 40m"; used to derive each stop's landing time. */
+  /** Total trip duration, e.g. "5h 40m"; used to derive each leg's times. */
   duration?: string;
   /** All intermediate stops with their layover durations, in travel order. */
   stops?: StopDetail[];
+  /** Per-leg flight codes (length = stops + 1), e.g. ["6E 2169", "6E 6598"]. */
+  legCodes?: string[];
+  /** Departure/arrival city names, e.g. "Delhi". */
+  depCity?: string;
+  arrCity?: string;
   children: ReactNode;
   className?: string;
   style?: CSSProperties;
 };
 
-// Derive each stop's landing time from the departure time, cumulative flight
-// durations (evenly split, layovers excluded) and the preceding layovers.
-const stopArrivalTimeOf = (stops: StopDetail[], depTime: string, totalDuration: number): string[] => {
+// Build the leg-by-leg schedule: splits the total duration evenly across legs
+// (layovers excluded) and adds each stop's layover before the next departure.
+const itineraryOf = (stops: StopDetail[], depTime: string, totalDuration: number): Leg[] => {
   const dep = twelveHToMins(depTime);
   const layoverTotal = stops.reduce((acc, s) => acc + s.minutes, 0);
   const flying = Math.max(totalDuration - layoverTotal, 0);
-  const leg = flying / (stops.length + 1);
-  const out: string[] = [];
+  const legMins = flying / (stops.length + 1);
+  const legs: Leg[] = [];
   let t = dep;
-  for (const s of stops) {
-    t = Math.round(t + leg + s.minutes);
-    out.push(minsToTwelveH(t));
+  for (let i = 0; i <= stops.length; i++) {
+    const depT = minsTo24H(t);
+    t = Math.round(t + legMins);
+    const arrT = minsTo24H(t);
+    legs.push({ dep: depT, arr: arrT, mins: Math.round(legMins) });
+    if (i < stops.length) t += stops[i].minutes;
   }
-  return out;
+  return legs;
 };
 
-// Renders a clickable timeline icon that opens a positioned popover with terminal
-// and stop-by-stop layover details. The plane icon straightens while open.
-export const FlightInfoPopover = ({ id, code, depTime, departure, arrTime, arrival, duration, stops, children, className = '', style }: Props) => {
+// Deterministic terminal number for intermediate stops.
+const terminalFor = (city: string, code: string) => `Terminal ${((city.charCodeAt(0) + code.length) % 3) + 1}`;
+
+// Renders a clickable timeline icon that opens a positioned popover with the
+// leg-by-leg itinerary. The plane icon straightens while open.
+export const FlightInfoPopover = ({
+  id,
+  code,
+  depTime,
+  departure,
+  arrival,
+  duration,
+  stops,
+  legCodes,
+  depCity,
+  arrCity,
+  children,
+  className = '',
+  style,
+}: Props) => {
   const { theme } = useThemeStore();
   const isLight = theme === 'light';
   const activeId = useFlightStore((s) => s.activePriceBreakdownId);
@@ -71,7 +99,7 @@ export const FlightInfoPopover = ({ id, code, depTime, departure, arrTime, arriv
   const [anchor, setAnchor] = useState<Anchor | null>(null);
 
   const stopList = stops ?? [];
-  const stopTimes = stopArrivalTimeOf(stopList, depTime, duration ? durationMinutes(duration) : 0);
+  const legs = itineraryOf(stopList, depTime, duration ? durationMinutes(duration) : 0);
 
   const openPopover = () => {
     pinnedRef.current = false;
@@ -168,7 +196,7 @@ export const FlightInfoPopover = ({ id, code, depTime, departure, arrTime, arriv
       <button
         ref={triggerRef}
         type="button"
-        aria-label="Show terminal and layover details"
+        aria-label="Show flight itinerary details"
         aria-expanded={open}
         aria-haspopup="dialog"
         onClick={(e) => {
@@ -202,48 +230,76 @@ export const FlightInfoPopover = ({ id, code, depTime, departure, arrTime, arriv
             ref={popRef}
             role="dialog"
             aria-label="Flight details"
-            className={`fixed z-[100] w-[250px] rounded-[12px] border p-4 shadow-[0_12px_36px_rgba(0,0,0,0.35)] backdrop-blur transition-colors duration-300 ${isLight ? 'border-[#E5E7EB] bg-white shadow-[0_12px_36px_rgba(0,0,0,0.14)]' : 'border-[#29466e] bg-[#0d1b2a]'}`}
+            className={`fixed z-[100] w-[250px] rounded-[12px] border p-3.5 shadow-[0_12px_36px_rgba(0,0,0,0.35)] backdrop-blur transition-colors duration-300 ${isLight ? 'border-[#E5E7EB] bg-white shadow-[0_12px_36px_rgba(0,0,0,0.14)]' : 'border-[#29466e] bg-[#0d1b2a]'}`}
             style={{ top: anchor.top, left: anchor.left }}
           >
-            <div className={`text-[11px] font-bold uppercase tracking-[0.1em] transition-colors duration-300 ${isLight ? 'text-[#2563EB]' : 'text-[#7CC0FF]'}`}>Terminal &amp; Layover</div>
-            <div className="mt-3 space-y-2">
-              <div className="flex items-baseline justify-between gap-3">
-                <span className={`text-[11.5px] transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#9baec7]'}`}>Flight</span>
-                <span className={`text-[12px] font-semibold tabular-nums transition-colors duration-300 ${isLight ? 'text-[#111827]' : 'text-white'}`}>{code}</span>
-              </div>
-              <div className="flex items-baseline justify-between gap-3">
-                <span className={`text-[11.5px] transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#9baec7]'}`}>Departs</span>
-                <span className={`text-[12px] font-semibold tabular-nums transition-colors duration-300 ${isLight ? 'text-[#111827]' : 'text-white'}`}>{depTime} · {departure}</span>
-              </div>
-              <div className="flex items-baseline justify-between gap-3">
-                <span className={`text-[11.5px] transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#9baec7]'}`}>Lands</span>
-                <span className={`text-[12px] font-semibold tabular-nums transition-colors duration-300 ${isLight ? 'text-[#111827]' : 'text-white'}`}>{arrTime} · {arrival}</span>
-              </div>
+            <div className={`text-[10.5px] font-bold uppercase tracking-[0.1em] transition-colors duration-300 ${isLight ? 'text-[#2563EB]' : 'text-[#7CC0FF]'}`}>Flight itinerary</div>
 
-              {/* One row per intermediate stop, in travel order */}
-              {stopList.map((s, i) => (
-                <div key={`${s.city}:${i}`} className={`rounded-[8px] bg-white/[0.04] px-2.5 py-1.5 transition-colors duration-300 ${isLight ? 'bg-[#F7F9FC]' : ''}`}>
-                  <div className="flex items-baseline justify-between gap-3">
-                    <span className={`shrink-0 text-[11px] font-bold uppercase tracking-wide transition-colors duration-300 ${isLight ? 'text-[#2563EB]' : 'text-[#7CC0FF]'}`}>
-                      Stop {i + 1}
-                    </span>
-                    <span className={`text-right text-[12px] font-semibold tabular-nums transition-colors duration-300 ${isLight ? 'text-[#111827]' : 'text-white'}`}>
-                      {stopTimes[i]} · {s.city}
-                    </span>
-                  </div>
-                  <div className={`mt-0.5 flex items-baseline justify-between gap-3 transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#9baec7]'}`}>
-                    <span className="shrink-0 text-[10.5px]">Layover</span>
-                    <span className="text-[11px] font-semibold tabular-nums">{minutesToHm(s.minutes)}</span>
-                  </div>
-                </div>
-              ))}
+            <div className="mt-2 space-y-3.5">
+              {legs.map((leg, i) => {
+                const legCode = legCodes?.[i] ?? code;
+                const m = legCode.match(/^(\D+)\s*(\d+)$/);
+                const alCode = (m?.[1] ?? legCode).trim();
+                const legNo = m?.[2] ?? '';
+                const stop = i < stopList.length ? stopList[i] : null;
+                const prevStop = i > 0 ? stopList[i - 1] : null;
+                const depCityI = i === 0 ? depCity ?? departure : cityNameOf(prevStop!.city);
+                const arrCityI = stop ? cityNameOf(stop.city) : arrCity ?? arrival;
+                const depTermI = i === 0 ? departure : terminalFor(prevStop!.city, code);
+                const arrTermI = stop ? terminalFor(stop.city, code) : arrival;
+                return (
+                  <div key={`${legCode}:${i}`}>
+                    {/* Change-of-planes layover pill between legs */}
+                    {prevStop && (
+                      <div
+                        className={`my-2.5 rounded-[7px] border px-2 py-1 text-[10px] font-semibold leading-snug transition-colors duration-300 ${isLight ? 'border-[#FCA5A5] bg-[#FEF2F2] text-[#DC2626]' : 'border-[#ef4444]/40 bg-[#ef4444]/10 text-[#f87171]'}`}
+                      >
+                        Change of planes · {minutesToHm(prevStop.minutes)} layover in {cityNameOf(prevStop.city)}
+                      </div>
+                    )}
 
-              {stopList.length === 0 && (
-                <div className="flex items-baseline justify-between gap-3">
-                  <span className={`shrink-0 text-[11.5px] transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#9baec7]'}`}>Stops</span>
-                  <span className={`text-[12px] font-semibold transition-colors duration-300 ${isLight ? 'text-[#111827]' : 'text-white'}`}>Non-stop</span>
-                </div>
-              )}
+                    {/* Leg header: flight number + cabin */}
+                    <div className="flex items-center gap-1.5">
+                      <span className={`text-[11.5px] font-bold leading-none transition-colors duration-300 ${isLight ? 'text-[#111827]' : 'text-white'}`}>
+                        {alCode}
+                        {legNo && <span className={`font-semibold transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#9baec7]'}`}> | {legNo}</span>}
+                      </span>
+                      <span className={`ml-auto text-[9.5px] font-semibold leading-none transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#9baec7]'}`}>Economy</span>
+                    </div>
+
+                    {/* Route visualization: departure/arrival dots joined by a dotted line, rows beside it */}
+                    <div className="mt-1.5 flex items-stretch gap-2">
+                      <div className="flex w-1.5 shrink-0 flex-col items-center pb-[3px] pt-[3px]">
+                        <span className={`h-[5px] w-[5px] shrink-0 rounded-full transition-colors duration-300 ${isLight ? 'bg-[#2563EB]' : 'bg-[#7CC0FF]'}`} />
+                        <span className={`w-0 flex-1 border-l border-dotted transition-colors duration-300 ${isLight ? 'border-[#94A3B8]' : 'border-[#5a7ea8]'}`} />
+                        <span className={`h-[5px] w-[5px] shrink-0 rounded-full transition-colors duration-300 ${isLight ? 'bg-[#2563EB]' : 'bg-[#7CC0FF]'}`} />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        {/* Departure city + time (left) + terminal (right) */}
+                        <div className="flex items-center gap-1.5">
+                          <span className={`min-w-0 truncate text-[11px] leading-none transition-colors duration-300 ${isLight ? 'text-[#374151]' : 'text-[#c4d2e5]'}`}>
+                            {depCityI} <span className={`font-bold transition-colors duration-300 ${isLight ? 'text-[#111827]' : 'text-white'}`}>{leg.dep}</span>
+                          </span>
+                          <span className={`ml-auto shrink-0 text-[9.5px] leading-none transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#9baec7]'}`}>{depTermI}</span>
+                        </div>
+
+                        {/* Leg duration (centered) */}
+                        <div className={`flex items-center justify-center text-[9.5px] leading-none transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#9baec7]'}`}>
+                          <span className="tabular-nums">{minutesToHm(leg.mins)}</span>
+                        </div>
+
+                        {/* Arrival city + time (left) + terminal (right) */}
+                        <div className="mt-1 flex items-center gap-1.5">
+                          <span className={`min-w-0 truncate text-[11px] leading-none transition-colors duration-300 ${isLight ? 'text-[#374151]' : 'text-[#c4d2e5]'}`}>
+                            {arrCityI} <span className={`font-bold transition-colors duration-300 ${isLight ? 'text-[#111827]' : 'text-white'}`}>{leg.arr}</span>
+                          </span>
+                          <span className={`ml-auto shrink-0 text-[9.5px] leading-none transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#9baec7]'}`}>{arrTermI}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
 
             {/* Arrow pointing at the exact plane icon that was clicked */}

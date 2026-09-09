@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import type { Flight } from '../store/flightStore';
-import { inr } from '../lib/format';
+import { inr, to24H } from '../lib/format';
 import { parseFlightParam } from '../lib/review';
 import { AirlineLogo } from '../components/Logos';
 import { BrandLogo } from '../components/BrandLogo';
@@ -165,7 +165,7 @@ const FlightSegment = ({ f, date, label }: { f: Flight; date: string; label?: st
       {/* times */}
       <div className="mt-4 grid grid-cols-[auto_1fr_auto] items-center gap-3">
         <div>
-          <div className="text-[17px] font-bold leading-none">{f.departure.time}</div>
+          <div className="text-[17px] font-bold leading-none">{to24H(f.departure.time)}</div>
           <div className="mt-1.5 text-[11.5px] font-semibold text-[#7CC0FF]">{airportCode(f.departure.airport)}</div>
           <div className="mt-0.5 text-[11px] text-[#9baec7]">{airportLabel(f.departure.airport)}</div>
         </div>
@@ -174,7 +174,7 @@ const FlightSegment = ({ f, date, label }: { f: Flight; date: string; label?: st
           {f.via ? <div className="mt-0.5 text-center text-[10px] text-[#fdba74]">1 Stop</div> : <div className="mt-0.5 text-center text-[10px] text-[#fdba74]">No Layovers</div>}
         </div>
         <div className="text-right">
-          <div className="text-[17px] font-bold leading-none">{f.arrival.time}</div>
+          <div className="text-[17px] font-bold leading-none">{to24H(f.arrival.time)}</div>
           <div className="mt-1.5 text-[11.5px] font-semibold text-[#7CC0FF]">{airportCode(f.arrival.airport)}</div>
           <div className="mt-0.5 text-[11px] text-[#9baec7]">{airportLabel(f.arrival.airport)}</div>
         </div>
