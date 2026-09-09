@@ -218,7 +218,7 @@ const TripReviewPage = () => {
 
           {/* Right sidebar */}
           <div className="space-y-5 lg:sticky lg:top-6 lg:self-start">
-            <FareSummary />
+            <FareSummary onwardPrice={onwardPrice ?? 0} returnPrice={returnPrice ?? 0} />
             <AncillaryServicesCard
               segments={segments}
               onHold={() => {}}

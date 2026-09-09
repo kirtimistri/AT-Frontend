@@ -44,28 +44,28 @@ export const Header = () => {
   );
 
   const rightSection = (
-    <div className={`flex shrink-0 flex-col items-end gap-1.5 transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-white/85'}`}>
-      <div className="flex items-center gap-2 sm:gap-5">
+    <div className={`flex shrink-0 flex-col items-end gap-0.5 transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-white/85'}`}>
+      <div className="flex items-center gap-1.5 sm:gap-4">
         <button
           type="button"
           onClick={() => setFiltersOpen(!filtersOpen)}
           aria-label="Toggle filters"
           aria-expanded={filtersOpen}
-          className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border transition-colors duration-200 md:hidden ${isLight ? 'bg-white border-[#E5E7EB] text-[#2563EB] hover:bg-[#F3F4F6]' : 'bg-transparent border-[rgba(212,175,55,0.35)] text-[#f0c265] hover:border-[#d4af37]/70 hover:text-[#f5d67b]'}`}
+          className={`flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border transition-colors duration-200 md:hidden ${isLight ? 'bg-white border-[#E5E7EB] text-[#2563EB] hover:bg-[#F3F4F6]' : 'bg-transparent border-[rgba(212,175,55,0.35)] text-[#f0c265] hover:border-[#d4af37]/70 hover:text-[#f5d67b]'}`}
         >
-          <svg {...iconProps('h-4 w-4')}><line x1="4" y1="6" x2="20" y2="6" /><line x1="4" y1="12" x2="20" y2="12" /><line x1="4" y1="18" x2="20" y2="18" /></svg>
+          <svg {...iconProps('h-3.5 w-3.5')}><line x1="4" y1="6" x2="20" y2="6" /><line x1="4" y1="12" x2="20" y2="12" /><line x1="4" y1="18" x2="20" y2="18" /></svg>
         </button>
-        <div className={`flex h-8 w-8 items-center justify-center rounded-full text-[12px] font-semibold transition-colors duration-300 ${isLight ? 'bg-[#EFF6FF] text-[#2563EB]' : 'bg-[#2B5BFF] text-white'}`}>
+        <div className={`flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-semibold transition-colors duration-300 ${isLight ? 'bg-[#EFF6FF] text-[#2563EB]' : 'bg-[#2B5BFF] text-white'}`}>
           AS
         </div>
-        <ThemeToggle className="shrink-0" />
+        <ThemeToggle className="shrink-0" size="sm" />
       </div>
       <div className="relative">
         <button
           type="button"
           onClick={() => setCabinOpen((o) => !o)}
           aria-expanded={cabinOpen}
-          className="flex cursor-pointer items-center gap-1.5 border-none bg-transparent text-[12.5px] font-medium sm:text-[13.5px] transition-colors duration-300"
+          className="flex cursor-pointer items-center gap-1 border-none bg-transparent text-[12px] font-medium sm:text-[12.5px] transition-colors duration-300"
         >
           {cabin} <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-300 ${isLight ? 'text-[#9CA3AF]' : 'text-white/50'} ${cabinOpen ? 'rotate-180' : ''}`} />
         </button>
@@ -97,10 +97,10 @@ export const Header = () => {
     <div className={`group relative mt-1.5 flex flex-wrap items-stretch overflow-hidden rounded-[26px] border transition-all duration-300 hover:border-[#d4af37]/70 sm:rounded-l-[16px] sm:rounded-r-[26px] lg:mt-0 ${isLight ? 'bg-white border-[#E5E7EB] shadow-[0_4px_12px_rgba(0,0,0,0.08)]' : 'bg-[#0F1B3A] border-[rgba(124,192,255,0.22)] shadow-[0_10px_30px_rgba(0,0,0,0.35)] hover:shadow-[0_0_18px_rgba(212,175,55,0.3),0_0_50px_rgba(212,175,55,0.14)]'}`}>
       {/* From + To (swap button overlaps the divider) */}
       <div className="relative flex w-full min-w-0 border-b border-white/10 sm:w-auto sm:flex-1 sm:border-b-0">
-        <div className={`relative flex min-w-0 flex-1 items-center px-3 py-1.5 sm:px-5 sm:py-2.5 border-l transition-colors duration-300 ${isLight ? 'border-l-[#E5E7EB]' : 'border-l-white/10'}`}>
+        <div className={`relative flex min-w-0 flex-1 items-center px-3 py-1 sm:px-5 sm:py-1.5 border-l transition-colors duration-300 ${isLight ? 'border-l-[#E5E7EB]' : 'border-l-white/10'}`}>
           <div className="min-w-0">
-            <div className={`bar-text text-[10.5px] font-semibold tracking-[0.12em] transition-all duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#7CC0FF]'}`}>From</div>
-            <div className={`bar-text-value mt-1 truncate text-[13px] font-bold transition-all duration-300 sm:text-[15px] ${isLight ? 'text-[#111827]' : 'text-white'}`}>{fromCity}</div>
+            <div className={`bar-text text-[10px] font-semibold tracking-[0.12em] transition-all duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#7CC0FF]'}`}>From</div>
+            <div className={`bar-text-value mt-0.5 truncate text-[12.5px] font-bold transition-all duration-300 sm:text-[14px] ${isLight ? 'text-[#111827]' : 'text-white'}`}>{fromCity}</div>
           </div>
         </div>
 
@@ -116,19 +116,19 @@ export const Header = () => {
           </span>
         </button>
 
-        <div className={`relative flex min-w-0 flex-1 items-center border-l px-3 py-1.5 sm:px-5 sm:py-2.5 transition-colors duration-300 ${isLight ? 'border-l-[#E5E7EB]' : 'border-white/10'}`}>
+        <div className={`relative flex min-w-0 flex-1 items-center border-l px-3 py-1 sm:px-5 sm:py-1.5 transition-colors duration-300 ${isLight ? 'border-l-[#E5E7EB]' : 'border-white/10'}`}>
           <div className="min-w-0">
-            <div className={`bar-text text-[10.5px] font-semibold tracking-[0.12em] transition-all duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#7CC0FF]'}`}>To</div>
-            <div className={`bar-text-value mt-1 truncate text-[13px] font-bold transition-all duration-300 sm:text-[15px] ${isLight ? 'text-[#111827]' : 'text-white'}`}>{toCity}</div>
+            <div className={`bar-text text-[10px] font-semibold tracking-[0.12em] transition-all duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#7CC0FF]'}`}>To</div>
+            <div className={`bar-text-value mt-0.5 truncate text-[12.5px] font-bold transition-all duration-300 sm:text-[14px] ${isLight ? 'text-[#111827]' : 'text-white'}`}>{toCity}</div>
           </div>
         </div>
       </div>
 
       {/* Departure */}
-      <div className={`flex w-1/2 shrink-0 items-center border-b px-3 py-1.5 sm:w-[150px] sm:border-b-0 sm:border-l sm:px-5 sm:py-2.5 transition-colors duration-300 ${isLight ? 'border-b-[#E5E7EB]' : 'border-white/10'}`}>
+      <div className={`flex w-1/2 shrink-0 items-center border-b px-3 py-1 sm:w-[150px] sm:border-b-0 sm:border-l sm:px-5 sm:py-1.5 transition-colors duration-300 ${isLight ? 'border-b-[#E5E7EB]' : 'border-white/10'}`}>
         <div>
-          <div className={`bar-text text-[10.5px] font-semibold tracking-[0.12em] transition-all duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#7CC0FF]'}`}>Departure</div>
-          <div className={`bar-text-value mt-1 text-[13px] font-bold transition-all duration-300 sm:text-[15px] ${isLight ? 'text-[#111827]' : 'text-white'}`}>{stripDay.label}</div>
+          <div className={`bar-text text-[10px] font-semibold tracking-[0.12em] transition-all duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#7CC0FF]'}`}>Departure</div>
+          <div className={`bar-text-value mt-0.5 text-[12.5px] font-bold transition-all duration-300 sm:text-[14px] ${isLight ? 'text-[#111827]' : 'text-white'}`}>{stripDay.label}</div>
         </div>
       </div>
 
@@ -136,20 +136,20 @@ export const Header = () => {
       <button
         type="button"
         onClick={() => setReturnOpen(!returnOpen)}
-        className={`relative flex w-1/2 shrink-0 cursor-pointer items-center border-b border-l px-3 py-1.5 text-left transition-colors duration-200 sm:w-[150px] sm:border-b-0 sm:px-5 sm:py-2.5 ${isLight ? 'bg-white border-[#E5E7EB] hover:bg-[#F9FAFB]' : 'bg-transparent border-white/10 hover:bg-[rgba(212,175,55,0.06)]'}`}
+        className={`relative flex w-1/2 shrink-0 cursor-pointer items-center border-b border-l px-3 py-1 text-left transition-colors duration-200 sm:w-[150px] sm:border-b-0 sm:px-5 sm:py-1.5 ${isLight ? 'bg-white border-[#E5E7EB] hover:bg-[#F9FAFB]' : 'bg-transparent border-white/10 hover:bg-[rgba(212,175,55,0.06)]'}`}
       >
         <div>
-          <div className={`bar-text text-[10.5px] font-semibold tracking-[0.12em] transition-all duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#7CC0FF]'}`}>Return</div>
-          <div className={`mt-1 truncate text-[13px] font-bold transition-all duration-300 sm:text-[15px] ${returnDate ? (isLight ? 'text-[#111827]' : 'text-white') : (isLight ? 'text-[#9CA3AF]' : 'text-white/40')}`}>{returnDate ?? 'Return'}</div>
+          <div className={`bar-text text-[10px] font-semibold tracking-[0.12em] transition-all duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#7CC0FF]'}`}>Return</div>
+          <div className={`mt-0.5 truncate text-[12.5px] font-bold transition-all duration-300 sm:text-[14px] ${returnDate ? (isLight ? 'text-[#111827]' : 'text-white') : (isLight ? 'text-[#9CA3AF]' : 'text-white/40')}`}>{returnDate ?? 'Return'}</div>
           <ChevronDown className={`absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-white/40'}`} />
         </div>
       </button>
 
       {/* Travellers & Class */}
-      <div className={`flex w-full min-w-0 items-center border-l px-3 py-1.5 sm:w-auto sm:flex-1 sm:border-l sm:px-5 sm:py-2.5 transition-colors duration-300 ${isLight ? 'border-l-[#E5E7EB]' : 'border-white/10'}`}>
+      <div className={`flex w-full min-w-0 items-center border-l px-3 py-1 sm:w-auto sm:flex-1 sm:border-l sm:px-5 sm:py-1.5 transition-colors duration-300 ${isLight ? 'border-l-[#E5E7EB]' : 'border-white/10'}`}>
         <div className="min-w-0">
-          <div className={`bar-text text-[10.5px] font-semibold tracking-[0.12em] transition-all duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#7CC0FF]'}`}>Travellers & Class</div>
-          <div className={`bar-text-value mt-1 truncate text-[13px] font-bold transition-all duration-300 sm:text-[15px] ${isLight ? 'text-[#111827]' : 'text-white'}`}>1 Traveller, {cabin}</div>
+          <div className={`bar-text text-[10px] font-semibold tracking-[0.12em] transition-all duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#7CC0FF]'}`}>Travellers & Class</div>
+          <div className={`bar-text-value mt-0.5 truncate text-[12.5px] font-bold transition-all duration-300 sm:text-[14px] ${isLight ? 'text-[#111827]' : 'text-white'}`}>1 Traveller, {cabin}</div>
         </div>
       </div>
 
@@ -178,8 +178,8 @@ export const Header = () => {
   );
 
   return (
-    <header className={`sticky top-0 z-30 shrink-0 border-b px-3 pb-1.5 pt-1.5 sm:px-6 sm:pb-3 sm:pt-2 transition-colors duration-300 ${isLight ? 'bg-white border-[#E5E7EB] shadow-sm' : 'bg-[#0E1833] border-white/10'}`}>
-      <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:gap-4">
+    <header className={`sticky top-0 z-30 shrink-0 border-b px-3 pb-0.5 pt-0.5 sm:px-6 sm:pb-1.5 sm:pt-1 transition-colors duration-300 ${isLight ? 'bg-white border-[#E5E7EB] shadow-sm' : 'bg-[#0E1833] border-white/10'}`}>
+      <div className="flex flex-col gap-1 lg:flex-row lg:items-center lg:gap-4">
         <div className="flex shrink-0 items-center">{leftSection}</div>
         <div className="min-w-0 flex-1">{searchBar}</div>
         <div className="flex shrink-0 items-center">{rightSection}</div>

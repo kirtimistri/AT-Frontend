@@ -31,12 +31,12 @@ export const ThemeToggle = ({
   const s =
     size === 'sm'
       ? {
-          btn: 'h-[26px] w-[50px]',
-          knob: 'left-[2px] top-[2px] h-[22px] w-[22px]',
-          knobOn: 'translate-x-[24px]',
-          icon: 'h-[12px] w-[12px]',
-          left: 'left-[7px]',
-          right: 'right-[7px]',
+          btn: 'h-[22px] w-[42px]',
+          knob: 'left-[2px] top-[2px] h-[18px] w-[18px]',
+          knobOn: 'translate-x-[20px]',
+          icon: 'h-[10px] w-[10px]',
+          left: 'left-[6px]',
+          right: 'right-[6px]',
         }
       : {
           btn: 'h-[32px] w-[62px]',
