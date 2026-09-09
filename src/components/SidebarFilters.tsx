@@ -35,7 +35,7 @@ export const SidebarFilters = () => {
         <FilterGroup
           icon={<ClockArrowUp className="h-4 w-4" />}
           label="Departure"
-          value="05:00 AM – 11:59 PM"
+          value="05:00 – 23:59"
           slider={{ from: 10, to: 60 }}
           active={openFilters[2]}
           onToggle={() => toggleFilterGroup(2)}
@@ -43,7 +43,7 @@ export const SidebarFilters = () => {
         <FilterGroup
           icon={<ClockArrowDown className="h-4 w-4" />}
           label="Arrival"
-          value="07:00 AM – 11:59 PM"
+          value="07:00 – 23:59"
           slider={{ from: 14, to: 64 }}
           active={openFilters[3]}
           onToggle={() => toggleFilterGroup(3)}

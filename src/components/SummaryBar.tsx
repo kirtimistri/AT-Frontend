@@ -2,7 +2,7 @@
 import type { Flight } from '../store/flightStore';
 import { useFlightStore } from '../store/flightStore';
 import { AirlineLogo } from './Logos';
-import { inr } from '../lib/format';
+import { inr, to24H } from '../lib/format';
 import { useThemeStore } from '../store/themeStore';
 import { openReview } from '../lib/openReview';
 import { tierAdjustedPrice } from '../lib/fare';
@@ -19,7 +19,7 @@ const FlightSummary = ({ label, f, isLight }: { label: 'ONWARD' | 'RETURN'; f: F
             {f.airline} <span className={`transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#9baec7]'}`}>• {f.code}</span>
           </div>
           <div className={`mt-0.5 flex items-center gap-1.5 text-[10px] sm:text-[11px] transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#b6c3d5]'}`}>
-            <span className="min-w-0 truncate">{f.departure.time} → {f.arrival.time}</span>
+            <span className="min-w-0 truncate">{to24H(f.departure.time)} → {to24H(f.arrival.time)}</span>
             <span className={`h-2.5 w-px shrink-0 transition-colors duration-300 ${isLight ? 'bg-[#E5E7EB]' : 'bg-[#315073]'}`} />
             <span className="shrink-0 whitespace-nowrap">{f.duration}</span>
           </div>
