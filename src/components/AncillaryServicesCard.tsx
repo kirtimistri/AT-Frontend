@@ -1,10 +1,12 @@
+// AncillaryServicesCard.tsx
+// Summary card for ancillary services (meals, seats, baggage, SSR) shown in the flight review sidebar.
 import { useState } from 'react';
 import { Sparkles } from 'lucide-react';
 import { useThemeStore } from '../store/themeStore';
 import { useAncillaryStore, travellerSectionOf } from '../store/ancillaryStore';
 import { selectionTotal } from '../lib/ancillary';
 import { inr } from '../lib/format';
-import { AncillaryServicesModal, type AncillarySegment } from './AncillaryServicesModal';
+import type { AncillarySegment } from './AncillaryServicesModal';
 
 type PricingField = {
   label: string;
@@ -12,6 +14,7 @@ type PricingField = {
   onChange: (val: string) => void;
 };
 
+// Reusable input field for entering a rupee amount.
 const PricingInput = ({ label, value, onChange, isLight }: PricingField & { isLight: boolean }) => (
   <label className="block">
     <span className={`mb-1.5 block text-[11px] font-medium transition-colors duration-300 ${isLight ? 'text-[#555]' : 'text-[#9baec7]'}`}>{label}</span>
@@ -31,6 +34,7 @@ const PricingInput = ({ label, value, onChange, isLight }: PricingField & { isLi
 /* The "Ancillary / SSR" entry card that replaces the legacy Seat / Meal card in
    the Flight Review (trip review) right sidebar. It opens the
    AncillaryServicesModal and reflects the currently selected services. */
+// Main card component that shows selected ancillary services and pricing controls.
 export const AncillaryServicesCard = ({
   segments,
   onBack,
@@ -44,7 +48,6 @@ export const AncillaryServicesCard = ({
 }) => {
   const { theme } = useThemeStore();
   const isLight = theme === 'light';
-  const [open, setOpen] = useState(false);
 
   const [serviceCharge, setServiceCharge] = useState('');
   const [markupBase, setMarkupBase] = useState('');
@@ -120,7 +123,7 @@ export const AncillaryServicesCard = ({
 
         <button
           type="button"
-          onClick={() => setOpen(true)}
+          onClick={onBook}
           className={`mt-4 flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg py-2.5 text-[13px] font-semibold text-white transition-all duration-300 ${isLight ? 'bg-[#004B7C] shadow-[0_4px_12px_rgba(0,75,124,0.25)] hover:bg-[#003E67]' : 'bg-[#2593fc] shadow-[0_6px_18px_rgba(37,147,252,0.45)] hover:bg-[#d4af37]'}`}
         >
           <Sparkles className="h-4 w-4" />
@@ -159,8 +162,6 @@ export const AncillaryServicesCard = ({
           </button>
         </div>
       </div>
-
-      {open && <AncillaryServicesModal onClose={() => setOpen(false)} segments={segments} />}
     </>
   );
 };

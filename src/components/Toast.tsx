@@ -1,7 +1,9 @@
+// Toast.tsx – Toast notification system that shows temporary messages at the top of the screen.
 import { useEffect, useState, type ReactNode } from 'react';
 import { dismissToast, getActiveToasts, subscribeToasts, type ToastData, type ToastKind } from './toastStore';
 import { useThemeStore } from '../store/themeStore';
 
+// Helper to convert HTTP status codes to human-readable labels.
 const statusLabel = (code: number): string => {
   switch (code) {
     case 200:
@@ -35,6 +37,7 @@ const statusLabel = (code: number): string => {
   }
 };
 
+// Color themes for each toast kind (error, warning, success, info).
 const kindTheme: Record<
   ToastKind,
   { bar: string; text: string; glow: string; tileBg: string; tileRing: string; lightBg: string; lightText: string }
@@ -77,6 +80,7 @@ const kindTheme: Record<
   },
 };
 
+// SVG icons for each toast kind.
 const kindIcons: Record<ToastKind, ReactNode> = {
   success: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -107,18 +111,23 @@ const kindIcons: Record<ToastKind, ReactNode> = {
   ),
 };
 
+// Main component that renders the toast notification list.
 export function ToastViewport() {
+  // Subscribe to active toasts from the toast store.
   const [items, setItems] = useState<ToastData[]>(() => getActiveToasts());
   const { theme } = useThemeStore();
   const isLight = theme === 'light';
 
+  // Re-render whenever the toast store updates.
   useEffect(() => {
     return subscribeToasts((next) => setItems(next));
   }, []);
 
   return (
+    // List of all active toast notifications.
     <div className="pointer-events-none fixed inset-x-0 top-4 z-[120] flex flex-col items-center gap-3 px-3 sm:inset-x-auto sm:top-5 sm:right-5 sm:items-end">
       {items.map((t) => {
+        // Look up the colors/theme for this toast kind.
         const p = kindTheme[t.kind];
         return (
           <div
@@ -147,6 +156,7 @@ export function ToastViewport() {
               </span>
 
               <div className="min-w-0 flex-1 pt-[2px]">
+                {/* Title and optional status code badge. */}
                 <div className="flex flex-wrap items-center gap-2">
                   <span className={`text-[13px] font-bold tracking-wide transition-colors duration-300 ${isLight ? 'text-[#111827]' : ''}`} style={!isLight ? { color: p.text } : undefined}>
                     {t.title}
@@ -165,6 +175,7 @@ export function ToastViewport() {
                 )}
               </div>
 
+              {/* Dismiss button to close this toast. */}
               <button
                 onClick={() => dismissToast(t.id)}
                 className={`toast-dismiss-btn flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-full border bg-transparent transition-all duration-200 ${isLight ? 'border-[#E5E7EB] text-[#9CA3AF] hover:border-[#2563EB] hover:text-[#2563EB]' : 'border-[rgba(124,192,255,0.25)] text-white/45 hover:border-[#d4af37]/70 hover:text-[#f0c265]'}`}
@@ -176,6 +187,7 @@ export function ToastViewport() {
               </button>
             </div>
 
+            {/* Progress bar that shrinks as the toast countdowns. */}
             <span className="absolute inset-x-0 bottom-0 block h-[3px]">
               <span
                 className="toast-progress block h-full rounded-r-full"

@@ -1,3 +1,5 @@
+// FlightItinerary – Wrapper card that shows the full flight itinerary (onward and optional return flight cards).
+
 import { Plane } from 'lucide-react';
 import { FlightCard as ReviewFlightCard, type FlightCardProps } from './FlightCard';
 import { useThemeStore } from '../../store/themeStore';
@@ -8,12 +10,15 @@ type FlightItineraryProps = {
 };
 
 export const FlightItinerary = ({ onward, ret }: FlightItineraryProps) => {
+  // Theme for light / dark mode styling
   const { theme } = useThemeStore();
   const isLight = theme === 'light';
+  // Determine if this is a round-trip booking (both legs present)
   const isRoundTrip = !!onward && !!ret;
 
   return (
     <div className={`rounded-lg border p-6 lg:p-7 transition-colors duration-300 ${isLight ? 'border-[#EEEEEE] bg-white' : 'border-[#29466e] bg-[#0f172a]'}`}>
+      {/* Section header with icon, title, and trip-type badge */}
       <div className="mb-5 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <Plane className={`h-5 w-5 transition-colors duration-300 ${isLight ? 'text-[#004B7C]' : 'text-[#7CC0FF]'}`} />
@@ -24,6 +29,7 @@ export const FlightItinerary = ({ onward, ret }: FlightItineraryProps) => {
         </span>
       </div>
 
+      {/* Render the onward and (optionally) return flight cards */}
       <div className="space-y-4">
         {onward && <ReviewFlightCard {...onward} />}
         {ret && <ReviewFlightCard {...ret} />}

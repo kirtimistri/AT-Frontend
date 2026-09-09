@@ -1,3 +1,5 @@
+// FlightTimeline – Visual timeline bar connecting departure and arrival (dots, line, plane icon, duration, stops).
+
 import { Plane } from 'lucide-react';
 import { useThemeStore } from '../../store/themeStore';
 
@@ -9,6 +11,7 @@ type FlightTimelineProps = {
 };
 
 export const FlightTimeline = ({ duration, isDirect, stops, isReturn = false }: FlightTimelineProps) => {
+  // Theme and derived colors (return flights use a red accent)
   const { theme } = useThemeStore();
   const isLight = theme === 'light';
   const accentColor = isReturn ? '#B5122B' : '#004B7C';
@@ -16,7 +19,9 @@ export const FlightTimeline = ({ duration, isDirect, stops, isReturn = false }: 
 
   return (
     <div className="flex min-w-0 flex-1 flex-col items-center">
+      {/* Duration label above the timeline */}
       <span className={`mb-1.5 text-[11px] transition-colors duration-300 ${isLight ? 'text-[#777]' : 'text-[#7e93b3]'}`}>{duration}</span>
+      {/* Timeline bar: departure dot — line with plane — arrival dot */}
       <div className="flex w-full items-center gap-0">
         <span
           className="h-[8px] w-[8px] shrink-0 rounded-full"
@@ -39,6 +44,7 @@ export const FlightTimeline = ({ duration, isDirect, stops, isReturn = false }: 
           style={{ backgroundColor: accentColor }}
         />
       </div>
+      {/* Stop info label below the timeline */}
       <span
         className="mt-1.5 text-[11px] font-medium"
         style={{ color: accentColor }}

@@ -331,6 +331,8 @@ type FlightStore = {
   searched: boolean;
   selectedOnward: Flight | null;
   selectedReturn: Flight | null;
+  selectedOnwardTier: string | null;
+  selectedReturnTier: string | null;
   onwardSort: SortKey;
   returnSort: SortKey;
   stripStart: number;
@@ -345,6 +347,8 @@ type FlightStore = {
   pickReturnDate: (label: string) => void;
   setSelectedOnward: (f: Flight | null) => void;
   setSelectedReturn: (f: Flight | null) => void;
+  setSelectedOnwardTier: (t: string | null) => void;
+  setSelectedReturnTier: (t: string | null) => void;
   setOnwardSort: (k: SortKey) => void;
   setReturnSort: (k: SortKey) => void;
   setStripSel: (i: number) => void;
@@ -370,6 +374,8 @@ export const useFlightStore = create<FlightStore>()((set, get) => ({
   searched: false,
   selectedOnward: null,
   selectedReturn: null,
+  selectedOnwardTier: null,
+  selectedReturnTier: null,
   onwardSort: 'price',
   returnSort: 'price',
   stripStart: STRIP_DEFAULT_START,
@@ -387,6 +393,8 @@ export const useFlightStore = create<FlightStore>()((set, get) => ({
       returnDate: null,
       selectedOnward: null,
       selectedReturn: null,
+      selectedOnwardTier: null,
+      selectedReturnTier: null,
       onwardSort: 'price',
       returnSort: 'price',
       monthOffset: 0,
@@ -400,6 +408,8 @@ export const useFlightStore = create<FlightStore>()((set, get) => ({
   pickReturnDate: (label) => set({ returnDate: label, returnOpen: false }),
   setSelectedOnward: (f) => set({ selectedOnward: f }),
   setSelectedReturn: (f) => set({ selectedReturn: f }),
+  setSelectedOnwardTier: (t) => set({ selectedOnwardTier: t }),
+  setSelectedReturnTier: (t) => set({ selectedReturnTier: t }),
   setOnwardSort: (k) => set({ onwardSort: k }),
   setReturnSort: (k) => set({ returnSort: k }),
   setStripSel: (i) => set({ stripSel: i }),

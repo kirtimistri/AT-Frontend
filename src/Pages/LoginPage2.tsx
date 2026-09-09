@@ -1,3 +1,5 @@
+// Login page: lets the user sign in with email + password, or use the demo
+// account, and redirects to the search page after a successful login.
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -11,18 +13,22 @@ import { loginUser, ApiError } from '../services/authService';
 import { toast } from '../components/toastStore';
 import { ThemeToggle } from '../components/ThemeToggle';
 
+// Pre-filled credentials for the demo login button.
 const DEMO_EMAIL = 'demo@akbarbizvoy.com';
 const DEMO_PASSWORD = 'demo123';
 
 const LoginPage2 = () => {
   const navigate = useNavigate();
 
+  // Theme + auth store setup.
   const { theme } = useThemeStore();
   const authLogin = useAuthStore((s) => s.login);
 
+  // Form state.
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  // Whether the password is visible (toggle) and if the form is submitting.
   const [showPassword, setShowPassword] = useState(false);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -593,7 +599,7 @@ const LoginPage2 = () => {
         {/* -------------------------------- */}
 
         <div className="absolute right-4 top-4 z-[60]">
-          <ThemeToggle />
+          <ThemeToggle size="sm" />
         </div>
 
         {/* -------------------------------- */}

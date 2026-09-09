@@ -1,6 +1,8 @@
+// Logo.tsx – Full brand logo: image icon plus "Akbar Bizvoy" text and an optional tagline.
 import logo2 from '../assets/Backgoundimages/logo2.svg';
 import { useThemeStore } from '../store/themeStore';
 
+// Props for the Logo component.
 interface LogoProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
   className?: string;
@@ -9,6 +11,7 @@ interface LogoProps {
   textClassName?: string;
 }
 
+// Maps each size keyword to its Tailwind height/width classes.
 const SIZE_CLASSES: Record<NonNullable<LogoProps['size']>, string> = {
   sm: 'h-8 w-8',
   md: 'h-10 w-10',
@@ -16,6 +19,7 @@ const SIZE_CLASSES: Record<NonNullable<LogoProps['size']>, string> = {
   xl: 'h-[70px] w-[70px]',
 };
 
+// Component that just shows the logo image icon on its own.
 export const LogoIcon = ({ size = 'md', className = '' }: Omit<LogoProps, 'withText' | 'textClassName' | 'withTagline'>) => (
   <img
     src={logo2}
@@ -24,6 +28,7 @@ export const LogoIcon = ({ size = 'md', className = '' }: Omit<LogoProps, 'withT
   />
 );
 
+// Full Logo component: icon + text, plus an optional tagline below.
 export const Logo = ({
   size = 'md',
   className = '',
@@ -31,11 +36,13 @@ export const Logo = ({
   withTagline = false,
   textClassName = '',
 }: LogoProps) => {
+  // Get the current theme so the text color matches it.
   const { theme } = useThemeStore();
   return (
   <div className={`akbar-logo ${className}`}>
     <div className="flex items-center gap-2">
       <LogoIcon size={size} />
+      {/* Show the "Akbar Bizvoy" text next to the icon when requested. */}
       {withText && (
         <div className="flex flex-col leading-none">
           <span
@@ -54,6 +61,7 @@ export const Logo = ({
       )}
     </div>
 
+    {/* Optionally show the "An Enterprise Travel Solution" tagline badge below the name. */}
     {withTagline && (
       <div className="mt-2 flex w-full items-center justify-center rounded bg-[#F20D59] px-4 py-1.5">
         <span

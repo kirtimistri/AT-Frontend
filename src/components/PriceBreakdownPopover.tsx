@@ -1,3 +1,5 @@
+// PriceBreakdownPopover.tsx
+// A popover that shows a detailed price breakdown (base fare, taxes, fees) when the price is clicked.
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { ReactNode } from 'react';
@@ -16,6 +18,7 @@ type Props = {
   className?: string;
 };
 
+// Renders a clickable price that opens a positioned popover with the full cost breakdown.
 export const PriceBreakdownPopover = ({ id, breakdown, children, className = '' }: Props) => {
   const { theme } = useThemeStore();
   const isLight = theme === 'light';

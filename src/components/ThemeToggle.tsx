@@ -1,5 +1,7 @@
+// Switch-style toggle for switching between light and dark theme.
 import { useThemeStore } from '../store/themeStore';
 
+// Small sun graphic shown on the left side of the switch
 const SunIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className={className}>
     <circle cx="12" cy="12" r="4" />
@@ -7,6 +9,7 @@ const SunIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
+// Small moon graphic shown on the right side of the switch
 const MoonIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
     <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
@@ -24,19 +27,21 @@ export const ThemeToggle = ({
   className?: string;
   size?: 'md' | 'sm';
 }) => {
+  // Read current theme and the toggle action from the store
   const theme = useThemeStore((s) => s.theme);
   const toggleTheme = useThemeStore((s) => s.toggleTheme);
   const isLight = theme === 'light';
 
+  // Size-specific CSS classes so small and large switches render correctly
   const s =
     size === 'sm'
       ? {
-          btn: 'h-[26px] w-[50px]',
-          knob: 'left-[2px] top-[2px] h-[22px] w-[22px]',
-          knobOn: 'translate-x-[24px]',
-          icon: 'h-[12px] w-[12px]',
-          left: 'left-[7px]',
-          right: 'right-[7px]',
+          btn: 'h-[22px] w-[42px]',
+          knob: 'left-[2px] top-[2px] h-[18px] w-[18px]',
+          knobOn: 'translate-x-[20px]',
+          icon: 'h-[10px] w-[10px]',
+          left: 'left-[6px]',
+          right: 'right-[6px]',
         }
       : {
           btn: 'h-[32px] w-[62px]',
@@ -47,6 +52,7 @@ export const ThemeToggle = ({
           right: 'right-[9px]',
         };
 
+  // Render the switch button with sun, moon, and sliding knob
   return (
     <div className={className}>
       <button

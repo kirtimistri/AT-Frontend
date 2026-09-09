@@ -1,8 +1,10 @@
+// FilterGroup.tsx – Reusable filter group component that expands to show a range slider.
 import type { ReactNode } from 'react';
 import { useThemeStore } from '../store/themeStore';
 import { RangeSlider, type SliderSpec } from './RangeSlider';
 import { ChevronDown, ChevronRight } from './icons';
 
+/* Props for the FilterGroup component. */
 export type FilterGroupProps = {
   icon: ReactNode;
   label: string;
@@ -13,10 +15,13 @@ export type FilterGroupProps = {
   onToggle: () => void;
 };
 
+// Main FilterGroup component.
 export const FilterGroup = ({ icon, label, value, chevron, slider, active, onToggle }: FilterGroupProps) => {
+  // Get current theme to adjust styling.
   const { theme } = useThemeStore();
   const isLight = theme === 'light';
   return (
+    // Main clickable container for the filter group.
     <div
       role="button"
       tabIndex={0}
@@ -45,13 +50,16 @@ export const FilterGroup = ({ icon, label, value, chevron, slider, active, onTog
             {label}
           </span>
         </div>
+        {/* Show a chevron icon on the right side if needed. */}
         {chevron === 'down' ? (
           <ChevronDown className={`h-3 w-3 transition-colors duration-300 ${active ? 'text-[#f5d67b]' : 'text-[#7CC0FF] group-hover:text-[#0E1833] group-active:text-[#f5d67b]'}`} />
         ) : chevron === 'right' ? (
           <ChevronRight className={`h-3 w-3 transition-colors duration-300 ${active ? 'text-[#f5d67b]' : 'text-[#7CC0FF] group-hover:text-[#0E1833] group-active:text-[#f5d67b]'}`} />
         ) : null}
       </div>
+      {/* Display the current filter value below the header row. */}
       <p className={`relative mt-1 pl-[40px] text-[11px] leading-tight transition-colors duration-300 ${isLight ? (active ? 'text-[#2563EB]' : 'text-[#6B7280] group-hover:text-[#2563EB] group-active:text-[#2563EB]') : (active ? 'text-[rgba(240,194,101,0.95)]' : 'text-[#9CC6FF]/85 group-hover:text-[#2a2208]/90 group-active:text-[rgba(240,194,101,0.95)]')}`}>{value}</p>
+      {/* Render the range slider if one was provided. */}
       {slider && (
         <div className="relative pl-[40px]" onClick={(e) => e.stopPropagation()}>
           <RangeSlider {...slider} lit={active} />

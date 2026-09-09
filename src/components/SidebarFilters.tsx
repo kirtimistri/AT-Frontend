@@ -1,9 +1,11 @@
+// Sidebar panel with filter groups (stops, airline, times, price, etc.) and a save-search button.
 import { useFlightStore } from '../store/flightStore';
 import { useThemeStore } from '../store/themeStore';
 import { FilterGroup } from './FilterGroup';
 import { GitFork, PlaneTakeoff, ClockArrowUp, ClockArrowDown, Rupee, Timer, ShoppingBag, RotateCcw, Bookmark, ChevronRight } from './icons';
 
 export const SidebarFilters = () => {
+  // Theme and filter state read from the global store
   const { theme } = useThemeStore();
   const isLight = theme === 'light';
   const filtersOpen = useFlightStore((s) => s.filtersOpen);
@@ -11,8 +13,10 @@ export const SidebarFilters = () => {
   const toggleFilterGroup = useFlightStore((s) => s.toggleFilterGroup);
   const clearFilters = useFlightStore((s) => s.clearFilters);
 
+  // Sidebar container: visible only when filters are open (on mobile) or always on desktop
   return (
     <aside className={`group/sidebar ${filtersOpen ? 'flex' : 'hidden'} w-full shrink-0 flex-col border-r p-3 md:flex md:w-[280px] transition-colors duration-300 ${isLight ? 'bg-[#F7F9FC] border-r-[#E5E7EB]' : 'bg-[#0E1833] border-[rgba(212,175,55,0.25)]'}`}>
+      {/* Header row with the title and "clear all" button */}
       <div className="flex items-center justify-between pb-1.5">
         <span className={`text-[10.5px] font-bold tracking-[0.14em] transition-colors duration-300 ${isLight ? 'text-[#111827]' : 'text-[#7CC0FF]'}`}>REFINE RESULTS</span>
         <button
@@ -24,6 +28,7 @@ export const SidebarFilters = () => {
         </button>
       </div>
 
+      {/* Scrollable area holding all the individual filter groups */}
       <div className={`pretty-scroll min-h-0 max-h-[50vh] flex-1 overflow-x-hidden overflow-y-scroll rounded-[14px] border px-3 py-1 md:max-h-none transition-colors duration-300 ${isLight ? 'bg-white border-[#E5E7EB] shadow-[0_2px_8px_rgba(0,0,0,0.06)]' : 'bg-[#0F1B3A] border-[rgba(124,192,255,0.35)] shadow-[inset_0_1px_0_rgba(255,255,255,0.02),0_0_18px_rgba(59,156,255,0.12)]'}`}>
         <FilterGroup icon={<GitFork className="h-4 w-4" />} label="Stops" value="Non-stop, 1 stop" chevron="right" active={openFilters[0]} onToggle={() => toggleFilterGroup(0)} />
         <FilterGroup icon={<PlaneTakeoff className="h-4 w-4" />} label="Airline" value="All airlines" chevron="right" active={openFilters[1]} onToggle={() => toggleFilterGroup(1)} />

@@ -1,3 +1,5 @@
+// AncillaryServicesModal.tsx
+// Full-screen modal for browsing and selecting meals, seats, baggage, and special services.
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { X, ChevronDown, Check, Plus, Utensils } from 'lucide-react';
 import type { Flight } from '../store/flightStore';
@@ -73,6 +75,7 @@ const TABS: { key: AncillaryKind; label: string; icon: 'meal' | 'seat' | 'baggag
   { key: 'ssr', label: 'Special Services', icon: 'ssr' },
 ];
 
+// Returns the SVG icon for each tab type (meal, seat, baggage, SSR).
 const TabIcon = ({ kind, isLight }: { kind: (typeof TABS)[number]['icon']; isLight: boolean }) => {
   const color = isLight ? 'text-[#004B7C]' : 'text-[#7CC0FF]';
   switch (kind) {
@@ -136,6 +139,7 @@ const MealThumb = ({ meal, isLight }: { meal: MealOption; isLight: boolean }) =>
   );
 };
 
+// Tab panel that lists available meal options for the selected segment.
 const MealTab = ({
   options,
   selected,
@@ -254,6 +258,7 @@ const SeatSeatButton = ({
   );
 };
 
+// Tab panel showing an interactive seat map where the user can pick a seat.
 const SeatTab = ({
   seats,
   selected,
@@ -334,6 +339,7 @@ const SeatTab = ({
    Baggage tab
 --------------------------------------------------------------------------- */
 
+// Tab panel listing extra baggage options that can be added to the booking.
 const BaggageTab = ({
   options,
   selected,
@@ -393,6 +399,7 @@ const BaggageTab = ({
    SSR tab
 --------------------------------------------------------------------------- */
 
+// Tab panel listing special service requests (e.g., wheelchair, infant bassinet).
 const SsrTab = ({
   options,
   selected,
@@ -459,6 +466,7 @@ const SsrTab = ({
    Summary (right panel) + skeleton + empty states
 --------------------------------------------------------------------------- */
 
+// Right-side panel showing a summary of all currently selected ancillary services.
 const SummaryPanel = ({
   selection,
   isLight,
@@ -522,6 +530,7 @@ const SummaryRow = ({
   </div>
 );
 
+// Placeholder rows shown while service data is loading.
 const SkeletonBlock = ({ rows, isLight }: { rows: number; isLight: boolean }) => (
   <div className="space-y-3">
     {Array.from({ length: rows }).map((_, i) => (
@@ -539,6 +548,7 @@ const SkeletonBlock = ({ rows, isLight }: { rows: number; isLight: boolean }) =>
   </div>
 );
 
+// Message shown when no options are available for the current tab and segment.
 const EmptyState = ({ message, isLight }: { message: string; isLight: boolean }) => (
   <div className={`flex flex-col items-center justify-center rounded-lg border p-8 text-center ${cardBorder(isLight)}`}>
     <span className={`text-[13px] font-medium ${cardText(isLight)}`}>{message}</span>
@@ -555,6 +565,7 @@ export type AncillaryServicesModalProps = {
   segments: AncillarySegment[];
 };
 
+// Main modal component: renders tabs, service lists, and a summary panel for ancillary selections.
 export const AncillaryServicesModal = ({ onClose, segments }: AncillaryServicesModalProps) => {
   const { theme } = useThemeStore();
   const isLight = theme === 'light';
@@ -784,6 +795,7 @@ export const AncillaryServicesModal = ({ onClose, segments }: AncillaryServicesM
   );
 };
 
+// Dropdown selector for switching between segments (onward/return) and travellers.
 const ContextSelect = ({
   label,
   value,
