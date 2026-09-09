@@ -1,5 +1,6 @@
 // Main app header: logo, search bar, city swap, return date picker, and theme toggle.
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useFlightStore } from '../store/flightStore';
 import { useThemeStore } from '../store/themeStore';
 import { ReturnCalendar } from './ReturnCalendar';
@@ -13,6 +14,39 @@ export const Header = () => {
   const [swapSpin, setSwapSpin] = useState(0);
   const [cabin, setCabin] = useState('Economy');
   const [cabinOpen, setCabinOpen] = useState(false);
+  const cabinBtnRef = useRef<HTMLButtonElement>(null);
+  const cabinMenuRef = useRef<HTMLDivElement>(null);
+  const [cabinPos, setCabinPos] = useState<{ top: number; left: number } | null>(null);
+
+  // Position the cabin menu right below the Travellers & Class section.
+  const placeCabin = () => {
+    const el = cabinBtnRef.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const left = Math.max(8, Math.min(r.left, window.innerWidth - 176 - 8));
+    setCabinPos({ top: r.bottom + 6, left });
+  };
+
+  // While the cabin menu is open: close on outside click and stay anchored on scroll/resize.
+  useEffect(() => {
+    if (!cabinOpen) return;
+    placeCabin();
+    const onPointerDown = (e: MouseEvent | TouchEvent) => {
+      const target = e.target as Node;
+      if (cabinBtnRef.current?.contains(target) || cabinMenuRef.current?.contains(target)) return;
+      setCabinOpen(false);
+    };
+    const onReposition = () => placeCabin();
+    document.addEventListener('pointerdown', onPointerDown);
+    window.addEventListener('resize', onReposition);
+    window.addEventListener('scroll', onReposition, true);
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown);
+      window.removeEventListener('resize', onReposition);
+      window.removeEventListener('scroll', onReposition, true);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cabinOpen]);
 
   // Flight store values needed for the search bar and return calendar
   const fromCity = useFlightStore((s) => s.fromCity);
@@ -52,7 +86,7 @@ export const Header = () => {
     </div>
   );
 
-  // Right section: filters toggle, avatar badge, theme toggle, and cabin class dropdown
+  // Right section: filters toggle, avatar badge, and theme toggle
   const rightSection = (
     <div className={`flex shrink-0 flex-col items-end gap-0.5 transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-white/85'}`}>
       <div className="flex items-center gap-1.5 sm:gap-4">
@@ -69,37 +103,6 @@ export const Header = () => {
           AS
         </div>
         <ThemeToggle className="shrink-0" size="sm" />
-      </div>
-      <div className="relative">
-        <button
-          type="button"
-          onClick={() => setCabinOpen((o) => !o)}
-          aria-expanded={cabinOpen}
-          className="flex cursor-pointer items-center gap-1 border-none bg-transparent text-[12px] font-medium sm:text-[12.5px] transition-colors duration-300"
-        >
-          {cabin} <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-300 ${isLight ? 'text-[#9CA3AF]' : 'text-white/50'} ${cabinOpen ? 'rotate-180' : ''}`} />
-        </button>
-        {/* Cabin class dropdown menu */}
-        {cabinOpen && (
-          <>
-            <div className="fixed inset-0 z-40" onClick={() => setCabinOpen(false)} />
-            <div className={`absolute right-0 top-full z-50 mt-2 w-44 overflow-hidden rounded-xl border p-1 transition-colors duration-300 ${isLight ? 'bg-white border-[#E5E7EB] shadow-[0_8px_24px_rgba(0,0,0,0.12)]' : 'bg-[#0F1B3A] border-[rgba(124,192,255,0.22)] shadow-[0_10px_30px_rgba(0,0,0,0.45)]'}`}>
-              {['Economy', 'Premium Economy', 'Business Class', 'First Class'].map((c) => (
-                <button
-                  key={c}
-                  type="button"
-                  onClick={() => {
-                    setCabin(c);
-                    setCabinOpen(false);
-                  }}
-                  className={`block w-full cursor-pointer rounded-lg px-3 py-1.5 text-left text-[12.5px] font-medium transition-colors duration-200 ${cabin === c ? (isLight ? 'bg-[#EFF6FF] text-[#2563EB]' : 'bg-[#2B5BFF]/25 text-[#7CC0FF]') : isLight ? 'text-[#374151] hover:bg-[#F3F4F6]' : 'text-white/85 hover:bg-white/10'}`}
-                >
-                  {c}
-                </button>
-              ))}
-            </div>
-          </>
-        )}
       </div>
     </div>
   );
@@ -158,13 +161,25 @@ export const Header = () => {
         </div>
       </button>
 
-      {/* Travellers & Class */}
-      <div className={`flex w-full min-w-0 items-center border-l px-3 py-1 sm:w-auto sm:flex-1 sm:border-l sm:px-5 sm:py-1.5 transition-colors duration-300 ${isLight ? 'border-l-[#E5E7EB]' : 'border-white/10'}`}>
+      {/* Travellers & Class — click to open the cabin class dropdown */}
+      <button
+        ref={cabinBtnRef}
+        type="button"
+        onClick={() => {
+          if (!cabinOpen) placeCabin();
+          setCabinOpen((o) => !o);
+        }}
+        aria-expanded={cabinOpen}
+        className={`flex w-full min-w-0 shrink-0 cursor-pointer items-center border-l px-3 py-1 text-left transition-colors duration-200 sm:w-auto sm:flex-1 sm:border-l sm:py-1.5 sm:pl-5 sm:pr-[170px] ${isLight ? 'border-l-[#E5E7EB] hover:bg-[#F9FAFB]' : 'border-white/10 hover:bg-[rgba(212,175,55,0.06)]'}`}
+      >
         <div className="min-w-0">
           <div className={`bar-text text-[10px] font-semibold tracking-[0.12em] transition-all duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#7CC0FF]'}`}>Travellers & Class</div>
-          <div className={`bar-text-value mt-0.5 truncate text-[12.5px] font-bold transition-all duration-300 sm:text-[14px] ${isLight ? 'text-[#111827]' : 'text-white'}`}>1 Traveller, {cabin}</div>
+          <div className={`flex items-center gap-1.5 ${isLight ? 'text-[#111827]' : 'text-white'}`}>
+            <span className="bar-text-value mt-0.5 truncate text-[12.5px] font-bold transition-all duration-300 sm:text-[14px]">1 Traveller, {cabin}</span>
+            <ChevronDown className={`h-3.5 w-3.5 shrink-0 transition-transform duration-300 ${isLight ? 'text-[#9CA3AF]' : 'text-white/50'} ${cabinOpen ? 'rotate-180' : ''}`} />
+          </div>
         </div>
-      </div>
+      </button>
 
       {/* Search button — blue pill cap, flush with the bar's top/bottom/right edges */}
       <button
@@ -211,6 +226,31 @@ export const Header = () => {
           />
         </div>
       )}
+      {/* Cabin class dropdown, anchored directly below the Travellers & Class section */}
+      {cabinOpen &&
+        cabinPos &&
+        createPortal(
+          <div
+            ref={cabinMenuRef}
+            className={`fixed z-[100] w-44 overflow-hidden rounded-xl border p-1 transition-colors duration-300 ${isLight ? 'bg-white border-[#E5E7EB] shadow-[0_8px_24px_rgba(0,0,0,0.12)]' : 'bg-[#0F1B3A] border-[rgba(124,192,255,0.22)] shadow-[0_10px_30px_rgba(0,0,0,0.45)]'}`}
+            style={{ top: cabinPos.top, left: cabinPos.left }}
+          >
+            {['Economy', 'Premium Economy', 'Business Class', 'First Class'].map((c) => (
+              <button
+                key={c}
+                type="button"
+                onClick={() => {
+                  setCabin(c);
+                  setCabinOpen(false);
+                }}
+                className={`block w-full cursor-pointer rounded-lg px-3 py-1.5 text-left text-[12.5px] font-medium transition-colors duration-200 ${cabin === c ? (isLight ? 'bg-[#EFF6FF] text-[#2563EB]' : 'bg-[#2B5BFF]/25 text-[#7CC0FF]') : isLight ? 'text-[#374151] hover:bg-[#F3F4F6]' : 'text-white/85 hover:bg-white/10'}`}
+              >
+                {c}
+              </button>
+            ))}
+          </div>,
+          document.body
+        )}
     </header>
   );
 };

@@ -8,7 +8,16 @@ import { AirlineLogo } from './Logos';
 import { Clock, ShoppingBag, PlaneFill, LeafIcon } from './icons';
 import { iconProps } from '../lib/iconProps';
 import { inr, viaCities, stopsCount, minutesToHm, priceBreakdownOf } from '../lib/format';
+import type { StopDetail } from './FlightInfoPopover';
+
+// Deterministic per-stop layover durations derived from the flight code.
+const stopDetailsOf = (cities: string[], code: string): StopDetail[] =>
+  cities.map((city, i) => ({
+    city,
+    minutes: 30 + ((code.charCodeAt(0) + code.length * 13 + i * 37) % 90),
+  }));
 import { PriceBreakdownPopover } from './PriceBreakdownPopover';
+import { FlightInfoPopover } from './FlightInfoPopover';
 import { tierAdjustedPrice } from '../lib/fare';
 import { prepareReview } from '../lib/openReview';
 
@@ -41,6 +50,20 @@ const fareTiers = (price: number): { name: string; tagline: string; price: numbe
       { label: 'Cancellation', sub: 'Before 24 hrs', kind: 'text', value: '₹ 1,500' },
       { label: 'Cancellation', sub: 'After 24 hrs', kind: 'text', value: '₹ 750' },
       { label: 'Date Change', sub: 'Before departure', kind: 'text', value: '₹ 1,000' },
+      { label: 'Seat', sub: 'Selection', kind: 'yes', value: 'Included' },
+      { label: 'Meal', sub: 'On board', kind: 'yes', value: 'Included' },
+    ],
+  },
+  {
+    name: 'FAMILY',
+    tagline: 'Perks for the whole family',
+    price: price + 1120,
+    rows: [
+      { label: '₹ Price', sub: 'per person', kind: 'text', value: inr(price + 1120) },
+      { label: 'Bag check in', sub: 'Baggage', kind: 'text', value: '25 kg' },
+      { label: 'Cancellation', sub: 'Before 24 hrs', kind: 'text', value: '₹ 1,000' },
+      { label: 'Cancellation', sub: 'After 24 hrs', kind: 'text', value: '₹ 500' },
+      { label: 'Date Change', sub: 'Before departure', kind: 'text', value: '₹ 750' },
       { label: 'Seat', sub: 'Selection', kind: 'yes', value: 'Included' },
       { label: 'Meal', sub: 'On board', kind: 'yes', value: 'Included' },
     ],
@@ -155,15 +178,16 @@ const CompactFlightLeft = ({
   fromLabel,
   toLabel,
   isLight,
+  scope,
 }: {
   f: Flight;
   fromLabel: string;
   toLabel: string;
   isLight?: boolean;
+  scope?: string;
 }) => {
   const stopN = stopsCount(f.stops);
   const viaList = viaCities(f.via);
-  const planeCount = Math.max(stopN, viaList.length);
   const depCode = fromLabel.split(' ')[0];
   const depTerm = fromLabel.split(' ').slice(1).join(' ') || 'Terminal 1';
   const arrCode = toLabel.split(' ')[0];
@@ -189,21 +213,24 @@ const CompactFlightLeft = ({
           <div className="flex min-w-0 flex-1 flex-col items-center">
             <div className="relative mx-2 h-6 w-full max-w-[260px] shrink-0">
               <div className={`absolute inset-x-0 top-[9px] border-t border-dotted transition-colors duration-300 ${isLight ? 'border-[#D1D5DB]' : 'border-[#8295ad]'}`} />
-              {f.via ? (
-                Array.from({ length: planeCount }, (_, i) => (
-                  <div
-                    key={`p-${i}`}
-                    className={`absolute top-[9px] flex h-5 w-5 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full shadow-[0_2px_6px_rgba(0,0,0,0.1)] transition-colors duration-300 ${isLight ? 'bg-[#EFF6FF]' : 'bg-[#e2e8f2]'}`}
-                    style={{ left: `${((i + 0.5) / planeCount) * 100}%` }}
-                  >
-                    <PlaneFill className={`h-3 w-3 rotate-45 transition-colors duration-300 ${isLight ? 'text-[#2563EB]' : 'text-[#2e7bf6]'}`} />
-                  </div>
-                ))
-              ) : (
-                <div className="absolute left-1/2 top-[9px] flex h-5 w-5 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-[#e2e8f2] shadow-[0_2px_6px_rgba(0,0,0,0.35)]">
-                  <PlaneFill className={`h-3 w-3 rotate-45 transition-colors duration-300 ${isLight ? 'text-[#2563EB]' : 'text-[#2e7bf6]'}`} />
-                </div>
-              )}
+              {stopN > 0 ? (
+                <FlightInfoPopover
+                  id={`compact:${scope ?? 'flight'}:${f.code}:plane`}
+                  code={f.code}
+                  depTime={f.departure.time}
+                  arrTime={f.arrival.time}
+                  departure={depTerm}
+                  arrival={arrTerm}
+                  duration={f.duration}
+                  stops={stopDetailsOf(viaList, f.code)}
+                  className={`absolute left-1/2 top-[9px] flex h-5 w-5 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full shadow-[0_2px_6px_rgba(0,0,0,0.1)] transition-colors duration-300 ${stopN > 1 ? 'bg-white' : isLight ? 'bg-[#EFF6FF]' : 'bg-[#e2e8f2]'}`}
+                >
+                  <PlaneFill className={`plane-tilt h-3 w-3 text-[#2563EB]`} />
+                  {stopN > 1 && (
+                    <span className="absolute -right-1.5 -top-1.5 flex h-[11px] min-w-[11px] items-center justify-center rounded-full bg-[#ef4444] px-[2px] text-[6.5px] font-bold leading-none text-white">{stopN}+</span>
+                  )}
+                </FlightInfoPopover>
+              ) : null}
             </div>
           </div>
 
@@ -362,7 +389,8 @@ export const FlightCard = ({
   const viaList = viaCities(f.via);
   const stopN = stopsCount(f.stops);
   const layoverMin = 30 + ((f.code.charCodeAt(0) + f.code.length * 13) % 90);
-  const planeCount = Math.max(stopsCount(f.stops) + 1, viaList.length + 1);
+  const depTerm = (fromLabel ?? f.departure.airport).split(' ').slice(1).join(' ') || 'Terminal 1';
+  const arrTerm = (toLabel ?? f.arrival.airport).split(' ').slice(1).join(' ') || 'Terminal 1';
 
   return (
   <article
@@ -393,8 +421,8 @@ export const FlightCard = ({
         {f.via ? `via ${viaList.join(', ')} · ${stopN} ${stopN === 1 ? 'Stop' : 'Stops'}` : 'Non-stop'}
       </span>
       {selected && (
-        <span className={`flex h-5 w-5 items-center justify-center rounded-full transition-colors duration-300 ${isLight ? 'bg-[#DC2626] shadow-[0_0_10px_rgba(220,38,38,0.8)]' : 'bg-[#d4af37] shadow-[0_0_10px_rgba(212,175,55,0.8)]'}`}>
-          <svg viewBox="0 0 24 24" className="h-3 w-3" fill="none" stroke="#ffffff" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round">
+        <span className={`flex h-3.5 w-3.5 items-center justify-center rounded-full transition-colors duration-300 ${isLight ? 'bg-[#DC2626] shadow-[0_0_8px_rgba(220,38,38,0.8)]' : 'bg-[#d4af37] shadow-[0_0_8px_rgba(212,175,55,0.8)]'}`}>
+          <svg viewBox="0 0 24 24" className="h-2 w-2" fill="none" stroke="#ffffff" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M20 6 9 17l-5-5" />
           </svg>
         </span>
@@ -408,6 +436,7 @@ export const FlightCard = ({
           fromLabel={fromLabel ?? f.departure.airport}
           toLabel={toLabel ?? f.arrival.airport}
           isLight={isLight}
+          scope={scope}
         />
         <CompactPriceCol
           f={f}
@@ -444,32 +473,31 @@ export const FlightCard = ({
 
           <div className="relative mx-2 h-6 min-w-0 flex-1 sm:max-w-[340px]">
             <div className={`absolute inset-x-0 top-1/2 border-t border-dotted transition-colors duration-300 ${isLight ? 'border-[#D1D5DB]' : 'border-[#8295ad]'}`} />
-            {f.via ? (
+            {stopN > 0 ? (
               <>
-                {Array.from({ length: planeCount }, (_, i) => (
-                  <div
-                    key={`p-${i}`}
-                    className="absolute top-1/2 flex h-4 w-4 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-[#fdba74] shadow-[0_1px_2px_rgba(0,0,0,0.25)]"
-                    style={{ left: `${((i + 0.5) / planeCount) * 100}%` }}
-                  >
-                    <PlaneFill className={`h-3 w-3 rotate-45 transition-colors duration-300 ${isLight ? 'text-[#2563EB]' : 'text-[#1d3a63]'}`} />
+                <FlightInfoPopover
+                  id={`${scope ?? 'flight'}:${f.code}:plane`}
+                  code={f.code}
+                  depTime={f.departure.time}
+                  arrTime={f.arrival.time}
+                  departure={depTerm}
+                  arrival={arrTerm}
+                  duration={f.duration}
+                  stops={stopDetailsOf(viaList, f.code)}
+                  className={`absolute left-1/2 top-1/2 flex h-5 w-5 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full shadow-[0_2px_6px_rgba(0,0,0,0.1)] transition-colors duration-300 ${stopN > 1 ? 'bg-white' : isLight ? 'bg-[#EFF6FF]' : 'bg-[#dbe2ec]'}`}
+                >
+                  <PlaneFill className={`plane-tilt h-3 w-3 text-[#2563EB]`} />
+                  {stopN > 1 && (
+                    <span className="absolute -right-1.5 -top-1.5 flex h-[11px] min-w-[11px] items-center justify-center rounded-full bg-[#ef4444] px-[2px] text-[6.5px] font-bold leading-none text-white">{stopN}+</span>
+                  )}
+                </FlightInfoPopover>
+                {stopN === 1 && viaList[0] && (
+                  <div className={`absolute left-1/2 top-1/2 max-w-[50%] -translate-x-1/2 -translate-y-[18px] truncate px-0.5 text-[9.5px] leading-none transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#9baec7]'}`}>
+                    {viaList[0]}
                   </div>
-                ))}
-                {viaList.map((city, i) => (
-                  <div
-                    key={`v-${city}`}
-                    className={`absolute top-1/2 max-w-[50%] -translate-x-1/2 -translate-y-[18px] truncate px-0.5 text-[9.5px] leading-none transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#9baec7]'}`}
-                    style={{ left: `${((i + 0.5) / planeCount) * 100}%` }}
-                  >
-                    {city}
-                  </div>
-                ))}
+                )}
               </>
-            ) : (
-              <div className={`absolute left-1/2 top-1/2 flex h-5 w-5 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full shadow-[0_2px_6px_rgba(0,0,0,0.1)] transition-colors duration-300 ${isLight ? 'bg-[#EFF6FF]' : 'bg-[#dbe2ec]'}`}>
-                <PlaneFill className={`h-3 w-3 rotate-45 transition-colors duration-300 ${isLight ? 'text-[#2563EB]' : 'text-[#1d3a63]'}`} />
-              </div>
-            )}
+            ) : null}
           </div>
 
           <div className="w-[88px] shrink-0 text-left">
@@ -560,7 +588,7 @@ export const FlightCard = ({
             className="pretty-scroll mt-1 pb-1"
             style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}
           >
-            <div className="grid min-w-[680px] grid-cols-3 gap-3">
+            <div className="grid min-w-[680px] grid-cols-2 gap-3 xl:grid-cols-4">
               {fareTiers(base).map((tier) => (
                 <FareTierCard
                   key={tier.name}
