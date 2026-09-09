@@ -29,6 +29,9 @@ export const GSTInformation = () => {
         <FormInput label="Company Email" defaultValue="accounts@bizvoyenterprise.com" />
         <FormInput label="Company Phone" defaultValue="+91 20 6655 4400" />
       </div>
+      <div className="mt-3">
+        <FormInput label="Registered Address" defaultValue="Survey No. 15, Baner Road, Pune, Maharashtra 411045" wrapperClassName="sm:col-span-2" />
+      </div>
     </div>
   );
 };

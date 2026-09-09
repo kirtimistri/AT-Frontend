@@ -1,10 +1,10 @@
-import { useState, type ReactNode } from 'react';
-import { useFlightStore, type Flight } from '../store/flightStore';
+import { useState } from 'react';
+import { type Flight } from '../store/flightStore';
 import { useThemeStore } from '../store/themeStore';
 import { AirlineLogo } from './Logos';
-import { Clock, ShoppingBag, PlaneTakeoff, PlaneFill, Timer, Bookmark, LeafIcon, MapPinIcon, SeatIcon, UserIcon, SettingsIcon, SuitcaseIcon, GlobeIcon } from './icons';
+import { Clock, ShoppingBag, PlaneFill, LeafIcon } from './icons';
 import { iconProps } from '../lib/iconProps';
-import { inr, airportCodeOf, terminalOf, viaCities, stopsCount, minutesToHm, cityNameOf, twelveHToMins, minsToTwelveH, legFlightCode } from '../lib/format';
+import { inr, viaCities, stopsCount, minutesToHm } from '../lib/format';
 
 /* ---------- Fare option tiers (expandable card details) ---------- */
 
@@ -81,199 +81,6 @@ const FareTierCard = ({ tier }: { tier: ReturnType<typeof fareTiers>[number] }) 
     </div>
   </div>
 );
-
-const LayoverPanel = ({ f }: { f: Flight }) => {
-  const location = f.via ? f.via.replace('via ', '') : airportCodeOf(f.arrival.airport);
-  const seatsLeft = 2 + ((f.code.charCodeAt(0) + f.code.length) % 5);
-  const rows: { icon: ReactNode; label: string; value: string }[] = [
-    { icon: <MapPinIcon />, label: 'Location', value: location },
-    { icon: <PlaneTakeoff className="h-3.5 w-3.5" />, label: 'Terminal', value: terminalOf(f.departure.airport) },
-    { icon: <Clock className="h-3.5 w-3.5" />, label: 'Time', value: '10m' },
-    { icon: <Bookmark className="h-3.5 w-3.5" />, label: 'Fare type', value: 'Economy Saver' },
-    { icon: <SeatIcon />, label: 'Seats left', value: `Only ${seatsLeft} seats at this price` },
-  ];
-  return (
-    <div className="layover-panel flex w-full shrink-0 flex-col rounded-[12px] border border-[#29466e] bg-[#0d1b2a] p-3 transition-colors duration-300 xl:w-[210px] xl:shrink-0">
-      <div className="layover-title flex items-center gap-1.5 text-[12px] font-bold text-white transition-colors duration-300">
-        <span className="h-[8px] w-[8px] rounded-full bg-[#22c55e]" />
-
-        {f.via ? 'Layover Flight' : 'Non-stop Flight'}
-      </div>
-      <div className="mt-2.5 space-y-1.5">
-        {rows.map((r) => (
-          <div key={r.label} className="layover-row flex items-start gap-2 rounded-[8px] bg-white/[0.03] px-2.5 py-1.5 transition-colors duration-300">
-            <span className="flex h-5 w-5 shrink-0 items-center justify-center text-[#7CC0FF]">{r.icon}</span>
-            <span className="layover-label shrink-0 whitespace-nowrap text-[11px] text-[#9baec7] transition-colors duration-300">{r.label}:</span>
-            <span className="layover-value min-w-0 flex-1 text-right text-[11px] font-semibold leading-snug text-white transition-colors duration-300">{r.value}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-/* ---------- Itinerary details (per-leg breakdown inside expanded card) ---------- */
-
-const ItineraryDetails = ({ f }: { f: Flight }) => {
-  const stripStart = useFlightStore((s) => s.stripStart);
-  const stripSel = useFlightStore((s) => s.stripSel);
-  const legs = itineraryLegs(f);
-  const travelDate = new Date(2026, 8, 9 + stripStart + stripSel);
-  const dateLabel = `${travelDate.toLocaleDateString('en-US', { weekday: 'short' })} ${travelDate.getDate()} ${travelDate.toLocaleDateString('en-US', { month: 'short' })}, ${travelDate.getFullYear()}`;
-
-  return (
-    <div className="itinerary-panel rounded-[12px] border border-[#29466e] bg-[#0d1b2a] p-4 transition-colors duration-300">
-      <div className="itinerary-heading flex items-center gap-1.5 text-[10.5px] font-semibold tracking-[0.12em] text-[#7CC0FF] transition-colors duration-300">
-        <PlaneTakeoff className="h-3.5 w-3.5" />
-        Flight Details
-      </div>
-      <div className="mt-3">
-        {legs.map((leg, i) => (
-          <div key={`${leg.code}-${i}`}>
-            {i > 0 && (
-              <div className="itinerary-layover-text my-3 flex items-center justify-center gap-1.5 text-[11.5px] font-semibold text-white/80 transition-colors duration-300">
-                <Timer className="h-4 w-4" />
-                {legs[i - 1].layoverMin} min Layover
-              </div>
-            )}
-            <div className="flex items-start gap-3 sm:gap-5">
-              {/* Airline + flight no */}
-              <div className="flex w-[104px] shrink-0 flex-col sm:w-[120px]">
-                <div className="flex items-center gap-2">
-                  <span className="shrink-0 scale-[0.78] origin-left">
-                    <AirlineLogo airline={f.airline} />
-                  </span>
-                  <span className="itinerary-airline-name min-w-0 text-[13px] font-bold lowercase leading-tight tracking-wide text-white transition-colors duration-300">{f.airline}</span>
-                </div>
-                <span className="itinerary-flight-code mt-1 pl-1 whitespace-nowrap text-[11px] text-[#9eafc7] transition-colors duration-300">{leg.code}</span>
-              </div>
-
-              {/* Departure → Arrival details */}
-              <div className="grid min-w-0 flex-1 grid-cols-2 gap-3 sm:gap-5">
-                <div className="min-w-0">
-                  <div className="itinerary-time whitespace-nowrap text-[16px] font-bold leading-none text-white transition-colors duration-300">{leg.depTime}</div>
-                  <div className="itinerary-code mt-1 text-[11.5px] font-semibold leading-none text-white transition-colors duration-300">{leg.depCode}</div>
-                  <div className="itinerary-city mt-0.5 text-[11px] leading-none text-[#9baec7] transition-colors duration-300">{leg.depCity}</div>
-                  <div className="itinerary-date mt-0.5 text-[11px] leading-none text-[#9baec7] transition-colors duration-300">{dateLabel}</div>
-                  <div className="itinerary-code mt-1.5 text-[11.5px] font-semibold leading-none text-white transition-colors duration-300">{leg.depCode}</div>
-                  <div className="itinerary-terminal mt-0.5 text-[11px] leading-none text-[#9baec7] transition-colors duration-300">{leg.depTerm}</div>
-                </div>
-                <div className="itinerary-divider min-w-0 border-l border-white/10 pl-3 text-right transition-colors duration-300 sm:pl-5">
-                  <div className="itinerary-time whitespace-nowrap text-[16px] font-bold leading-none text-white transition-colors duration-300">{leg.arrTime}</div>
-                  <div className="itinerary-code mt-1 text-[11.5px] font-semibold leading-none text-white transition-colors duration-300">{leg.arrCode}</div>
-                  <div className="itinerary-city mt-0.5 text-[11px] leading-none text-[#9baec7] transition-colors duration-300">{leg.arrCity}</div>
-                  <div className="itinerary-date mt-0.5 text-[11px] leading-none text-[#9baec7] transition-colors duration-300">{dateLabel}</div>
-                  <div className="itinerary-code mt-1.5 text-[11.5px] font-semibold leading-none text-white transition-colors duration-300">{leg.arrCode}</div>
-                  <div className="itinerary-terminal mt-0.5 text-[11px] leading-none text-[#9baec7] transition-colors duration-300">{leg.arrTerm}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-type ItineraryLeg = {
-  code: string;
-  depTime: string;
-  arrTime: string;
-  depCode: string;
-  depCity: string;
-  depTerm: string;
-  arrCode: string;
-  arrCity: string;
-  arrTerm: string;
-  layoverMin?: number;
-};
-
-const itineraryLegs = (f: Flight): ItineraryLeg[] => {
-  const viaList = viaCities(f.via);
-  const n = viaList.length + 1;
-  const depMin = twelveHToMins(f.departure.time);
-  let arrMin = twelveHToMins(f.arrival.time);
-  if (arrMin < depMin) arrMin += 24 * 60; // overnight arrival
-  const total = arrMin - depMin;
-
-  // Deterministic per-flight layovers so the breakdown is stable across renders
-  const hash = f.code.charCodeAt(0) + f.code.length * 13;
-  const layovers = viaList.map((_, i) => 10 + ((hash + i * 17) % 40));
-  const flightMins = Math.max(total - layovers.reduce((a, b) => a + b, 0), 20);
-
-  const stops = [airportCodeOf(f.departure.airport), ...viaList, airportCodeOf(f.arrival.airport)];
-  const depTerm = terminalOf(f.departure.airport);
-  const arrTerm = terminalOf(f.arrival.airport);
-
-  const legs: ItineraryLeg[] = [];
-  let t = depMin;
-  for (let i = 0; i < n; i++) {
-    const legFlight = Math.round((flightMins * (i + 1)) / n) - Math.round((flightMins * i) / n);
-    const arr = t + legFlight;
-    legs.push({
-      code: legFlightCode(f, i),
-      depTime: minsToTwelveH(t),
-      arrTime: minsToTwelveH(arr),
-      depCode: stops[i],
-      depCity: cityNameOf(stops[i]),
-      depTerm: i === 0 ? `Terminal ${depTerm}` : 'Terminal 1',
-      arrCode: stops[i + 1],
-      arrCity: cityNameOf(stops[i + 1]),
-      arrTerm: i === n - 1 ? `Terminal ${arrTerm}` : 'Terminal 1',
-      layoverMin: i < n - 1 ? layovers[i] : undefined,
-    });
-    t = arr + (layovers[i] ?? 0);
-  }
-  return legs;
-};
-
-/* ---------- Price breakdown (expanded card) ---------- */
-
-const PriceBreakdown = ({ base, baggage }: { base: number; baggage: string }) => {
-  const rows = [
-    { icon: <UserIcon />, label: 'Base fare', sub: '1 × Adult', value: inr(base - 730) },
-    { icon: <SettingsIcon />, label: 'Taxes & fees', sub: 'Includes GST', value: inr(730) },
-    { icon: <SeatIcon />, label: 'Seat selection', sub: 'Standard seat', value: inr(500) },
-    { icon: <SuitcaseIcon />, label: 'Baggage', sub: baggage.replace(/baggage/i, 'check-in'), value: inr(0) },
-    { icon: <GlobeIcon />, label: 'Service fee', sub: 'Platform fee', value: inr(100) },
-  ];
-  const total = base + 600;
-  return (
-    <div className="price-breakdown flex flex-col rounded-[12px] border border-[#29466e] bg-[#0d1b2a] p-4 transition-colors duration-300">
-      <div className="price-breakdown-heading text-[10.5px] font-semibold tracking-[0.12em] text-[#7CC0FF] transition-colors duration-300">PRICE BREAKDOWN</div>
-      <div className="mt-3 space-y-1.5">
-        {rows.map((r) => (
-          <div key={r.label} className="price-breakdown-row flex items-center justify-between gap-3 rounded-[8px] bg-white/[0.03] px-2.5 py-2 transition-colors duration-300">
-            <div className="flex min-w-0 items-center gap-2.5">
-              <span className="price-breakdown-icon flex h-6 w-6 shrink-0 items-center justify-center rounded-[8px] bg-[#1b2b47] text-[#7CC0FF] transition-colors duration-300">{r.icon}</span>
-              <div className="min-w-0">
-                <div className="price-breakdown-label text-[12px] font-semibold text-white transition-colors duration-300">{r.label}</div>
-                <div className="price-breakdown-sub text-[10px] text-[#7e93b3] transition-colors duration-300">{r.sub}</div>
-              </div>
-            </div>
-            <span className="price-breakdown-value shrink-0 text-[12px] font-bold text-white transition-colors duration-300">{r.value}</span>
-          </div>
-        ))}
-      </div>
-      <div className="price-breakdown-divider mt-3 border-t border-dashed border-[#73869e] pt-3 transition-colors duration-300">
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="price-breakdown-total text-[11px] font-bold tracking-wide text-white transition-colors duration-300">TOTAL</div>
-            <div className="price-breakdown-sub text-[9.5px] text-[#7e93b3] transition-colors duration-300">Per person</div>
-          </div>
-          <div className="price-breakdown-total-value text-[18px] font-bold leading-none text-[#3B9CFF] transition-colors duration-300">{inr(total)}</div>
-        </div>
-      </div>
-      <button className="mt-4 flex h-10 w-full cursor-pointer items-center justify-center gap-1.5 rounded-full bg-[#2593fc] text-[13px] font-bold text-white shadow-[0_6px_18px_rgba(37,147,252,0.45)] transition-all duration-300 hover:bg-[#d4af37] hover:shadow-[0_0_20px_rgba(212,175,55,0.7),0_0_45px_rgba(212,175,55,0.4)] active:bg-[#f0c265]">
-        Continue
-        <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M5 12h14" />
-          <path d="m12 5 7 7-7 7" />
-        </svg>
-      </button>
-    </div>
-  );
-};
 
 const SelectButton = ({ selected, onSelect, isLight }: { selected: boolean; onSelect?: () => void; isLight?: boolean }) => (
   <button
@@ -628,17 +435,13 @@ export const FlightCard = ({
         className="expanded-divider mt-4 border-t border-dotted border-[#73869e] pt-4 transition-colors duration-300"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="mt-4 grid grid-cols-1 items-stretch gap-3 xl:grid-cols-2">
-          <ItineraryDetails f={f} />
-          <PriceBreakdown base={base} baggage={f.baggage} />
-        </div>
-        <div className="mt-4 grid grid-cols-1 items-stretch gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="flex items-start gap-3 overflow-x-auto pb-2 pretty-scroll">
           {fareTiers(base).map((tier) => (
-            <FareTierCard key={tier.name} tier={tier} />
+            <div key={tier.name} className="w-[280px] shrink-0">
+              <FareTierCard tier={tier} />
+            </div>
           ))}
-          <LayoverPanel f={f} />
         </div>
-
       </div>
     )}
   </article>

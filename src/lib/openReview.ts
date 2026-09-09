@@ -17,7 +17,12 @@ export const saveBooking = (selection: BookingSelection) => {
   localStorage.setItem('bookingSelection', payload);
 };
 
-export const openReview = (selection: BookingSelection) => {
+/**
+ * Saves the current search state (booking selection + search snapshot) to
+ * localStorage so it can be restored when the user returns to the search page.
+ * Call navigate('/review-trip') separately to move to the review page.
+ */
+export const prepareReview = (selection: BookingSelection) => {
   saveBooking(selection);
   const s = useFlightStore.getState();
   const snapshot: SearchSnapshot = {
@@ -38,7 +43,6 @@ export const openReview = (selection: BookingSelection) => {
   const payload = JSON.stringify(snapshot);
   sessionStorage.setItem(STORAGE_KEY, payload);
   localStorage.setItem(STORAGE_KEY, payload);
-  window.open('/review-trip?bookingId=TRV-2024-8894X', '_blank', 'noopener,noreferrer');
 };
 
 export const readSearchSnapshot = (): SearchSnapshot | null => {

@@ -4,12 +4,13 @@ import { FlightItinerary } from '../components/review/FlightItinerary';
 import { TravellerInformation } from '../components/review/TravellerInformation';
 import { GSTInformation } from '../components/review/GSTInformation';
 import { FareSummary } from '../components/review/FareSummary';
-import { AssistanceCard } from '../components/review/AssistanceCard';
+import { SeatMealPricingPanel, type ConfirmedSelections } from '../components/SeatMealPricingPanel';
 import { Footer } from '../components/review/Footer';
 import type { FlightCardProps } from '../components/review/FlightCard';
 import type { Flight } from '../store/flightStore';
 import { cityNameOf } from '../lib/format';
 import type { BookingSelection } from '../lib/openReview';
+import { useState } from 'react';
 
 // Fallback demo data — shown only when no booking selection is available so the
 // page keeps its original content instead of showing an empty itinerary.
@@ -107,6 +108,7 @@ const readBooking = (): BookingSelection | null => {
 };
 
 const TripReviewPage = () => {
+  const [confirmed, setConfirmed] = useState<ConfirmedSelections | null>(null);
   let onward: FlightCardProps | undefined;
   let ret: FlightCardProps | undefined;
   let onwardPrice: number | undefined;
@@ -163,8 +165,14 @@ const TripReviewPage = () => {
               returnPrice={returnPrice}
               fromCode={fromCode}
               toCode={toCode}
+              ancillary={confirmed}
             />
-            <AssistanceCard />
+            <SeatMealPricingPanel
+              onBack={() => {}}
+              onHold={(data) => console.log('Hold:', data)}
+              onBook={(data) => console.log('Book:', data)}
+              onConfirm={setConfirmed}
+            />
           </div>
         </div>
       </main>

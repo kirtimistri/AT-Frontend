@@ -3,7 +3,8 @@ import { useFlightStore } from '../store/flightStore';
 import { AirlineLogo } from './Logos';
 import { inr } from '../lib/format';
 import { useThemeStore } from '../store/themeStore';
-import { openReview } from '../lib/openReview';
+import { prepareReview } from '../lib/openReview';
+import { useNavigate } from 'react-router-dom';
 
 const FlightSummary = ({ label, f, isLight }: { label: 'ONWARD' | 'RETURN'; f: Flight | null; isLight?: boolean }) => (
   <div className={`flex min-w-0 items-center gap-2.5 px-3 py-2.5 sm:w-auto sm:flex-1 sm:gap-3.5 sm:px-6 sm:py-3 transition-colors duration-300 ${isLight ? 'text-[#111827]' : 'text-white/90'}`}>
@@ -32,6 +33,7 @@ const FlightSummary = ({ label, f, isLight }: { label: 'ONWARD' | 'RETURN'; f: F
 
 export const SummaryBar = ({ onward, ret, dayDelta }: { onward: Flight | null; ret: Flight | null; dayDelta: number }) => {
   const { theme } = useThemeStore();
+  const navigate = useNavigate();
   const isLight = theme === 'light';
   const datePool = useFlightStore((s) => s.datePool);
   const stripStart = useFlightStore((s) => s.stripStart);
@@ -62,13 +64,14 @@ export const SummaryBar = ({ onward, ret, dayDelta }: { onward: Flight | null; r
           <button
             onClick={() => {
               if (any) {
-                openReview({
+                prepareReview({
                   onward,
                   returnFlight: ret,
                   date,
                   fromCode,
                   toCode,
                 });
+                window.open('/review-trip?bookingId=TRV-2024-8894X', '_blank');
               }
             }}
             disabled={!any}
