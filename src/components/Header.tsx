@@ -1,7 +1,7 @@
 // Main app header: logo, search bar, city swap, return date picker, and theme toggle.
-import { useEffect, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
+import { useState } from 'react';
 import { useFlightStore } from '../store/flightStore';
+import { travellersLabel } from '../store/flightStore';
 import { useThemeStore } from '../store/themeStore';
 import { ReturnCalendar } from './ReturnCalendar';
 import { ChevronDown, ChevronRight, ArrowLeftRight } from './icons';
@@ -10,43 +10,11 @@ import { ThemeToggle } from './ThemeToggle';
 import { Logo } from './Logo';
 
 export const Header = () => {
-  // Local state for swap animation, cabin class dropdown, and return date calendar
+  // Local state for swap animation, travellers popover, and return date calendar
   const [swapSpin, setSwapSpin] = useState(0);
   const [cabin, setCabin] = useState('Economy');
-  const [cabinOpen, setCabinOpen] = useState(false);
-  const cabinBtnRef = useRef<HTMLButtonElement>(null);
-  const cabinMenuRef = useRef<HTMLDivElement>(null);
-  const [cabinPos, setCabinPos] = useState<{ top: number; left: number } | null>(null);
-
-  // Position the cabin menu right below the Travellers & Class section.
-  const placeCabin = () => {
-    const el = cabinBtnRef.current;
-    if (!el) return;
-    const r = el.getBoundingClientRect();
-    const left = Math.max(8, Math.min(r.left, window.innerWidth - 176 - 8));
-    setCabinPos({ top: r.bottom + 6, left });
-  };
-
-  // While the cabin menu is open: close on outside click and stay anchored on scroll/resize.
-  useEffect(() => {
-    if (!cabinOpen) return;
-    placeCabin();
-    const onPointerDown = (e: MouseEvent | TouchEvent) => {
-      const target = e.target as Node;
-      if (cabinBtnRef.current?.contains(target) || cabinMenuRef.current?.contains(target)) return;
-      setCabinOpen(false);
-    };
-    const onReposition = () => placeCabin();
-    document.addEventListener('pointerdown', onPointerDown);
-    window.addEventListener('resize', onReposition);
-    window.addEventListener('scroll', onReposition, true);
-    return () => {
-      document.removeEventListener('pointerdown', onPointerDown);
-      window.removeEventListener('resize', onReposition);
-      window.removeEventListener('scroll', onReposition, true);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cabinOpen]);
+  const [paxOpen, setPaxOpen] = useState(false);
+  const [paxClosing, setPaxClosing] = useState(false);
 
   // Flight store values needed for the search bar and return calendar
   const fromCity = useFlightStore((s) => s.fromCity);
@@ -65,6 +33,8 @@ export const Header = () => {
   const swapCities = useFlightStore((s) => s.swapCities);
   const doSearch = useFlightStore((s) => s.doSearch);
   const searching = useFlightStore((s) => s.searching);
+  const travellers = useFlightStore((s) => s.travellers);
+  const setTravellers = useFlightStore((s) => s.setTravellers);
 
   // Theme for light/dark mode styling
   const { theme } = useThemeStore();
@@ -79,6 +49,32 @@ export const Header = () => {
     setSwapSpin((s) => s + 1);
   };
 
+  // Travellers popover open/close (close plays an exit animation first)
+  const openPax = () => {
+    setPaxClosing(false);
+    setPaxOpen(true);
+  };
+  const closePax = () => {
+    setPaxClosing(true);
+    window.setTimeout(() => {
+      setPaxOpen(false);
+      setPaxClosing(false);
+    }, 150);
+  };
+
+  // Increment/decrement a traveller category; clamping rules live in the store.
+  const changePax = (key: 'adults' | 'children' | 'infants', delta: number) => {
+    setTravellers({ ...travellers, [key]: travellers[key] + delta });
+  };
+
+  // Shared styling for the −/+ stepper buttons.
+  const stepperCls = (disabled: boolean) =>
+    `flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-[14px] font-bold leading-none transition-all duration-200 active:scale-90 ${
+      disabled
+        ? 'cursor-not-allowed border-current/30 text-current opacity-40'
+        : `cursor-pointer ${isLight ? 'border-[#D1D5DB] text-[#2563EB] hover:border-[#2563EB] hover:bg-[#EFF6FF]' : 'border-[rgba(124,192,255,0.4)] text-[#7CC0FF] hover:border-[#7CC0FF] hover:bg-white/5'}`
+    }`;
+
   // Left section: just the app logo
   const leftSection = (
     <div className="flex min-w-0 items-center gap-2 sm:gap-5">
@@ -88,8 +84,7 @@ export const Header = () => {
 
   // Right section: filters toggle, avatar badge, and theme toggle
   const rightSection = (
-    <div className={`flex shrink-0 flex-col items-end gap-0.5 transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-white/85'}`}>
-      <div className="flex items-center gap-1.5 sm:gap-4">
+    <div className="flex shrink-0 items-center gap-1.5 sm:gap-4">
         <button
           type="button"
           onClick={() => setFiltersOpen(!filtersOpen)}
@@ -99,17 +94,21 @@ export const Header = () => {
         >
           <svg {...iconProps('h-3.5 w-3.5')}><line x1="4" y1="6" x2="20" y2="6" /><line x1="4" y1="12" x2="20" y2="12" /><line x1="4" y1="18" x2="20" y2="18" /></svg>
         </button>
-        <div className={`flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-semibold transition-colors duration-300 ${isLight ? 'bg-[#EFF6FF] text-[#2563EB]' : 'bg-[#2B5BFF] text-white'}`}>
+        <div
+          role="button"
+          tabIndex={0}
+          aria-label="Account"
+          className={`flex h-7 w-7 cursor-pointer select-none items-center justify-center rounded-full text-[11px] font-bold ring-1 transition-all duration-300 hover:scale-[1.06] ${isLight ? 'bg-[#EFF6FF] text-[#2563EB] ring-[#2563EB]/30 shadow-[0_2px_8px_rgba(37,99,235,0.18)] hover:shadow-[0_4px_14px_rgba(37,99,235,0.28)]' : 'bg-[#2B5BFF] text-white ring-[#7CC0FF]/40 shadow-[0_2px_10px_rgba(43,91,255,0.4)] hover:shadow-[0_4px_16px_rgba(43,91,255,0.55)]'}`}
+        >
           AS
         </div>
         <ThemeToggle className="shrink-0" size="sm" />
-      </div>
     </div>
   );
 
   // Search bar: From/To cities, dates, travellers, and the Search button
   const searchBar = (
-    <div className={`group relative mt-1.5 flex flex-wrap items-stretch overflow-hidden rounded-[26px] border transition-all duration-300 hover:border-[#d4af37]/70 sm:rounded-l-[16px] sm:rounded-r-[26px] lg:mt-0 ${isLight ? 'bg-white border-[#E5E7EB] shadow-[0_4px_12px_rgba(0,0,0,0.08)]' : 'bg-[#0F1B3A] border-[rgba(124,192,255,0.22)] shadow-[0_10px_30px_rgba(0,0,0,0.35)] hover:shadow-[0_0_18px_rgba(212,175,55,0.3),0_0_50px_rgba(212,175,55,0.14)]'}`}>
+    <div className={`group relative mt-1.5 flex flex-wrap items-stretch rounded-[26px] border transition-all duration-300 hover:border-[#d4af37]/70 sm:rounded-l-[16px] sm:rounded-r-[26px] lg:mt-0 ${isLight ? 'bg-white border-[#E5E7EB] shadow-[0_4px_12px_rgba(0,0,0,0.08)]' : 'bg-[#0F1B3A] border-[rgba(124,192,255,0.22)] shadow-[0_10px_30px_rgba(0,0,0,0.35)] hover:shadow-[0_0_18px_rgba(212,175,55,0.3),0_0_50px_rgba(212,175,55,0.14)]'}`}>
       {/* From + To (swap button overlaps the divider) */}
       <div className="relative flex w-full min-w-0 border-b border-white/10 sm:w-auto sm:flex-1 sm:border-b-0">
         <div className={`relative flex min-w-0 flex-1 items-center px-3 py-1 sm:px-5 sm:py-1.5 border-l transition-colors duration-300 ${isLight ? 'border-l-[#E5E7EB]' : 'border-l-white/10'}`}>
@@ -161,25 +160,86 @@ export const Header = () => {
         </div>
       </button>
 
-      {/* Travellers & Class — click to open the cabin class dropdown */}
-      <button
-        ref={cabinBtnRef}
-        type="button"
-        onClick={() => {
-          if (!cabinOpen) placeCabin();
-          setCabinOpen((o) => !o);
-        }}
-        aria-expanded={cabinOpen}
-        className={`flex w-full min-w-0 shrink-0 cursor-pointer items-center border-l px-3 py-1 text-left transition-colors duration-200 sm:w-auto sm:flex-1 sm:border-l sm:py-1.5 sm:pl-5 sm:pr-[170px] ${isLight ? 'border-l-[#E5E7EB] hover:bg-[#F9FAFB]' : 'border-white/10 hover:bg-[rgba(212,175,55,0.06)]'}`}
-      >
-        <div className="min-w-0">
-          <div className={`bar-text text-[10px] font-semibold tracking-[0.12em] transition-all duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#7CC0FF]'}`}>Travellers & Class</div>
-          <div className={`flex items-center gap-1.5 ${isLight ? 'text-[#111827]' : 'text-white'}`}>
-            <span className="bar-text-value mt-0.5 truncate text-[12.5px] font-bold transition-all duration-300 sm:text-[14px]">1 Traveller, {cabin}</span>
-            <ChevronDown className={`h-3.5 w-3.5 shrink-0 transition-transform duration-300 ${isLight ? 'text-[#9CA3AF]' : 'text-white/50'} ${cabinOpen ? 'rotate-180' : ''}`} />
+      {/* Travellers & Class — clickable, opens the travellers popover */}
+      <div className="relative w-full min-w-0 sm:w-auto sm:flex-1">
+        <button
+          type="button"
+          onClick={() => (paxOpen ? closePax() : openPax())}
+          aria-expanded={paxOpen}
+          aria-haspopup="dialog"
+          className={`flex w-full min-w-0 cursor-pointer items-center border-l px-3 py-1 text-left transition-colors duration-300 sm:px-5 sm:py-1.5 ${isLight ? 'border-l-[#E5E7EB] hover:bg-[#F9FAFB]' : 'border-l-white/10 hover:bg-white/5'}`}
+        >
+          <div className="min-w-0 flex-1">
+            <div className={`bar-text text-[10px] font-semibold tracking-[0.12em] transition-all duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#7CC0FF]'}`}>Travellers & Class</div>
+            <div className={`bar-text-value mt-0.5 flex items-center gap-1 truncate text-[12.5px] font-bold transition-all duration-300 sm:text-[14px] ${isLight ? 'text-[#111827]' : 'text-white'}`}>
+              <span className="truncate">{travellersLabel(travellers)}, {cabin}</span>
+              <ChevronDown className={`h-3.5 w-3.5 shrink-0 transition-transform duration-300 ${isLight ? 'text-[#6B7280]' : 'text-white/50'} ${paxOpen && !paxClosing ? 'rotate-180' : ''}`} />
+            </div>
           </div>
-        </div>
-      </button>
+        </button>
+
+        {/* Travellers popover: per-category steppers + cabin class + Done */}
+        {paxOpen && (
+          <>
+            <div className="fixed inset-0 z-40" onClick={closePax} />
+            <div
+              role="dialog"
+              aria-label="Select travellers and cabin class"
+              className={`popover-${paxClosing ? 'out' : 'in'} absolute left-0 top-full z-50 mt-1 w-[290px] max-w-[calc(100vw-24px)] rounded-xl border p-3 ${isLight ? 'bg-white border-[#E5E7EB] shadow-[0_8px_24px_rgba(0,0,0,0.12)]' : 'bg-[#0F1B3A] border-[rgba(124,192,255,0.22)] shadow-[0_10px_30px_rgba(0,0,0,0.45)]'}`}
+            >
+              <div className={`text-[10px] font-semibold tracking-[0.12em] ${isLight ? 'text-[#6B7280]' : 'text-[#7CC0FF]'}`}>TRAVELLERS</div>
+              <div className="mt-1">
+                {(['adults', 'children', 'infants'] as const).map((key) => {
+                  const meta = { adults: { label: 'Adults', sub: '12+ years' }, children: { label: 'Children', sub: '2–11 years' }, infants: { label: 'Infants', sub: 'Under 2 years' } }[key];
+                  const minusDisabled = key === 'adults' ? travellers.adults <= 1 : travellers[key] <= 0;
+                  const plusDisabled = key === 'adults' ? travellers.adults >= 9 : key === 'children' ? travellers.children >= 8 : travellers.infants >= travellers.adults;
+                  return (
+                    <div key={key} className="flex items-center justify-between gap-3 py-2">
+                      <div className="min-w-0">
+                        <div className={`text-[12.5px] font-semibold ${isLight ? 'text-[#111827]' : 'text-white'}`}>{meta.label}</div>
+                        <div className={`text-[10.5px] ${isLight ? 'text-[#9CA3AF]' : 'text-[#9baec7]'}`}>{meta.sub}</div>
+                      </div>
+                      <div className="flex shrink-0 items-center gap-2.5">
+                        <button type="button" aria-label={`Decrease ${meta.label}`} disabled={minusDisabled} onClick={() => changePax(key, -1)} className={stepperCls(minusDisabled)}>−</button>
+                        <span className={`w-5 text-center text-[13px] font-bold tabular-nums ${isLight ? 'text-[#111827]' : 'text-white'}`}>{travellers[key]}</span>
+                        <button type="button" aria-label={`Increase ${meta.label}`} disabled={plusDisabled} onClick={() => changePax(key, 1)} className={stepperCls(plusDisabled)}>+</button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Cabin class */}
+              <div className={`mt-1 border-t pt-2.5 ${isLight ? 'border-[#E5E7EB]' : 'border-white/10'}`}>
+                <div className={`text-[10px] font-semibold tracking-[0.12em] ${isLight ? 'text-[#6B7280]' : 'text-[#7CC0FF]'}`}>CABIN CLASS</div>
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {['Economy', 'Premium Economy', 'Business Class', 'First Class'].map((c) => (
+                    <button
+                      key={c}
+                      type="button"
+                      onClick={() => setCabin(c)}
+                      className={`cursor-pointer rounded-full border px-2.5 py-1 text-[11px] font-semibold transition-all duration-200 active:scale-95 ${cabin === c
+                        ? (isLight ? 'border-[#2563EB] bg-[#EFF6FF] text-[#2563EB]' : 'border-[#7CC0FF]/60 bg-[#2B5BFF]/25 text-[#7CC0FF]')
+                        : (isLight ? 'border-[#E5E7EB] text-[#374151] hover:border-[#2563EB]/50 hover:bg-[#F9FAFB]' : 'border-white/15 text-white/85 hover:border-[#7CC0FF]/40 hover:bg-white/5')}`}
+                    >
+                      {c}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Done */}
+              <button
+                type="button"
+                onClick={closePax}
+                className={`mt-3 h-9 w-full cursor-pointer rounded-lg border-none text-[13px] font-bold tracking-wide transition-all duration-200 active:scale-[0.98] ${isLight ? 'bg-[#2563EB] text-white shadow-[0_2px_8px_rgba(37,99,235,0.3)] hover:bg-[#1D4ED8]' : 'bg-[#2593fc] text-white shadow-[0_2px_10px_rgba(37,147,252,0.4)] hover:bg-[#1D4ED8]'}`}
+              >
+                Done
+              </button>
+            </div>
+          </>
+        )}
+      </div>
 
       {/* Search button — blue pill cap, flush with the bar's top/bottom/right edges */}
       <button
@@ -226,31 +286,6 @@ export const Header = () => {
           />
         </div>
       )}
-      {/* Cabin class dropdown, anchored directly below the Travellers & Class section */}
-      {cabinOpen &&
-        cabinPos &&
-        createPortal(
-          <div
-            ref={cabinMenuRef}
-            className={`fixed z-[100] w-44 overflow-hidden rounded-xl border p-1 transition-colors duration-300 ${isLight ? 'bg-white border-[#E5E7EB] shadow-[0_8px_24px_rgba(0,0,0,0.12)]' : 'bg-[#0F1B3A] border-[rgba(124,192,255,0.22)] shadow-[0_10px_30px_rgba(0,0,0,0.45)]'}`}
-            style={{ top: cabinPos.top, left: cabinPos.left }}
-          >
-            {['Economy', 'Premium Economy', 'Business Class', 'First Class'].map((c) => (
-              <button
-                key={c}
-                type="button"
-                onClick={() => {
-                  setCabin(c);
-                  setCabinOpen(false);
-                }}
-                className={`block w-full cursor-pointer rounded-lg px-3 py-1.5 text-left text-[12.5px] font-medium transition-colors duration-200 ${cabin === c ? (isLight ? 'bg-[#EFF6FF] text-[#2563EB]' : 'bg-[#2B5BFF]/25 text-[#7CC0FF]') : isLight ? 'text-[#374151] hover:bg-[#F3F4F6]' : 'text-white/85 hover:bg-white/10'}`}
-              >
-                {c}
-              </button>
-            ))}
-          </div>,
-          document.body
-        )}
     </header>
   );
 };

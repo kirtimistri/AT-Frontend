@@ -18,6 +18,20 @@ export type Flight = {
 
 export type SortKey = 'price' | 'fastest' | 'departure';
 
+// Traveller counts for a search, split by age category.
+export type Travellers = { adults: number; children: number; infants: number };
+
+export const DEFAULT_TRAVELLERS: Travellers = { adults: 1, children: 0, infants: 0 };
+
+// Total travellers across all categories.
+export const travellersTotal = (t: Travellers): number => t.adults + t.children + t.infants;
+
+// "1 Traveller" / "3 Travellers" label helper.
+export const travellersLabel = (t: Travellers): string => {
+  const total = travellersTotal(t);
+  return `${total} ${total === 1 ? 'Traveller' : 'Travellers'}`;
+};
+
 export type StripDay = { label: string; price: number };
 
 export type SearchSnapshot = {
@@ -34,6 +48,7 @@ export type SearchSnapshot = {
   stripSel: number;
   monthOffset: number;
   filtersOpen: boolean;
+  travellers: Travellers;
 };
 
 // ── Client-side dummy data ────────────────────────────────────────────────
@@ -451,6 +466,7 @@ type FlightStore = {
   stripSel: number;
   openFilters: boolean[];
   activePriceBreakdownId: string | null;
+  travellers: Travellers;
   setReturnOpen: (v: boolean) => void;
   setFiltersOpen: (v: boolean) => void;
   toggleFilterGroup: (i: number) => void;
@@ -466,6 +482,7 @@ type FlightStore = {
   setStripSel: (i: number) => void;
   shiftStrip: (dir: -1 | 1) => void;
   setActivePriceBreakdownId: (id: string | null) => void;
+  setTravellers: (t: Travellers) => void;
   swapCities: () => void;
   doSearch: () => void;
   restoreSearch: (snapshot: SearchSnapshot) => void;
@@ -494,6 +511,18 @@ export const useFlightStore = create<FlightStore>()((set, get) => ({
   stripSel: STRIP_DEFAULT_SEL,
   openFilters: Array(8).fill(false),
   activePriceBreakdownId: null,
+  travellers: { ...DEFAULT_TRAVELLERS },
+
+  setTravellers: (t) =>
+    set(() => ({
+      travellers: {
+        // Adults must never go below 1 (capped at 9), children capped at 8,
+        // and infants can never exceed the number of adults.
+        adults: Math.min(9, Math.max(1, t.adults)),
+        children: Math.min(8, Math.max(0, t.children)),
+        infants: Math.min(Math.min(9, Math.max(1, t.adults)), Math.max(0, t.infants)),
+      },
+    })),
 
   setReturnOpen: (v) => set({ returnOpen: v }),
   setFiltersOpen: (v) => set({ filtersOpen: v }),
@@ -550,10 +579,11 @@ export const useFlightStore = create<FlightStore>()((set, get) => ({
       stripSel: snapshot.stripSel,
       monthOffset: snapshot.monthOffset,
       filtersOpen: snapshot.filtersOpen,
+      travellers: snapshot.travellers ?? { ...DEFAULT_TRAVELLERS },
     }),
 
   doSearch: () => {
-    const { searching, fromCity, toCity, returnDate } = get();
+    const { searching, fromCity, toCity, returnDate, travellers } = get();
     if (searching) return;
     const fromCode = fromCity.split(' - ')[0];
     const toCode = toCity.split(' - ')[0];
@@ -564,11 +594,19 @@ export const useFlightStore = create<FlightStore>()((set, get) => ({
     if (!returnDate) {
       toast({ kind: 'warning', code: 400, title: 'No Return Date', message: 'Showing one-way results — select a return date for round-trip pricing.' });
     }
+    // Build the flight-search request payload, including the selected traveller
+    // counts (adults / children / infants) so the API receives them.
+    const searchRequest = {
+      fromCode,
+      toCode,
+      returnDate,
+      travellers: { ...travellers },
+    };
     set({ selectedOnward: null, selectedReturn: null, searching: true });
     window.setTimeout(() => {
       set({ searching: false, searched: true });
       const { fromCity: fc, toCity: tc } = get();
-      toast({ kind: 'success', code: 200, title: 'Search Complete', message: `${fc} → ${tc} flights loaded.` });
+      toast({ kind: 'success', code: 200, title: 'Search Complete', message: `${fc} → ${tc} flights loaded for ${travellersLabel(searchRequest.travellers).toLowerCase()}.` });
     }, 1400);
   },
 }));

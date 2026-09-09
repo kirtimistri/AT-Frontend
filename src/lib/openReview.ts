@@ -39,6 +39,7 @@ export const prepareReview = (selection: BookingSelection) => {
     stripSel: s.stripSel,
     monthOffset: s.monthOffset,
     filtersOpen: s.filtersOpen,
+    travellers: s.travellers,
   };
   const payload = JSON.stringify(snapshot);
   sessionStorage.setItem(STORAGE_KEY, payload);
