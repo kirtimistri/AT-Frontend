@@ -6,8 +6,8 @@ export type LogoSize = 'md' | 'sm';
 
 // Maps each size to the box and svg Tailwind classes.
 const LOGO_SIZE_CLASSES: Record<LogoSize, { box: string; svg: string }> = {
-  md: { box: 'h-10 w-10', svg: 'h-6 w-6' },
-  sm: { box: 'h-8 w-8', svg: 'h-5 w-5' },
+  md: { box: 'h-8 w-8', svg: 'h-5 w-5' },
+  sm: { box: 'h-6 w-6', svg: 'h-4 w-4' },
 };
 
 // Indigo airline logo tile.

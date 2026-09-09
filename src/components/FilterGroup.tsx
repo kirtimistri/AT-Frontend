@@ -33,32 +33,32 @@ export const FilterGroup = ({ icon, label, value, chevron, slider, active, onTog
           onToggle();
         }
       }}
-      className={`group relative -mx-4 cursor-pointer select-none border-b px-4 py-2 transition-all duration-300 last:border-b-0 ${isLight ? 'border-[#E5E7EB]' : 'border-[rgba(124,192,255,0.16)]'} ${active ? (isLight ? 'bg-[#EFF6FF]' : 'bg-gradient-to-r from-[rgba(212,175,55,0.38)] via-[rgba(212,175,55,0.24)] to-[rgba(212,175,55,0.14)]') : (isLight ? 'hover:bg-[#F9FAFB]' : 'hover:bg-gradient-to-r hover:from-[#f0c265] hover:via-[#d4af37] hover:to-[#a8842a]')}`}
+      className={`group relative -mx-4 flex flex-1 cursor-pointer select-none flex-col justify-center border-b px-4 py-1.5 transition-all duration-300 last:border-b-0 ${isLight ? 'border-[#E5E7EB]' : 'border-[rgba(124,192,255,0.16)]'} ${active ? (isLight ? 'bg-[#EFF6FF]' : 'bg-gradient-to-r from-[rgba(212,175,55,0.38)] via-[rgba(212,175,55,0.24)] to-[rgba(212,175,55,0.14)]') : (isLight ? 'hover:bg-[#F9FAFB]' : 'hover:bg-gradient-to-r hover:from-[#f0c265] hover:via-[#d4af37] hover:to-[#a8842a]')}`}
     >
       <div className="relative flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span
-            className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-[9px] ring-1 transition-all duration-300 group-hover:scale-[1.06] group-active:scale-[1.06] ${isLight ? (active ? 'bg-[#FEE2E2] text-[#DC2626] ring-[#DC2626]/30 shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] group-hover:bg-[#DC2626] group-hover:text-white group-hover:ring-[#B91C1C]/50' : 'bg-[#FEF2F2] text-[#EF4444] ring-[#EF4444]/30 group-hover:bg-[#FEE2E2] group-hover:text-[#DC2626] group-hover:ring-[#DC2626]/40') : (active ? 'scale-[1.06] from-[rgba(239,68,68,0.45)] via-[rgba(239,68,68,0.28)] to-[rgba(239,68,68,0.12)] text-[#F87171] ring-[rgba(248,113,113,0.8)] shadow-[inset_0_1px_0_rgba(255,255,255,0.14)]' : 'from-[rgba(239,68,68,0.32)] via-[rgba(239,68,68,0.16)] to-[rgba(248,113,113,0.08)] text-[#F87171] ring-[rgba(248,113,113,0.35)] shadow-[inset_0_1px_0_rgba(255,255,255,0.14)] group-hover:from-[#EF4444] group-hover:via-[#DC2626] group-hover:to-[#B91C1C] group-hover:text-white group-hover:ring-[#EF4444] group-hover:shadow-[0_0_14px_rgba(239,68,68,0.45),inset_0_1px_0_rgba(255,255,255,0.2)] group-active:from-[rgba(239,68,68,0.45)] group-active:via-[rgba(239,68,68,0.28)] group-active:to-[rgba(239,68,68,0.12)] group-active:text-[#F87171] group-active:ring-[rgba(248,113,113,0.8)] group-active:shadow-[inset_0_1px_0_rgba(255,255,255,0.14)]')}`}
+            className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-[9px] ring-1 transition-all duration-300 group-hover:scale-[1.06] group-active:scale-[1.06] ${isLight ? (active ? 'bg-[#DC2626] text-white ring-[#DC2626] group-hover:bg-[#B91C1C] group-hover:ring-[#B91C1C]' : 'bg-[#EF4444] text-white ring-[#EF4444] shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] group-hover:bg-[#DC2626] group-hover:ring-[#DC2626] group-active:bg-[#DC2626] group-active:ring-[#DC2626]') : (active ? 'bg-[#DC2626] text-white ring-[#DC2626]/70 group-hover:bg-[#B91C1C]' : 'bg-[#EF4444] text-white ring-[#EF4444]/60 shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] group-hover:bg-[#DC2626] group-active:bg-[#DC2626]')}`}
           >
             <span className="flex items-center justify-center transition-all duration-300">
               {icon}
             </span>
           </span>
           <span
-            className={`text-[12.5px] font-semibold transition-colors duration-300 ${isLight ? (active ? 'text-[#2563EB]' : 'text-[#111827]') : (active ? 'text-[#f5d67b]' : 'text-[#9CC6FF] group-hover:text-[#0E1833] group-active:text-[#f5d67b]')}`}
+            className={`text-[12.5px] font-semibold transition-colors duration-300 ${isLight ? (active ? 'text-[#2563EB]' : 'text-[#111827]') : (active ? 'text-[#f5d67b]' : 'text-white group-hover:text-[#0E1833] group-active:text-[#f5d67b]')}`}
           >
             {label}
           </span>
         </div>
         {/* Show a chevron icon on the right side if needed. */}
         {chevron === 'down' ? (
-          <ChevronDown className={`h-3 w-3 transition-colors duration-300 ${active ? 'text-[#f5d67b]' : 'text-[#7CC0FF] group-hover:text-[#0E1833] group-active:text-[#f5d67b]'}`} />
+          <ChevronDown className={`h-3 w-3 transition-colors duration-300 ${active ? 'text-[#f5d67b]' : 'text-white group-hover:text-[#0E1833] group-active:text-[#f5d67b]'}`} />
         ) : chevron === 'right' ? (
-          <ChevronRight className={`h-3 w-3 transition-colors duration-300 ${active ? 'text-[#f5d67b]' : 'text-[#7CC0FF] group-hover:text-[#0E1833] group-active:text-[#f5d67b]'}`} />
+          <ChevronRight className={`h-3 w-3 transition-colors duration-300 ${active ? 'text-[#f5d67b]' : 'text-white group-hover:text-[#0E1833] group-active:text-[#f5d67b]'}`} />
         ) : null}
       </div>
       {/* Display the current filter value below the header row. */}
-      <p className={`relative mt-1 pl-[40px] text-[11px] leading-tight transition-colors duration-300 ${isLight ? (active ? 'text-[#2563EB]' : 'text-[#6B7280] group-hover:text-[#2563EB] group-active:text-[#2563EB]') : (active ? 'text-[rgba(240,194,101,0.95)]' : 'text-[#9CC6FF]/85 group-hover:text-[#2a2208]/90 group-active:text-[rgba(240,194,101,0.95)]')}`}>{value}</p>
+      <p className={`relative mt-1 pl-[40px] text-[11px] leading-tight transition-colors duration-300 ${isLight ? (active ? 'text-[#2563EB]' : 'text-[#111827] group-hover:text-[#2563EB] group-active:text-[#2563EB]') : (active ? 'text-[rgba(240,194,101,0.95)]' : 'text-white/85 group-hover:text-[#2a2208]/90 group-active:text-[rgba(240,194,101,0.95)]')}`}>{value}</p>
       {/* Render the range slider if one was provided. */}
       {slider && (
         <div className="relative pl-[40px]" onClick={(e) => e.stopPropagation()}>
