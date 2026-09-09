@@ -125,7 +125,7 @@ export function ToastViewport() {
 
   return (
     // List of all active toast notifications.
-    <div className="pointer-events-none fixed inset-x-0 top-4 z-[120] flex flex-col items-center gap-3 px-3 sm:inset-x-auto sm:top-5 sm:right-5 sm:items-end">
+    <div className="pointer-events-none fixed inset-x-0 top-4 z-[120] flex flex-col items-center gap-3 px-3 sm:top-5">
       {items.map((t) => {
         // Look up the colors/theme for this toast kind.
         const p = kindTheme[t.kind];
@@ -141,21 +141,21 @@ export function ToastViewport() {
               className="pointer-events-none absolute inset-x-0 top-0 h-px"
               style={{ background: `linear-gradient(90deg, transparent, ${p.glow}, transparent)` }}
             />
-            <div className="relative flex items-start gap-3 py-3 pl-3.5 pr-3">
+            <div className="relative flex items-start gap-2.5 py-1.5 pl-3 pr-2">
               <span
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[11px]"
+                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[9px]"
                 style={{
                   background: isLight ? p.lightBg : p.tileBg,
                   border: `1px solid ${p.tileRing}`,
                   boxShadow: isLight ? 'none' : `inset 0 1px 0 rgba(255,255,255,0.14), 0 0 16px ${p.glow}`,
                 }}
               >
-                <span className="flex h-[18px] w-[18px]" style={{ color: isLight ? p.lightText : p.text }}>
+                <span className="flex h-[14px] w-[14px]" style={{ color: isLight ? p.lightText : p.text }}>
                   {kindIcons[t.kind]}
                 </span>
               </span>
 
-              <div className="min-w-0 flex-1 pt-[2px]">
+              <div className="min-w-0 flex-1 pt-[1px]">
                 {/* Title and optional status code badge. */}
                 <div className="flex flex-wrap items-center gap-2">
                   <span className={`text-[13px] font-bold tracking-wide transition-colors duration-300 ${isLight ? 'text-[#111827]' : ''}`} style={!isLight ? { color: p.text } : undefined}>
@@ -178,7 +178,7 @@ export function ToastViewport() {
               {/* Dismiss button to close this toast. */}
               <button
                 onClick={() => dismissToast(t.id)}
-                className={`toast-dismiss-btn flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-full border bg-transparent transition-all duration-200 ${isLight ? 'border-[#E5E7EB] text-[#9CA3AF] hover:border-[#2563EB] hover:text-[#2563EB]' : 'border-[rgba(124,192,255,0.25)] text-white/45 hover:border-[#d4af37]/70 hover:text-[#f0c265]'}`}
+                className={`toast-dismiss-btn flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-full border bg-transparent transition-all duration-200 ${isLight ? 'border-[#E5E7EB] text-[#9CA3AF] hover:border-[#2563EB] hover:text-[#2563EB]' : 'border-[rgba(124,192,255,0.25)] text-white/45 hover:border-[#d4af37]/70 hover:text-[#f0c265]'}`}
                 aria-label="Dismiss"
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="h-3 w-3">

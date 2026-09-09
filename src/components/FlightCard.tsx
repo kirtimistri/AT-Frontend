@@ -168,15 +168,11 @@ const CompactFlightLeft = ({
   const depTerm = fromLabel.split(' ').slice(1).join(' ') || 'Terminal 1';
   const arrCode = toLabel.split(' ')[0];
   const arrTerm = toLabel.split(' ').slice(1).join(' ') || 'Terminal 1';
-  const layoverMin = 30 + ((f.code.charCodeAt(0) + f.code.length * 13) % 90);
   return (
     <div className="min-w-0 flex-1 pr-2 pb-1 lg:pb-0">
       {/* Left details + schedule side by side */}
       <div className="mt-0.5 flex items-start justify-between gap-2">
         <div className="flex shrink-0 flex-col items-start">
-          <span className={`mb-0.5 whitespace-nowrap text-[8.5px] font-semibold leading-none transition-colors duration-300 ${f.via ? (isLight ? 'text-[#6B7280]' : 'text-[#9eafc7]') : 'text-[#22c55e]'}`}>
-            {f.via ? `via ${viaList.join(', ')} · ${stopN} ${stopN === 1 ? 'Stop' : 'Stops'}` : 'Non-stop'}
-          </span>
           <AirlineLogo airline={f.airline} size="sm" />
           <span className={`mt-0.5 whitespace-nowrap text-[11px] font-bold leading-none tracking-wide transition-colors duration-300 ${isLight ? 'text-[#111827]' : 'text-white'}`}>{f.airline}</span>
           <span className={`mt-0.5 whitespace-nowrap text-[9px] font-semibold leading-none transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#9eafc7]'}`}>{f.code}</span>
@@ -208,25 +204,7 @@ const CompactFlightLeft = ({
                   <PlaneFill className={`h-3 w-3 rotate-45 transition-colors duration-300 ${isLight ? 'text-[#2563EB]' : 'text-[#2e7bf6]'}`} />
                 </div>
               )}
-              {f.via && (
-                <div className={`absolute left-1/2 top-[-12px] -translate-x-1/2 whitespace-nowrap text-[8.5px] transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#9baec7]'}`}>
-                  via {viaList.join(', ')}
-                </div>
-              )}
             </div>
-            {f.via && (
-              <div className={`mt-1.5 flex items-center gap-2 whitespace-nowrap text-[8.5px] transition-colors duration-300 ${isLight ? 'text-[#4B5563]' : 'text-white'}`}>
-                <span className="flex items-center gap-1">
-                  <span className="h-[7px] w-[7px] rounded-full bg-[#22c55e]" />
-                  Layover {minutesToHm(layoverMin)} at {viaList.join(', ')}
-                </span>
-                <span className={`h-2.5 w-px transition-colors duration-300 ${isLight ? 'bg-[#D1D5DB]' : 'bg-[#315073]'}`} />
-                <span className="flex items-center gap-1">
-                  <span className="h-[7px] w-[7px] rounded-full bg-[#ef4444]" />
-                  Hop Flight
-                </span>
-              </div>
-            )}
           </div>
 
           <div className="w-[64px] shrink-0 text-left">
@@ -382,6 +360,8 @@ export const FlightCard = ({
   };
   const base = f.price + dayDelta;
   const viaList = viaCities(f.via);
+  const stopN = stopsCount(f.stops);
+  const layoverMin = 30 + ((f.code.charCodeAt(0) + f.code.length * 13) % 90);
   const planeCount = Math.max(stopsCount(f.stops) + 1, viaList.length + 1);
 
   return (
@@ -395,6 +375,23 @@ export const FlightCard = ({
       <div className={`flex h-[13px] min-w-0 items-center justify-center rounded-full px-1.5 text-[7.5px] font-bold ${f.badgeBg}`}>
         <span className="text-[7.5px] font-bold tracking-[0.2px] text-white">{f.badge}</span>
       </div>
+      {f.via && (
+        <>
+          <span className="flex items-center gap-1 whitespace-nowrap text-[8px] font-semibold leading-none text-[#22c55e]">
+            <span className="h-[6px] w-[6px] rounded-full bg-[#22c55e]" />
+            Layover {minutesToHm(layoverMin)} at {viaList.join(', ')}
+          </span>
+          <span className={`h-2.5 w-px shrink-0 transition-colors duration-300 ${isLight ? 'bg-[#D1D5DB]' : 'bg-[#315073]'}`} />
+          <span className="flex items-center gap-1 whitespace-nowrap text-[8px] font-semibold leading-none text-[#ef4444]">
+            <span className="h-[6px] w-[6px] rounded-full bg-[#ef4444]" />
+            Hop Flight
+          </span>
+          <span className={`h-2.5 w-px shrink-0 transition-colors duration-300 ${isLight ? 'bg-[#D1D5DB]' : 'bg-[#315073]'}`} />
+        </>
+      )}
+      <span className={`whitespace-nowrap text-[8px] font-semibold leading-none transition-colors duration-300 ${f.via ? (isLight ? 'text-[#6B7280]' : 'text-[#9eafc7]') : 'text-[#22c55e]'}`}>
+        {f.via ? `via ${viaList.join(', ')} · ${stopN} ${stopN === 1 ? 'Stop' : 'Stops'}` : 'Non-stop'}
+      </span>
       {selected && (
         <span className={`flex h-5 w-5 items-center justify-center rounded-full transition-colors duration-300 ${isLight ? 'bg-[#DC2626] shadow-[0_0_10px_rgba(220,38,38,0.8)]' : 'bg-[#d4af37] shadow-[0_0_10px_rgba(212,175,55,0.8)]'}`}>
           <svg viewBox="0 0 24 24" className="h-3 w-3" fill="none" stroke="#ffffff" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round">
@@ -433,16 +430,6 @@ export const FlightCard = ({
           <AirlineLogo airline={f.airline} size="sm" />
           <div className="flex flex-col items-start pt-[3px]">
             <span className={`whitespace-nowrap text-[13px] font-bold leading-none tracking-wide transition-colors duration-300 ${isLight ? 'text-[#111827]' : 'text-white'}`}>{f.airline}</span>
-            {viaList.length > 0 ? (
-              <span className="mt-0.5 whitespace-nowrap text-[9.5px] font-semibold leading-none text-[#fdba74]">
-                via {viaList.join(', ')}
-              </span>
-            ) : (
-              <span className="mt-0.5 flex items-center gap-1 whitespace-nowrap text-[9.5px] font-semibold leading-none text-[#22c55e]">
-                <span className="h-[6px] w-[6px] rounded-full bg-[#22c55e]" />
-                Non-stop
-              </span>
-            )}
             <span className={`mt-0.5 whitespace-nowrap text-[9.5px] font-semibold leading-none transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#9eafc7]'}`}>{f.code}</span>
           </div>
         </div>
