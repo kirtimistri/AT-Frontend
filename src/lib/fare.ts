@@ -1,6 +1,7 @@
 export const TIER_DELTA: Record<string, number> = {
   SAVER: -730,
   FLEX: 370,
+  FAMILY: 1120,
   PREMIUM: 2370,
 };
 
