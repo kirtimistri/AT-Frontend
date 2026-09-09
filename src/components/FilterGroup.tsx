@@ -33,7 +33,7 @@ export const FilterGroup = ({ icon, label, value, chevron, slider, active, onTog
           onToggle();
         }
       }}
-      className={`group relative -mx-4 flex min-h-0 flex-1 cursor-pointer select-none flex-col justify-center border-b px-4 py-1 transition-all duration-300 last:border-b-0 ${isLight ? 'border-[#E5E7EB]' : 'border-[rgba(124,192,255,0.16)]'} ${active ? (isLight ? 'bg-[#EFF6FF]' : 'bg-gradient-to-r from-[rgba(212,175,55,0.38)] via-[rgba(212,175,55,0.24)] to-[rgba(212,175,55,0.14)]') : (isLight ? 'hover:bg-[#F9FAFB]' : 'hover:bg-gradient-to-r hover:from-[#f0c265] hover:via-[#d4af37] hover:to-[#a8842a]')}`}
+      className={`group relative -mx-4 flex min-h-[72px] flex-none cursor-pointer select-none flex-col justify-center border-b px-4 py-2 transition-all duration-300 md:min-h-0 md:flex-1 md:py-1 last:border-b-0 ${isLight ? 'border-[#E5E7EB]' : 'border-[rgba(124,192,255,0.16)]'} ${active ? (isLight ? 'bg-[#EFF6FF]' : 'bg-gradient-to-r from-[rgba(212,175,55,0.38)] via-[rgba(212,175,55,0.24)] to-[rgba(212,175,55,0.14)]') : (isLight ? 'hover:bg-[#F9FAFB]' : 'hover:bg-gradient-to-r hover:from-[#f0c265] hover:via-[#d4af37] hover:to-[#a8842a]')}`}
     >
       <div className="relative flex items-center justify-between">
         <div className="flex items-center gap-2">

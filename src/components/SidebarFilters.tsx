@@ -15,7 +15,7 @@ export const SidebarFilters = () => {
 
   // Sidebar container: visible only when filters are open (on mobile) or always on desktop
   return (
-    <aside className={`group/sidebar ${filtersOpen ? 'flex' : 'hidden'} w-full shrink-0 flex-col border-r p-3 md:flex md:w-[300px] transition-colors duration-300 ${isLight ? 'bg-[#F7F9FC] border-r-[#E5E7EB]' : 'bg-[#0E1833] border-[rgba(212,175,55,0.25)]'}`}>
+    <aside className={`group/sidebar ${filtersOpen ? 'flex' : 'hidden'} max-h-[72dvh] w-full shrink-0 flex-col overflow-hidden border-b p-3 md:max-h-none md:flex md:w-[300px] md:border-r md:border-b-0 transition-colors duration-300 ${isLight ? 'bg-[#F7F9FC] border-[#E5E7EB]' : 'bg-[#0E1833] border-[rgba(212,175,55,0.25)]'}`}>
       {/* Header row with the title and "clear all" button */}
       <div className="flex items-center justify-between pb-1.5">
         <span className={`text-[11.5px] font-bold tracking-[0.14em] transition-colors duration-300 ${isLight ? 'text-[#111827]' : 'text-white'}`}>REFINE RESULTS</span>
@@ -30,7 +30,7 @@ export const SidebarFilters = () => {
 
       {/* Filter groups: fills the sidebar height exactly — all options visible, no scrollbar */}
       {/* Filter groups: fills the sidebar height exactly — rows flex to fit, all options visible, no scrollbar */}
-      <div className={`flex min-h-0 flex-1 flex-col overflow-hidden rounded-[14px] border px-3 py-1 transition-colors duration-300 ${isLight ? 'bg-white border-[#E5E7EB] shadow-[0_2px_8px_rgba(0,0,0,0.06)]' : 'bg-[#0F1B3A] border-[rgba(124,192,255,0.35)] shadow-[inset_0_1px_0_rgba(255,255,255,0.02),0_0_18px_rgba(59,156,255,0.12)]'}`}>
+      <div className={`pretty-scroll flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain rounded-[14px] border px-3 py-1 md:overflow-hidden ${isLight ? 'bg-white border-[#E5E7EB] shadow-[0_2px_8px_rgba(0,0,0,0.06)]' : 'bg-[#0F1B3A] border-[rgba(124,192,255,0.35)] shadow-[inset_0_1px_0_rgba(255,255,255,0.02),0_0_18px_rgba(59,156,255,0.12)]'}`}>
         <FilterGroup icon={<GitFork className="h-4 w-4" />} label="Stops" value="Non-stop, 1 stop" chevron="right" active={openFilters[0]} onToggle={() => toggleFilterGroup(0)} />
         <FilterGroup icon={<PlaneTakeoff className="h-4 w-4" />} label="Airline" value="All airlines" chevron="right" active={openFilters[1]} onToggle={() => toggleFilterGroup(1)} />
         <FilterGroup
