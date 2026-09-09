@@ -4,6 +4,26 @@ export const inr = (n: number) => `₹${Math.round(n).toLocaleString('en-IN')}`;
 
 export const stripInr = (n: number) => `₹${n.toLocaleString('en-IN')}`;
 
+export type PriceBreakdown = {
+  baseFare: number;
+  taxes: number;
+  serviceFee: number;
+  serviceFeeGst: number;
+  totalAmount: number;
+};
+
+// Deterministic derivation of a flight's price breakdown from its total fare.
+// The flight/fare model only exposes a single `price`, so the components are
+// derived consistently and always sum back to the exact displayed total.
+export const priceBreakdownOf = (total: number): PriceBreakdown => {
+  const baseShare = total / 1.2095;
+  const serviceFee = Math.round(baseShare * 0.025);
+  const serviceFeeGst = Math.round(serviceFee * 0.18);
+  const taxes = Math.round(baseShare * 0.18);
+  const baseFare = total - taxes - serviceFee - serviceFeeGst;
+  return { baseFare, taxes, serviceFee, serviceFeeGst, totalAmount: total };
+};
+
 export const minutesToHm = (m: number) => `${Math.floor(m / 60)}h ${m % 60}m`;
 
 export const airportCodeOf = (airport: string) => airport.split(' ')[0];

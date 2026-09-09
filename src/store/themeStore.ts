@@ -11,6 +11,11 @@ const readInitialTheme = (): Theme => {
 
 const applyTheme = (theme: Theme) => {
   document.documentElement.dataset.theme = theme;
+  if (theme === 'light') {
+    document.documentElement.classList.add('light-theme');
+  } else {
+    document.documentElement.classList.remove('light-theme');
+  }
 };
 
 type ThemeStore = {
@@ -31,3 +36,14 @@ export const useThemeStore = create<ThemeStore>((set, get) => ({
 // Keep the <html> data-theme in sync with the persisted preference on load
 // so the toggle switch reflects the stored theme on every page.
 applyTheme(readInitialTheme());
+
+// Keep all open tabs in sync when the theme is changed in one of them.
+if (typeof window !== 'undefined') {
+  window.addEventListener('storage', (e: StorageEvent) => {
+    if (e.key === STORAGE_KEY) {
+      const next: Theme = e.newValue === 'light' ? 'light' : 'dark';
+      applyTheme(next);
+      useThemeStore.setState({ theme: next });
+    }
+  });
+}

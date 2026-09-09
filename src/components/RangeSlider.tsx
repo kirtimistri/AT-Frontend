@@ -1,32 +1,106 @@
-import { useState } from 'react';
-
+import { useRef, useState } from 'react';
+import { useThemeStore } from '../store/themeStore';
 export type SliderSpec = { from: number; to: number; lit?: boolean };
+export const RangeSlider = ({ from, to }: SliderSpec) => {
+  const { theme } = useThemeStore();
+  const isLight = theme === 'light';
+  // Editable copy of the from/to bounds, initialised from props.
+  const [range, setRange] = useState({ from, to });
+  const trackRef = useRef<HTMLDivElement>(null);
+  // Which thumb is being dragged (null = not dragging).
+  const dragRef = useRef<'from' | 'to' | null>(null);
 
-export const RangeSlider = ({ from, to, lit = false }: SliderSpec) => {
-  const [active, setActive] = useState(false);
-  const on = active || lit;
+  // Convert a pointer x position to a 0-100 percentage clamped to the track.
+  const pctFromEvent = (clientX: number) => {
+    const el = trackRef.current;
+    if (!el) return 0;
+    const rect = el.getBoundingClientRect();
+    return Math.min(100, Math.max(0, ((clientX - rect.left) / rect.width) * 100));
+  };
+
+  // Move the currently dragged thumb, keeping from <= to.
+  const applyDrag = (clientX: number) => {
+    const which = dragRef.current;
+    if (!which) return;
+    const pct = pctFromEvent(clientX);
+    setRange((r) => (which === 'from' ? { ...r, from: Math.min(pct, r.to) } : { ...r, to: Math.max(pct, r.from) }));
+  };
+
+  // Begin dragging a specific thumb; capture the pointer so moves outside the track still register.
+  const startDrag = (which: 'from' | 'to') => (e: React.PointerEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    dragRef.current = which;
+    trackRef.current?.setPointerCapture(e.pointerId);
+    applyDrag(e.clientX);
+  };
+
+  // Clicking the track jumps the nearest thumb to the click position.
+  const onTrackPointerDown = (e: React.PointerEvent) => {
+    if (dragRef.current) return;
+    const pct = pctFromEvent(e.clientX);
+    const which: 'from' | 'to' = Math.abs(pct - range.from) <= Math.abs(pct - range.to) ? 'from' : 'to';
+    dragRef.current = which;
+    trackRef.current?.setPointerCapture(e.pointerId);
+    applyDrag(e.clientX);
+  };
+
+  const endDrag = () => {
+    dragRef.current = null;
+  };
+
+  // Nudge a thumb by 2% with the arrow keys.
+  const onThumbKeyDown = (which: 'from' | 'to') => (e: React.KeyboardEvent) => {
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    e.preventDefault();
+    e.stopPropagation();
+    const delta = e.key === 'ArrowRight' ? 2 : -2;
+    setRange((r) => {
+      const v = Math.min(100, Math.max(0, (which === 'from' ? r.from : r.to) + delta));
+      return which === 'from' ? { ...r, from: Math.min(v, r.to) } : { ...r, to: Math.max(v, r.from) };
+    });
+  };
+
+  // Thumb style: solid blue, matching the track, in both themes.
+  const thumbCls = `absolute top-1/2 h-[14px] w-[14px] -translate-y-1/2 cursor-grab touch-none rounded-full shadow-[0_1px_4px_rgba(0,0,0,0.35)] outline-none transition-all duration-300 focus-visible:ring-2 focus-visible:ring-[#d4af37]/70 active:cursor-grabbing active:scale-110 ${isLight ? 'bg-[#2563EB]' : 'bg-[#3B9CFF]'}`;
 
   return (
-    <div
-      className={`mt-1 cursor-pointer px-0.5 transition-all duration-300 ${on ? 'opacity-100' : ''}`}
-      onPointerDown={() => setActive(true)}
-      onMouseEnter={() => setActive(true)}
-      onMouseLeave={() => setActive(false)}
-      role="slider"
-      aria-label="Range slider"
-    >
-      <div className="relative h-[3px] rounded-full bg-white/10">
+    <div className="mt-0.5 cursor-pointer px-0.5">
+      <div
+        ref={trackRef}
+        className="relative h-[3px] rounded-full bg-white/10"
+        onPointerDown={onTrackPointerDown}
+        onPointerMove={(e) => applyDrag(e.clientX)}
+        onPointerUp={endDrag}
+        onPointerCancel={endDrag}
+      >
         <div
-          className={`absolute top-0 h-full rounded-full transition-colors duration-300 ${on ? 'bg-[#d4af37]' : 'bg-[#3B9CFF] group-hover:bg-[#d4af37] group-active:bg-[#d4af37]'}`}
-          style={{ left: `${from}%`, width: `${to - from}%` }}
+          className={`absolute top-0 h-full rounded-full ${isLight ? 'bg-[#2563EB]' : 'bg-[#3B9CFF]'}`}
+          style={{ left: `${range.from}%`, width: `${range.to - range.from}%` }}
         />
         <div
-          className={`absolute top-1/2 h-[14px] w-[14px] -translate-y-1/2 rounded-full border-2 transition-all duration-300 ${on ? 'border-[#f5d67b] bg-[#2a2208]' : 'border-[#7CC0FF] bg-[#121E3C] group-hover:border-[#f5d67b] group-hover:bg-[#2a2208]'}`}
-          style={{ left: `calc(${from}% - 7px)` }}
+          role="slider"
+          aria-label="Minimum value"
+          aria-valuenow={Math.round(range.from)}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          tabIndex={0}
+          onPointerDown={startDrag('from')}
+          onKeyDown={onThumbKeyDown('from')}
+          className={thumbCls}
+          style={{ left: `calc(${range.from}% - 7px)` }}
         />
         <div
-          className={`absolute top-1/2 h-[14px] w-[14px] -translate-y-1/2 rounded-full border-2 transition-all duration-300 ${on ? 'border-[#f5d67b] bg-[#2a2208]' : 'border-[#7CC0FF] bg-[#121E3C] group-hover:border-[#f5d67b] group-hover:bg-[#2a2208]'}`}
-          style={{ left: `calc(${to}% - 7px)` }}
+          role="slider"
+          aria-label="Maximum value"
+          aria-valuenow={Math.round(range.to)}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          tabIndex={0}
+          onPointerDown={startDrag('to')}
+          onKeyDown={onThumbKeyDown('to')}
+          className={thumbCls}
+          style={{ left: `calc(${range.to}% - 7px)` }}
         />
       </div>
     </div>

@@ -1,5 +1,7 @@
+// icons.tsx – Small reusable SVG icon components used across the app.
 import { iconProps } from '../lib/iconProps';
 
+// Navigation chevrons (point down or right).
 export const ChevronDown = ({ className }: { className?: string }) => (
   <svg {...iconProps(className)}><path d="m6 9 6 6 6-6" /></svg>
 );
@@ -17,6 +19,7 @@ export const ArrowLeftRight = ({ className }: { className?: string }) => (
   </svg>
 );
 
+// Travel / flight related icons: plane, clocks, and a reset arrow.
 export const PlaneFill = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" className={className ?? 'h-4 w-4'} fill="currentColor">
     <path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5L21 16z" />
