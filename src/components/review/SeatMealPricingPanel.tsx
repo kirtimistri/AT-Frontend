@@ -19,6 +19,7 @@ import {
   HeartPulse,
   Wheat,
 } from 'lucide-react';
+import { useThemeStore } from '../store/themeStore';
 
 export interface PricingValues {
   serviceCharge: string;
@@ -202,17 +203,17 @@ const SEAT_MAP = buildSeatMap();
 
 /* ---------- Meal Image ---------- */
 
-const MealImage: React.FC<{ meal: AncillaryMeal; selected?: boolean }> = ({ meal, selected }) => {
+const MealImage: React.FC<{ meal: AncillaryMeal; selected?: boolean; isLight: boolean }> = ({ meal, selected, isLight }) => {
   const [imgError, setImgError] = useState(false);
   if (imgError || !meal.imageUrl) {
     return (
-      <div className="flex h-[90px] w-full items-center justify-center rounded-t-[10px] bg-gradient-to-b from-[#f8f5f2] to-[#f0ece8]">
+      <div className={`flex h-[90px] w-full items-center justify-center rounded-t-[10px] bg-gradient-to-b transition-colors duration-300 ${isLight ? 'from-[#f8f5f2] to-[#f0ece8]' : 'from-[#16233f] to-[#122844]'}`}>
         <span className="text-[36px] leading-none">{meal.emoji}</span>
       </div>
     );
   }
   return (
-    <div className="relative h-[90px] w-full overflow-hidden rounded-t-[10px] bg-[#f0ece8]">
+    <div className={`relative h-[90px] w-full overflow-hidden rounded-t-[10px] transition-colors duration-300 ${isLight ? 'bg-[#f0ece8]' : 'bg-[#16233f]'}`}>
       <img src={meal.imageUrl} alt={meal.label} className="h-full w-full object-cover" onError={() => setImgError(true)} loading="lazy" />
       <div className="absolute inset-0 bg-gradient-to-t from-black/15 to-transparent" />
       {selected && (
@@ -226,7 +227,7 @@ const MealImage: React.FC<{ meal: AncillaryMeal; selected?: boolean }> = ({ meal
 
 /* ---------- Dietary Badge ---------- */
 
-const DietaryBadge: React.FC<{ dietary: MealDietary }> = ({ dietary }) => {
+const DietaryBadge: React.FC<{ dietary: MealDietary; isLight: boolean }> = ({ dietary, isLight }) => {
   const isVeg = dietary === 'Vegetarian';
   const isNonVeg = dietary === 'Non-Vegetarian';
   return (
@@ -238,7 +239,7 @@ const DietaryBadge: React.FC<{ dietary: MealDietary }> = ({ dietary }) => {
       ) : (
         <span className={`h-1.5 w-1.5 rounded-full ${dietary === 'Vegan' ? 'bg-[#4a8f2f]' : 'bg-[#b8860b]'}`} />
       )}
-      <span className="text-[9.5px] font-medium text-[#666]">{dietary}</span>
+      <span className={`text-[9.5px] font-medium transition-colors duration-300 ${isLight ? 'text-[#666]' : 'text-[#9baec7]'}`}>{dietary}</span>
     </span>
   );
 };
@@ -246,6 +247,8 @@ const DietaryBadge: React.FC<{ dietary: MealDietary }> = ({ dietary }) => {
 /* ---------- Main Component ---------- */
 
 export const SeatMealPricingPanel: React.FC<SeatMealPricingPanelProps> = ({ onBack, onHold, onBook, onConfirm }) => {
+  const { theme } = useThemeStore();
+  const isLight = theme === 'light';
   const [modalOpen, setModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<ServiceTab>('seat');
   const [passengers, setPassengers] = useState<PassengerAncillary[]>(() =>
@@ -374,6 +377,15 @@ export const SeatMealPricingPanel: React.FC<SeatMealPricingPanelProps> = ({ onBa
     });
   };
 
+  /* --- Book all --- */
+  const handleBook = () => {
+    onBook?.(formData);
+    // Confirm the ancillary selections into the parent (keeps the fare summary
+    // in sync) before opening the review page in a new tab.
+    confirmContinue();
+    window.open('/review-trip?bookingId=TRV-2024-8894X', '_blank');
+  };
+
   const formData: BookingPricingData = {
     seat: activePassenger.seat?.id ?? '',
     meal: activePassenger.meals.map((m) => m.short),
@@ -400,27 +412,27 @@ export const SeatMealPricingPanel: React.FC<SeatMealPricingPanelProps> = ({ onBa
   const rowsOf = (row: number) => SEAT_MAP.filter((s) => s.row === row);
 
   return (
-    <div className="w-full rounded-lg border border-[#eeeeee] bg-white p-6">
-      <h2 className="text-[18px] font-bold leading-[22px] text-[#292929]">ANCILLARY</h2>
-      <div className="my-[14px] h-px w-full bg-[#eeeeee]" />
+    <div className={`w-full rounded-lg border p-6 transition-colors duration-300 ${isLight ? 'border-[#eeeeee] bg-white' : 'border-[#29466e] bg-[#0f172a]'}`}>
+      <h2 className={`text-[18px] font-bold leading-[22px] transition-colors duration-300 ${isLight ? 'text-[#292929]' : 'text-white'}`}>ANCILLARY</h2>
+      <div className={`my-[14px] h-px w-full transition-colors duration-300 ${isLight ? 'bg-[#eeeeee]' : 'bg-[#29466e]'}`} />
 
       {allConfigured ? (
-        <div className="flex items-center justify-between gap-2 rounded-[6px] border border-[#9fdcb1] bg-[#f1fbf5] px-3 py-2.5">
+        <div className={`flex items-center justify-between gap-2 rounded-[6px] border px-3 py-2.5 transition-colors duration-300 ${isLight ? 'border-[#9fdcb1] bg-[#f1fbf5]' : 'border-[#16A34A]/30 bg-[#16A34A]/10'}`}>
           <div className="flex min-w-0 items-center gap-2.5">
             <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#22c55e] text-white">
               <Check className="h-3.5 w-3.5" strokeWidth={3} />
             </span>
             <div className="min-w-0">
-              <div className="text-[12px] font-semibold text-[#171717]">Ancillaries Selected</div>
-              <div className="text-[11px] text-[#22a354]">{passengers.length} passengers &middot; ₹{ancillaryTotal.toLocaleString('en-IN')}</div>
+              <div className={`text-[12px] font-semibold transition-colors duration-300 ${isLight ? 'text-[#171717]' : 'text-white'}`}>Ancillaries Selected</div>
+              <div className={`text-[11px] transition-colors duration-300 ${isLight ? 'text-[#22a354]' : 'text-[#34d399]'}`}>{passengers.length} passengers &middot; ₹{ancillaryTotal.toLocaleString('en-IN')}</div>
             </div>
           </div>
-          <button type="button" onClick={openModal} className="shrink-0 cursor-pointer rounded-[5px] border border-[#004B7C] px-3 py-1.5 text-[11px] font-semibold text-[#004B7C] transition-colors hover:bg-[#E1EFFB]">
+          <button type="button" onClick={openModal} className={`shrink-0 cursor-pointer rounded-[5px] border px-3 py-1.5 text-[11px] font-semibold transition-colors ${isLight ? 'border-[#004B7C] text-[#004B7C] hover:bg-[#E1EFFB]' : 'border-[#7CC0FF] text-[#7CC0FF] hover:bg-[#2593fc]/20'}`}>
             Edit
           </button>
         </div>
       ) : (
-        <button type="button" onClick={openModal} className="flex h-[38px] w-full cursor-pointer items-center justify-center gap-2 rounded-[5px] border border-[#004B7C] bg-[#004B7C] text-[12px] font-semibold uppercase tracking-wide text-white transition-all hover:bg-[#003E67] active:bg-[#003052]">
+        <button type="button" onClick={openModal} className={`flex h-[38px] w-full cursor-pointer items-center justify-center gap-2 rounded-[5px] border text-[12px] font-semibold uppercase tracking-wide text-white transition-all ${isLight ? 'border-[#004B7C] bg-[#004B7C] hover:bg-[#003E67] active:bg-[#003052]' : 'border-[#2593fc] bg-[#2593fc] hover:bg-[#d4af37] active:bg-[#b8922b]'}`}>
           <Armchair className="h-4 w-4" />
           Ancillary
           <ChevronDown className="h-3.5 w-3.5" />
@@ -429,8 +441,8 @@ export const SeatMealPricingPanel: React.FC<SeatMealPricingPanelProps> = ({ onBa
 
       {/* Pricing Controls */}
       <div className="mt-[18px]">
-        <h2 className="text-[18px] font-bold leading-[22px] text-[#292929]">PRICING CONTROLS</h2>
-        <div className="my-[14px] h-px w-full bg-[#eeeeee]" />
+        <h2 className={`text-[18px] font-bold leading-[22px] transition-colors duration-300 ${isLight ? 'text-[#292929]' : 'text-white'}`}>PRICING CONTROLS</h2>
+        <div className={`my-[14px] h-px w-full transition-colors duration-300 ${isLight ? 'bg-[#eeeeee]' : 'bg-[#29466e]'}`} />
       </div>
       <div className="flex flex-col gap-[10px]">
         {[
@@ -439,18 +451,18 @@ export const SeatMealPricingPanel: React.FC<SeatMealPricingPanelProps> = ({ onBa
           { label: 'Markup on Tax', value: markupTax, set: setMarkupTax },
         ].map((f) => (
           <div key={f.label}>
-            <label className="mb-[4px] block text-[10px] font-medium text-[#333]">{f.label}</label>
+            <label className={`mb-[4px] block text-[10px] font-medium transition-colors duration-300 ${isLight ? 'text-[#333]' : 'text-[#9baec7]'}`}>{f.label}</label>
             <div className="relative">
-              <span className="pointer-events-none absolute left-[13px] top-1/2 -translate-y-1/2 text-[11px] text-[#999]">₹</span>
-              <input type="text" inputMode="decimal" value={f.value} onChange={handleNumericInput(f.set)} placeholder="0" className="h-[33px] w-full rounded-[4px] border-none bg-[#f4f1f1] pl-[26px] pr-[13px] text-[11px] text-[#333] outline-none placeholder:text-[#aaa]" />
+              <span className={`pointer-events-none absolute left-[13px] top-1/2 -translate-y-1/2 text-[11px] transition-colors duration-300 ${isLight ? 'text-[#999]' : 'text-[#7e93b3]'}`}>₹</span>
+              <input type="text" inputMode="decimal" value={f.value} onChange={handleNumericInput(f.set)} placeholder="0" className={`h-[33px] w-full rounded-[4px] border-none pl-[26px] pr-[13px] text-[11px] outline-none transition-colors duration-300 placeholder:text-[#aaa] ${isLight ? 'bg-[#f4f1f1] text-[#333]' : 'bg-white/[0.05] text-white placeholder:text-[#7e93b3]'}`} />
             </div>
           </div>
         ))}
       </div>
       <div className="mt-[18px] flex gap-[5px]">
-        <button type="button" onClick={onBack} className="h-[30px] flex-1 cursor-pointer rounded-[5px] border-none bg-[#e9e7e7] text-[10px] font-semibold text-[#222] transition-colors hover:bg-[#dddbdb]">Back</button>
-        <button type="button" onClick={() => onHold?.(formData)} className="h-[30px] flex-1 cursor-pointer rounded-[5px] border-none bg-[#e6e4e4] text-[10px] font-semibold text-[#222] transition-colors hover:bg-[#d9d7d7]">Hold</button>
-        <button type="button" onClick={() => { onBook?.(formData); window.open('/review-trip?bookingId=TRV-2024-8894X', '_blank'); }} className="h-[30px] flex-1 cursor-pointer rounded-[5px] border-none bg-[#005b96] text-[10px] font-semibold text-white transition-colors hover:bg-[#004a7d]">Book</button>
+        <button type="button" onClick={onBack} className={`h-[30px] flex-1 cursor-pointer rounded-[5px] border-none text-[10px] font-semibold transition-colors ${isLight ? 'bg-[#e9e7e7] text-[#222] hover:bg-[#dddbdb]' : 'bg-white/[0.06] text-[#9baec7] hover:bg-white/[0.12]'}`}>Back</button>
+        <button type="button" onClick={() => onHold?.(formData)} className={`h-[30px] flex-1 cursor-pointer rounded-[5px] border-none text-[10px] font-semibold transition-colors ${isLight ? 'bg-[#e6e4e4] text-[#222] hover:bg-[#d9d7d7]' : 'bg-white/[0.06] text-[#9baec7] hover:bg-white/[0.12]'}`}>Hold</button>
+        <button type="button" onClick={handleBook} className={`h-[30px] flex-1 cursor-pointer rounded-[5px] border-none text-[10px] font-semibold text-white transition-colors ${isLight ? 'bg-[#005b96] hover:bg-[#004a7d]' : 'bg-[#2593fc] hover:bg-[#d4af37]'}`}>Book</button>
       </div>
 
       {/* ==================== MODAL ==================== */}
@@ -460,21 +472,21 @@ export const SeatMealPricingPanel: React.FC<SeatMealPricingPanelProps> = ({ onBa
           <div className="absolute inset-0 bg-[#0f1b3a]/50 backdrop-blur-[2px]" onClick={closeModal} />
 
           {/* Modal container */}
-          <div className="relative flex w-full max-w-[700px] flex-col overflow-hidden rounded-[20px] bg-white shadow-[0_25px_60px_rgba(0,0,0,0.3)]" style={{ maxHeight: '85vh' }}>
+          <div className={`relative flex w-full max-w-[700px] flex-col overflow-hidden rounded-[20px] shadow-[0_25px_60px_rgba(0,0,0,0.3)] transition-colors duration-300 ${isLight ? 'bg-white' : 'bg-[#0d1b2a]'}`} style={{ maxHeight: '85vh' }}>
 
             {/* ── Header ── */}
-            <div className="flex shrink-0 items-center justify-between border-b border-[#f0f0f0] px-5 py-3.5">
+            <div className={`flex shrink-0 items-center justify-between border-b px-5 py-3.5 transition-colors duration-300 ${isLight ? 'border-[#f0f0f0]' : 'border-[#29466e]'}`}>
               <div>
-                <h3 className="text-[16px] font-bold text-[#171717]">Customize Your Journey</h3>
-                <p className="text-[11px] text-[#999]">Choose your seat, meal, baggage and special services.</p>
+                <h3 className={`text-[16px] font-bold transition-colors duration-300 ${isLight ? 'text-[#171717]' : 'text-white'}`}>Customize Your Journey</h3>
+                <p className={`text-[11px] transition-colors duration-300 ${isLight ? 'text-[#999]' : 'text-[#9baec7]'}`}>Choose your seat, meal, baggage and special services.</p>
               </div>
-              <button type="button" onClick={closeModal} aria-label="Close" className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full border border-[#eee] text-[#777] transition-colors hover:bg-[#f5f5f5] hover:text-[#171717]">
+              <button type="button" onClick={closeModal} aria-label="Close" className={`flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-full border transition-colors ${isLight ? 'border-[#eee] text-[#777] hover:bg-[#f5f5f5] hover:text-[#171717]' : 'border-[#315073] text-[#7CC0FF] hover:border-[#d4af37]/70 hover:text-[#f0c265]'}`}>
                 <X className="h-4 w-4" />
               </button>
             </div>
 
             {/* ── Tab Bar ── */}
-            <div className="flex shrink-0 gap-1 border-b border-[#f0f0f0] px-5 pt-3 pb-0">
+            <div className={`flex shrink-0 gap-1 border-b px-5 pt-3 pb-0 transition-colors duration-300 ${isLight ? 'border-[#f0f0f0]' : 'border-[#29466e]'}`}>
               {TABS.map((tab) => {
                 const active = activeTab === tab.id;
                 return (
@@ -483,7 +495,7 @@ export const SeatMealPricingPanel: React.FC<SeatMealPricingPanelProps> = ({ onBa
                     type="button"
                     onClick={() => switchTab(tab.id)}
                     className={`flex items-center gap-1.5 rounded-t-[8px] px-3.5 py-2 text-[11.5px] font-semibold transition-all duration-150 ${
-                      active ? 'bg-[#004B7C] text-white shadow-[0_-2px_6px_rgba(0,75,124,0.1)]' : 'text-[#888] hover:bg-[#f5f5f5] hover:text-[#555]'
+                      active ? (isLight ? 'bg-[#004B7C] text-white shadow-[0_-2px_6px_rgba(0,75,124,0.1)]' : 'bg-[#d4af37] text-[#0B132B]') : (isLight ? 'text-[#888] hover:bg-[#f5f5f5] hover:text-[#555]' : 'text-[#9baec7] hover:bg-white/[0.04] hover:text-white')
                     }`}
                   >
                     {tab.icon}
@@ -495,8 +507,8 @@ export const SeatMealPricingPanel: React.FC<SeatMealPricingPanelProps> = ({ onBa
             </div>
 
             {/* ── Passenger Selector ── */}
-            <div className="flex shrink-0 items-center gap-2 border-b border-[#f0f0f0] px-5 py-2.5">
-              <span className="text-[10px] font-semibold uppercase tracking-wide text-[#999]">Passenger</span>
+            <div className={`flex shrink-0 items-center gap-2 border-b px-5 py-2.5 transition-colors duration-300 ${isLight ? 'border-[#f0f0f0]' : 'border-[#29466e]'}`}>
+              <span className={`text-[10px] font-semibold uppercase tracking-wide transition-colors duration-300 ${isLight ? 'text-[#999]' : 'text-[#7e93b3]'}`}>Passenger</span>
               <div className="flex gap-1.5">
                 {passengers.map((p) => {
                   const active = p.id === activePassengerId;
@@ -516,7 +528,7 @@ export const SeatMealPricingPanel: React.FC<SeatMealPricingPanelProps> = ({ onBa
                         setDraftBaggage(null);
                       }}
                       className={`flex shrink-0 cursor-pointer items-center gap-1 rounded-full border px-2.5 py-1 text-[10.5px] font-semibold transition-colors ${
-                        active ? 'border-[#004B7C] bg-[#004B7C] text-white' : 'border-[#ddd] bg-white text-[#555] hover:border-[#004B7C]'
+                        active ? (isLight ? 'border-[#004B7C] bg-[#004B7C] text-white' : 'border-[#d4af37] bg-[#d4af37] text-[#0B132B]') : (isLight ? 'border-[#ddd] bg-white text-[#555] hover:border-[#004B7C]' : 'border-[#315073] bg-[#0d1b2a] text-[#9baec7] hover:border-[#d4af37]')
                       }`}
                     >
                       <User className="h-3 w-3" />
@@ -534,7 +546,7 @@ export const SeatMealPricingPanel: React.FC<SeatMealPricingPanelProps> = ({ onBa
               {/* ════════════ SEAT TAB ════════════ */}
               {activeTab === 'seat' && (
                 <div>
-                  <p className="mb-2 text-[12px] font-semibold text-[#171717]">Select Your Seat</p>
+                  <p className={`mb-2 text-[12px] font-semibold transition-colors duration-300 ${isLight ? 'text-[#171717]' : 'text-white'}`}>Select Your Seat</p>
 
                   {/* ── Airplane + Inline Legend ── */}
                   <div className="mb-3 flex items-start justify-center gap-3 sm:gap-5">
@@ -542,35 +554,35 @@ export const SeatMealPricingPanel: React.FC<SeatMealPricingPanelProps> = ({ onBa
                     <div className="relative mx-auto sm:mx-0" style={{ width: '100%', maxWidth: 400 }}>
                       <svg viewBox="0 0 340 640" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-auto w-full">
                         {/* Fuselage body */}
-                        <path d="M170 8 C170 8, 148 35, 132 65 L122 80 L112 100 L108 120 L106 540 L112 570 L125 595 L145 615 L170 625 L195 615 L215 595 L228 570 L234 540 L232 120 L228 100 L218 80 L208 65 C192 35, 170 8, 170 8Z" fill="#e8ecf0" stroke="#c8d0da" strokeWidth="2" />
+                        <path d="M170 8 C170 8, 148 35, 132 65 L122 80 L112 100 L108 120 L106 540 L112 570 L125 595 L145 615 L170 625 L195 615 L215 595 L228 570 L234 540 L232 120 L228 100 L218 80 L208 65 C192 35, 170 8, 170 8Z" fill={isLight ? '#e8ecf0' : '#1c2b45'} stroke={isLight ? '#c8d0da' : '#2a3a52'} strokeWidth="2" />
                         {/* Nose accent */}
-                        <path d="M170 8 C168 18, 155 40, 140 60 L170 52 L200 60 C185 40, 172 18, 170 8Z" fill="#dde3eb" />
+                        <path d="M170 8 C168 18, 155 40, 140 60 L170 52 L200 60 C185 40, 172 18, 170 8Z" fill={isLight ? '#dde3eb' : '#17253c'} />
                         {/* Cockpit windows */}
-                        <ellipse cx="155" cy="58" rx="5" ry="3" fill="#a0b0c4" opacity="0.7" />
-                        <ellipse cx="185" cy="58" rx="5" ry="3" fill="#a0b0c4" opacity="0.7" />
-                        <text x="170" y="48" textAnchor="middle" fontSize="7" fontWeight="bold" fill="#8a9bb0" letterSpacing="1.5">COCKPIT</text>
+                        <ellipse cx="155" cy="58" rx="5" ry="3" fill={isLight ? '#a0b0c4' : '#4a5a75'} opacity="0.7" />
+                        <ellipse cx="185" cy="58" rx="5" ry="3" fill={isLight ? '#a0b0c4' : '#4a5a75'} opacity="0.7" />
+                        <text x="170" y="48" textAnchor="middle" fontSize="7" fontWeight="bold" fill={isLight ? '#8a9bb0' : '#7e93b3'} letterSpacing="1.5">COCKPIT</text>
                         {/* Left wing */}
-                        <path d="M108 260 L14 290 L8 305 L14 320 L108 350" fill="#d4dce6" stroke="#b8c4d2" strokeWidth="1.5" />
-                        <path d="M108 290 L24 300" stroke="#b8c4d2" strokeWidth="0.5" opacity="0.5" />
-                        <path d="M108 320 L24 315" stroke="#b8c4d2" strokeWidth="0.5" opacity="0.5" />
+                        <path d="M108 260 L14 290 L8 305 L14 320 L108 350" fill={isLight ? '#d4dce6' : '#1c2b45'} stroke={isLight ? '#b8c4d2' : '#2a3a52'} strokeWidth="1.5" />
+                        <path d="M108 290 L24 300" stroke={isLight ? '#b8c4d2' : '#2a3a52'} strokeWidth="0.5" opacity="0.5" />
+                        <path d="M108 320 L24 315" stroke={isLight ? '#b8c4d2' : '#2a3a52'} strokeWidth="0.5" opacity="0.5" />
                         {/* Right wing */}
-                        <path d="M232 260 L326 290 L332 305 L326 320 L232 350" fill="#d4dce6" stroke="#b8c4d2" strokeWidth="1.5" />
-                        <path d="M232 290 L316 300" stroke="#b8c4d2" strokeWidth="0.5" opacity="0.5" />
-                        <path d="M232 320 L316 315" stroke="#b8c4d2" strokeWidth="0.5" opacity="0.5" />
+                        <path d="M232 260 L326 290 L332 305 L326 320 L232 350" fill={isLight ? '#d4dce6' : '#1c2b45'} stroke={isLight ? '#b8c4d2' : '#2a3a52'} strokeWidth="1.5" />
+                        <path d="M232 290 L316 300" stroke={isLight ? '#b8c4d2' : '#2a3a52'} strokeWidth="0.5" opacity="0.5" />
+                        <path d="M232 320 L316 315" stroke={isLight ? '#b8c4d2' : '#2a3a52'} strokeWidth="0.5" opacity="0.5" />
                         {/* Left cabin windows */}
                         {[130, 160, 190, 220, 250, 280, 310, 340, 370, 400, 430, 460, 490, 520].map((y) => (
-                          <ellipse key={`lw${y}`} cx="102" cy={y} rx="2.5" ry="4" fill="#a8b8cc" opacity="0.5" />
+                          <ellipse key={`lw${y}`} cx="102" cy={y} rx="2.5" ry="4" fill={isLight ? '#a8b8cc' : '#3f5069'} opacity="0.5" />
                         ))}
                         {/* Right cabin windows */}
                         {[130, 160, 190, 220, 250, 280, 310, 340, 370, 400, 430, 460, 490, 520].map((y) => (
-                          <ellipse key={`rw${y}`} cx="238" cy={y} rx="2.5" ry="4" fill="#a8b8cc" opacity="0.5" />
+                          <ellipse key={`rw${y}`} cx="238" cy={y} rx="2.5" ry="4" fill={isLight ? '#a8b8cc' : '#3f5069'} opacity="0.5" />
                         ))}
                         {/* Tail vertical stabilizer */}
-                        <path d="M170 610 L170 635 L162 632 L158 625 L170 610Z" fill="#c8d0da" stroke="#b0bcc9" strokeWidth="1" />
-                        <path d="M170 610 L170 635 L178 632 L182 625 L170 610Z" fill="#d0d8e2" stroke="#b0bcc9" strokeWidth="1" />
+                        <path d="M170 610 L170 635 L162 632 L158 625 L170 610Z" fill={isLight ? '#c8d0da' : '#24334d'} stroke={isLight ? '#b0bcc9' : '#2f415c'} strokeWidth="1" />
+                        <path d="M170 610 L170 635 L178 632 L182 625 L170 610Z" fill={isLight ? '#d0d8e2' : '#2c3d58'} stroke={isLight ? '#b0bcc9' : '#2f415c'} strokeWidth="1" />
                         {/* Tail horizontal stabilizers */}
-                        <path d="M140 590 L110 600 L108 606 L115 608 L145 598Z" fill="#d4dce6" stroke="#b8c4d2" strokeWidth="1" />
-                        <path d="M200 590 L230 600 L232 606 L225 608 L195 598Z" fill="#d4dce6" stroke="#b8c4d2" strokeWidth="1" />
+                        <path d="M140 590 L110 600 L108 606 L115 608 L145 598Z" fill={isLight ? '#d4dce6' : '#1c2b45'} stroke={isLight ? '#b8c4d2' : '#2a3a52'} strokeWidth="1" />
+                        <path d="M200 590 L230 600 L232 606 L225 608 L195 598Z" fill={isLight ? '#d4dce6' : '#1c2b45'} stroke={isLight ? '#b8c4d2' : '#2a3a52'} strokeWidth="1" />
                       </svg>
 
                       {/* Seat grid overlay */}
@@ -579,13 +591,13 @@ export const SeatMealPricingPanel: React.FC<SeatMealPricingPanelProps> = ({ onBa
                         <div className="mb-1 flex items-center justify-center">
                           <div className="flex w-[100px] justify-around">
                             {['A', 'B', 'C'].map((c) => (
-                              <span key={c} className="w-[28px] text-center text-[7px] font-bold text-[#8a9bb0]">{c}</span>
+                              <span key={c} className={`w-[28px] text-center text-[7px] font-bold transition-colors duration-300 ${isLight ? 'text-[#8a9bb0]' : 'text-[#7e93b3]'}`}>{c}</span>
                             ))}
                           </div>
                           <div className="w-[20px]" />
                           <div className="flex w-[100px] justify-around">
                             {['D', 'E', 'F'].map((c) => (
-                              <span key={c} className="w-[28px] text-center text-[7px] font-bold text-[#8a9bb0]">{c}</span>
+                              <span key={c} className={`w-[28px] text-center text-[7px] font-bold transition-colors duration-300 ${isLight ? 'text-[#8a9bb0]' : 'text-[#7e93b3]'}`}>{c}</span>
                             ))}
                           </div>
                         </div>
@@ -608,15 +620,15 @@ export const SeatMealPricingPanel: React.FC<SeatMealPricingPanelProps> = ({ onBa
                               <div className="flex items-center justify-center">
                                 <div className="flex items-center justify-around">
                                   {rowsOf(row).filter((s) => s.col <= 2).map((s) => (
-                                    <SeatBtn key={s.id} cell={s} selected={currentSeat?.id === s.id} onClick={() => setDraftSeat({ id: s.id, type: s.type, price: s.price, premium: s.premium })} />
+                                    <SeatBtn key={s.id} cell={s} selected={currentSeat?.id === s.id} onClick={() => setDraftSeat({ id: s.id, type: s.type, price: s.price, premium: s.premium })} isLight={isLight} />
                                   ))}
                                 </div>
                                 <div className="mx-1 flex w-[20px] flex-col items-center justify-center">
-                                  <span className="text-[7px] font-bold text-[#aab4c2]">{row}</span>
+                                  <span className={`text-[7px] font-bold transition-colors duration-300 ${isLight ? 'text-[#aab4c2]' : 'text-[#7e93b3]'}`}>{row}</span>
                                 </div>
                                 <div className="flex items-center justify-around">
                                   {rowsOf(row).filter((s) => s.col >= 3).map((s) => (
-                                    <SeatBtn key={s.id} cell={s} selected={currentSeat?.id === s.id} onClick={() => setDraftSeat({ id: s.id, type: s.type, price: s.price, premium: s.premium })} />
+                                    <SeatBtn key={s.id} cell={s} selected={currentSeat?.id === s.id} onClick={() => setDraftSeat({ id: s.id, type: s.type, price: s.price, premium: s.premium })} isLight={isLight} />
                                   ))}
                                 </div>
                               </div>
@@ -628,16 +640,16 @@ export const SeatMealPricingPanel: React.FC<SeatMealPricingPanelProps> = ({ onBa
 
                     {/* ── Inline Seat Status Legend (right side on desktop, bottom on mobile) ── */}
                     <div className="sticky top-4 z-10 hidden shrink-0 flex-col gap-3 pt-16 sm:flex">
-                      <span className="text-[8px] font-bold uppercase tracking-wider text-[#aab4c2]">Seat Status</span>
+                      <span className={`text-[8px] font-bold uppercase tracking-wider transition-colors duration-300 ${isLight ? 'text-[#aab4c2]' : 'text-[#7e93b3]'}`}>Seat Status</span>
                       {[
-                        { label: 'Available', render: () => <span className="flex h-[18px] w-[18px] items-end justify-center rounded-b-[4px] rounded-t-[3px] border border-[#d0d7e2] bg-white"><span className="mb-px h-[5px] w-[12px] rounded-[2px] bg-[#e2e8f0]" /></span> },
+                        { label: 'Available', render: () => <span className={`flex h-[18px] w-[18px] items-end justify-center rounded-b-[4px] rounded-t-[3px] border transition-colors duration-300 ${isLight ? 'border-[#d0d7e2] bg-white' : 'border-[#2a3a52] bg-[#1c3a5f]'}`}><span className={`mb-px h-[5px] w-[12px] rounded-[2px] transition-colors duration-300 ${isLight ? 'bg-[#e2e8f0]' : 'bg-[#27507c]'}`} /></span> },
                         { label: 'Selected', render: () => <span className="flex h-[18px] w-[18px] items-end justify-center rounded-b-[4px] rounded-t-[3px] border border-[#22c55e] bg-[#22c55e]"><span className="mb-px h-[5px] w-[12px] rounded-[2px] bg-white/40" /></span> },
-                        { label: 'Occupied', render: () => <span className="flex h-[18px] w-[18px] items-end justify-center rounded-b-[4px] rounded-t-[3px] border border-[#ddd] bg-[#ececec]"><span className="mb-px h-[5px] w-[12px] rounded-[2px] bg-[#ddd]" /></span> },
-                        { label: 'Premium', render: () => <span className="flex h-[18px] w-[18px] items-end justify-center rounded-b-[4px] rounded-t-[3px] border border-[#d4af37]/60 bg-[#fef9e7]"><span className="mb-px h-[5px] w-[12px] rounded-[2px] bg-[#d4af37]/30" /></span> },
+                        { label: 'Occupied', render: () => <span className={`flex h-[18px] w-[18px] items-end justify-center rounded-b-[4px] rounded-t-[3px] border transition-colors duration-300 ${isLight ? 'border-[#ddd] bg-[#ececec]' : 'border-[#374151] bg-[#2a2f3a]'}`}><span className={`mb-px h-[5px] w-[12px] rounded-[2px] transition-colors duration-300 ${isLight ? 'bg-[#ddd]' : 'bg-[#3d4350]'}`} /></span> },
+                        { label: 'Premium', render: () => <span className={`flex h-[18px] w-[18px] items-end justify-center rounded-b-[4px] rounded-t-[3px] border border-[#d4af37]/60 transition-colors duration-300 ${isLight ? 'bg-[#fef9e7]' : 'bg-[#d4af37]/25'}`}><span className="mb-px h-[5px] w-[12px] rounded-[2px] bg-[#d4af37]/30" /></span> },
                       ].map((l) => (
                         <span key={l.label} className="flex items-center gap-2">
                           {l.render()}
-                          <span className="text-[10px] font-medium text-[#666]">{l.label}</span>
+                          <span className={`text-[10px] font-medium transition-colors duration-300 ${isLight ? 'text-[#666]' : 'text-[#9baec7]'}`}>{l.label}</span>
                         </span>
                       ))}
                     </div>
@@ -646,34 +658,34 @@ export const SeatMealPricingPanel: React.FC<SeatMealPricingPanelProps> = ({ onBa
                   {/* Mobile legend (shown below airplane on small screens) */}
                   <div className="mb-2.5 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 sm:hidden">
                     {[
-                      { label: 'Available', render: () => <span className="flex h-[14px] w-[14px] items-end justify-center rounded-b-[3px] rounded-t-[2px] border border-[#d0d7e2] bg-white"><span className="mb-px h-[4px] w-[9px] rounded-[2px] bg-[#e2e8f0]" /></span> },
+                      { label: 'Available', render: () => <span className={`flex h-[14px] w-[14px] items-end justify-center rounded-b-[3px] rounded-t-[2px] border transition-colors duration-300 ${isLight ? 'border-[#d0d7e2] bg-white' : 'border-[#2a3a52] bg-[#1c3a5f]'}`}><span className={`mb-px h-[4px] w-[9px] rounded-[2px] transition-colors duration-300 ${isLight ? 'bg-[#e2e8f0]' : 'bg-[#27507c]'}`} /></span> },
                       { label: 'Selected', render: () => <span className="flex h-[14px] w-[14px] items-end justify-center rounded-b-[3px] rounded-t-[2px] border border-[#22c55e] bg-[#22c55e]"><span className="mb-px h-[4px] w-[9px] rounded-[2px] bg-white/40" /></span> },
-                      { label: 'Occupied', render: () => <span className="flex h-[14px] w-[14px] items-end justify-center rounded-b-[3px] rounded-t-[2px] border border-[#ddd] bg-[#ececec]"><span className="mb-px h-[4px] w-[9px] rounded-[2px] bg-[#ddd]" /></span> },
-                      { label: 'Premium', render: () => <span className="flex h-[14px] w-[14px] items-end justify-center rounded-b-[3px] rounded-t-[2px] border border-[#d4af37]/60 bg-[#fef9e7]"><span className="mb-px h-[4px] w-[9px] rounded-[2px] bg-[#d4af37]/30" /></span> },
+                      { label: 'Occupied', render: () => <span className={`flex h-[14px] w-[14px] items-end justify-center rounded-b-[3px] rounded-t-[2px] border transition-colors duration-300 ${isLight ? 'border-[#ddd] bg-[#ececec]' : 'border-[#374151] bg-[#2a2f3a]'}`}><span className={`mb-px h-[4px] w-[9px] rounded-[2px] transition-colors duration-300 ${isLight ? 'bg-[#ddd]' : 'bg-[#3d4350]'}`} /></span> },
+                      { label: 'Premium', render: () => <span className={`flex h-[14px] w-[14px] items-end justify-center rounded-b-[3px] rounded-t-[2px] border border-[#d4af37]/60 transition-colors duration-300 ${isLight ? 'bg-[#fef9e7]' : 'bg-[#d4af37]/25'}`}><span className="mb-px h-[4px] w-[9px] rounded-[2px] bg-[#d4af37]/30" /></span> },
                     ].map((l) => (
                       <span key={l.label} className="flex items-center gap-1">
                         {l.render()}
-                        <span className="text-[8.5px] text-[#888]">{l.label}</span>
+                        <span className={`text-[8.5px] transition-colors duration-300 ${isLight ? 'text-[#888]' : 'text-[#9baec7]'}`}>{l.label}</span>
                       </span>
                     ))}
                   </div>
 
                   {/* ── Selected seat info ── */}
                   {currentSeat && (
-                    <div className="flex items-center justify-between rounded-[8px] border border-[#e8f0fe] bg-[#f7faff] px-3 py-2">
+                    <div className={`flex items-center justify-between rounded-[8px] border px-3 py-2 transition-colors duration-300 ${isLight ? 'border-[#e8f0fe] bg-[#f7faff]' : 'border-[#29466e] bg-white/[0.03]'}`}>
                       <div className="flex items-center gap-2">
                         <Check className="h-3.5 w-3.5 text-[#22c55e]" strokeWidth={3} />
                         <div>
-                          <span className="text-[11.5px] font-semibold text-[#171717]">Seat {currentSeat.id}</span>
-                          <span className="ml-1.5 text-[10px] text-[#888]">{currentSeat.type}{currentSeat.premium ? ' · Premium' : ''}</span>
+                          <span className={`text-[11.5px] font-semibold transition-colors duration-300 ${isLight ? 'text-[#171717]' : 'text-white'}`}>Seat {currentSeat.id}</span>
+                          <span className={`ml-1.5 text-[10px] transition-colors duration-300 ${isLight ? 'text-[#888]' : 'text-[#9baec7]'}`}>{currentSeat.type}{currentSeat.premium ? ' · Premium' : ''}</span>
                         </div>
                       </div>
-                      <span className="text-[12px] font-bold text-[#004B7C]">₹{currentSeat.price.toLocaleString('en-IN')}</span>
+                      <span className={`text-[12px] font-bold transition-colors duration-300 ${isLight ? 'text-[#004B7C]' : 'text-[#3B9CFF]'}`}>₹{currentSeat.price.toLocaleString('en-IN')}</span>
                     </div>
                   )}
 
                   {!currentSeat && (
-                    <p className="py-2 text-center text-[11px] text-[#bbb]">Tap a seat inside the cabin to select it</p>
+                    <p className={`py-2 text-center text-[11px] transition-colors duration-300 ${isLight ? 'text-[#bbb]' : 'text-[#7e93b3]'}`}>Tap a seat inside the cabin to select it</p>
                   )}
                 </div>
               )}
@@ -683,17 +695,17 @@ export const SeatMealPricingPanel: React.FC<SeatMealPricingPanelProps> = ({ onBa
                 <div>
                   {/* Selection badge */}
                   {currentMeals.length > 0 && (
-                    <div className="mb-3 flex items-center gap-2 rounded-[8px] border border-[#9fdcb1] bg-[#f1fbf5] px-3 py-1.5">
+                    <div className={`mb-3 flex items-center gap-2 rounded-[8px] border px-3 py-1.5 transition-colors duration-300 ${isLight ? 'border-[#9fdcb1] bg-[#f1fbf5]' : 'border-[#16A34A]/30 bg-[#16A34A]/10'}`}>
                       <span className="flex h-4.5 w-4.5 items-center justify-center rounded-full bg-[#22c55e] text-[9px] font-bold text-white">{currentMeals.length}</span>
-                      <span className="text-[11px] font-medium text-[#128a4a]">{currentMeals.length} dish{currentMeals.length > 1 ? 'es' : ''} &middot; ₹{currentMeals.reduce((s, m) => s + m.price, 0).toLocaleString('en-IN')}</span>
-                      <button type="button" onClick={() => { setDraftMeals([...activePassenger.meals]); }} className="ml-auto text-[10px] font-semibold text-[#004B7C] hover:underline">Edit</button>
+                      <span className={`text-[11px] font-medium transition-colors duration-300 ${isLight ? 'text-[#128a4a]' : 'text-[#34d399]'}`}>{currentMeals.length} dish{currentMeals.length > 1 ? 'es' : ''} &middot; ₹{currentMeals.reduce((s, m) => s + m.price, 0).toLocaleString('en-IN')}</span>
+                      <button type="button" onClick={() => { setDraftMeals([...activePassenger.meals]); }} className={`ml-auto text-[10px] font-semibold transition-colors duration-300 ${isLight ? 'text-[#004B7C] hover:underline' : 'text-[#7CC0FF] hover:underline'}`}>Edit</button>
                     </div>
                   )}
 
                   {/* Category pills */}
                   <div className="mb-3 flex gap-1 overflow-x-auto pb-1">
                     {MEAL_TABS.map((tab) => (
-                      <button key={tab.id} type="button" onClick={() => setMealTab(tab.id)} className={`shrink-0 cursor-pointer rounded-full px-3 py-1 text-[10.5px] font-semibold transition-colors ${mealTab === tab.id ? 'bg-[#004B7C] text-white' : 'bg-[#f0f0f0] text-[#555] hover:bg-[#e5e5e5]'}`}>
+                      <button key={tab.id} type="button" onClick={() => setMealTab(tab.id)} className={`shrink-0 cursor-pointer rounded-full px-3 py-1 text-[10.5px] font-semibold transition-colors ${mealTab === tab.id ? (isLight ? 'bg-[#004B7C] text-white' : 'bg-[#d4af37] text-[#0B132B]') : (isLight ? 'bg-[#f0f0f0] text-[#555] hover:bg-[#e5e5e5]' : 'bg-white/[0.06] text-[#9baec7] hover:bg-white/[0.12]')}`}>
                         {tab.label}
                       </button>
                     ))}
@@ -719,21 +731,21 @@ export const SeatMealPricingPanel: React.FC<SeatMealPricingPanelProps> = ({ onBa
                               toggleDraftMeal(m);
                             }
                           }}
-                          className={`group flex w-full cursor-pointer flex-col overflow-hidden rounded-[10px] border text-left transition-all duration-150 ${selected ? 'border-[#004B7C] shadow-[0_1px_6px_rgba(0,75,124,0.1)]' : 'border-[#eee] hover:border-[#ccc]'}`}
+                          className={`group flex w-full cursor-pointer flex-col overflow-hidden rounded-[10px] border text-left transition-all duration-150 ${selected ? (isLight ? 'border-[#004B7C] shadow-[0_1px_6px_rgba(0,75,124,0.1)]' : 'border-[#d4af37] shadow-[0_1px_6px_rgba(212,175,55,0.15)]') : (isLight ? 'border-[#eee] hover:border-[#ccc]' : 'border-[#29466e] hover:border-[#315073]')}`}
                         >
-                          <MealImage meal={m} selected={selected} />
-                          <div className="flex flex-1 flex-col p-2.5">
-                            <span className="text-[11px] font-semibold leading-tight text-[#171717] line-clamp-2">{m.short}</span>
-                            <span className="mt-0.5 text-[9.5px] leading-tight text-[#999] line-clamp-1">{m.description}</span>
-                            <div className="mt-1.5"><DietaryBadge dietary={m.dietary} /></div>
+                          <MealImage meal={m} selected={selected} isLight={isLight} />
+                          <div className={`flex flex-1 flex-col p-2.5 transition-colors duration-300 ${isLight ? 'bg-white' : 'bg-[#0f172a]'}`}>
+                            <span className={`text-[11px] font-semibold leading-tight line-clamp-2 transition-colors duration-300 ${isLight ? 'text-[#171717]' : 'text-white'}`}>{m.short}</span>
+                            <span className={`mt-0.5 text-[9.5px] leading-tight line-clamp-1 transition-colors duration-300 ${isLight ? 'text-[#999]' : 'text-[#7e93b3]'}`}>{m.description}</span>
+                            <div className="mt-1.5"><DietaryBadge dietary={m.dietary} isLight={isLight} /></div>
                             <div className="mt-auto flex items-center justify-between pt-2">
-                              <span className="text-[12px] font-bold text-[#004B7C]">₹{m.price.toLocaleString('en-IN')}</span>
+                              <span className={`text-[12px] font-bold transition-colors duration-300 ${isLight ? 'text-[#004B7C]' : 'text-[#3B9CFF]'}`}>₹{m.price.toLocaleString('en-IN')}</span>
                               {selected ? (
                                 <span className="flex items-center gap-0.5 rounded-[5px] bg-[#22c55e]/10 px-2 py-0.5 text-[9.5px] font-semibold text-[#128a4a]">
                                   <Check className="h-2.5 w-2.5" strokeWidth={3} />Selected
                                 </span>
                               ) : (
-                                <span className="rounded-[5px] border border-[#004B7C] px-2 py-0.5 text-[9.5px] font-semibold text-[#004B7C]">+ Add</span>
+                                <span className={`rounded-[5px] border px-2 py-0.5 text-[9.5px] font-semibold transition-colors duration-300 ${isLight ? 'border-[#004B7C] text-[#004B7C]' : 'border-[#7CC0FF] text-[#7CC0FF]'}`}>+ Add</span>
                               )}
                             </div>
                           </div>
@@ -748,12 +760,12 @@ export const SeatMealPricingPanel: React.FC<SeatMealPricingPanelProps> = ({ onBa
               {activeTab === 'baggage' && (
                 <div>
                   {/* Included allowance */}
-                  <div className="mb-3 flex items-center justify-between rounded-[8px] border border-[#eee] bg-[#f7f4f3] px-3 py-2">
+                  <div className={`mb-3 flex items-center justify-between rounded-[8px] border px-3 py-2 transition-colors duration-300 ${isLight ? 'border-[#eee] bg-[#f7f4f3]' : 'border-[#29466e] bg-white/[0.03]'}`}>
                     <div>
-                      <div className="text-[10px] text-[#777]">Included baggage</div>
-                      <div className="text-[12px] font-semibold text-[#171717]">{INCLUDED_BAGGAGE_KG} KG</div>
+                      <div className={`text-[10px] transition-colors duration-300 ${isLight ? 'text-[#777]' : 'text-[#9baec7]'}`}>Included baggage</div>
+                      <div className={`text-[12px] font-semibold transition-colors duration-300 ${isLight ? 'text-[#171717]' : 'text-white'}`}>{INCLUDED_BAGGAGE_KG} KG</div>
                     </div>
-                    <span className="text-[9.5px] font-medium text-[#22a354]">Included in fare</span>
+                    <span className={`text-[9.5px] font-medium transition-colors duration-300 ${isLight ? 'text-[#22a354]' : 'text-[#34d399]'}`}>Included in fare</span>
                   </div>
 
                   {/* Extra baggage grid */}
@@ -767,24 +779,24 @@ export const SeatMealPricingPanel: React.FC<SeatMealPricingPanelProps> = ({ onBa
                           onClick={() => {
                             if (isSel) { removeBaggage(); } else { updateActivePassenger({ baggage: { ...b } }); setDraftBaggage(null); }
                           }}
-                          className={`flex w-full cursor-pointer flex-col rounded-[10px] border p-3 text-left transition-all duration-150 ${isSel ? 'border-[#004B7C] bg-[#f0f7fc] shadow-[0_1px_6px_rgba(0,75,124,0.1)]' : 'border-[#eee] bg-white hover:border-[#ccc]'}`}
+                          className={`flex w-full cursor-pointer flex-col rounded-[10px] border p-3 text-left transition-all duration-150 ${isSel ? (isLight ? 'border-[#004B7C] bg-[#f0f7fc] shadow-[0_1px_6px_rgba(0,75,124,0.1)]' : 'border-[#d4af37] bg-[#d4af37]/10 shadow-[0_1px_6px_rgba(212,175,55,0.15)]') : (isLight ? 'border-[#eee] bg-white hover:border-[#ccc]' : 'border-[#29466e] bg-[#0f172a] hover:border-[#d4af37]/60')}`}
                         >
                           <div className="flex items-center gap-2">
                             <span className="text-[20px] leading-none">🧳</span>
                             <div className="min-w-0 flex-1">
-                              <div className="text-[12px] font-bold text-[#171717]">{b.weight} KG</div>
-                              <div className="text-[9.5px] text-[#888]">{b.description}</div>
+                              <div className={`text-[12px] font-bold transition-colors duration-300 ${isLight ? 'text-[#171717]' : 'text-white'}`}>{b.weight} KG</div>
+                              <div className={`text-[9.5px] transition-colors duration-300 ${isLight ? 'text-[#888]' : 'text-[#9baec7]'}`}>{b.description}</div>
                             </div>
                             {isSel && <Check className="h-4 w-4 shrink-0 text-[#22c55e]" strokeWidth={3} />}
                           </div>
                           <div className="mt-2 flex items-center justify-between">
-                            <span className="text-[12px] font-bold text-[#004B7C]">₹{b.price.toLocaleString('en-IN')}</span>
+                            <span className={`text-[12px] font-bold transition-colors duration-300 ${isLight ? 'text-[#004B7C]' : 'text-[#3B9CFF]'}`}>₹{b.price.toLocaleString('en-IN')}</span>
                             {isSel ? (
                               <span className="flex items-center gap-0.5 rounded-[5px] bg-[#22c55e]/10 px-2 py-0.5 text-[9.5px] font-semibold text-[#128a4a]">
                                 <Check className="h-2.5 w-2.5" strokeWidth={3} />Selected
                               </span>
                             ) : (
-                              <span className="rounded-[5px] border border-[#004B7C] px-2 py-0.5 text-[9.5px] font-semibold text-[#004B7C]">Select</span>
+                              <span className={`rounded-[5px] border px-2 py-0.5 text-[9.5px] font-semibold transition-colors duration-300 ${isLight ? 'border-[#004B7C] text-[#004B7C]' : 'border-[#7CC0FF] text-[#7CC0FF]'}`}>Select</span>
                             )}
                           </div>
                         </button>
@@ -800,23 +812,23 @@ export const SeatMealPricingPanel: React.FC<SeatMealPricingPanelProps> = ({ onBa
                   {SSRS.map((s) => {
                     const added = activePassenger.ssr.some((x) => x.id === s.id);
                     return (
-                      <div key={s.id} className={`flex flex-col rounded-[10px] border p-2.5 transition-colors ${added ? 'border-[#004B7C] bg-[#f0f7fc]' : 'border-[#eee] bg-white'}`}>
+                      <div key={s.id} className={`flex flex-col rounded-[10px] border p-2.5 transition-colors ${added ? (isLight ? 'border-[#004B7C] bg-[#f0f7fc]' : 'border-[#d4af37] bg-[#d4af37]/10') : (isLight ? 'border-[#eee] bg-white' : 'border-[#29466e] bg-[#0f172a]')}`}>
                         <div className="flex items-start gap-2">
-                          <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-[6px] ${added ? 'bg-[#e1effb] text-[#004B7C]' : 'bg-[#f7f4f3] text-[#777]'}`}>
+                          <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-[6px] transition-colors ${added ? (isLight ? 'bg-[#e1effb] text-[#004B7C]' : 'bg-[#2593fc]/20 text-[#7CC0FF]') : (isLight ? 'bg-[#f7f4f3] text-[#777]' : 'bg-white/[0.06] text-[#9baec7]')}`}>
                             <s.icon className="h-3.5 w-3.5" />
                           </span>
                           <div className="min-w-0 flex-1">
-                            <div className="text-[11px] font-semibold text-[#171717] leading-tight">{s.name}</div>
-                            <div className="text-[9.5px] text-[#999] leading-tight">{s.description}</div>
+                            <div className={`text-[11px] font-semibold leading-tight transition-colors duration-300 ${isLight ? 'text-[#171717]' : 'text-white'}`}>{s.name}</div>
+                            <div className={`text-[9.5px] leading-tight transition-colors duration-300 ${isLight ? 'text-[#999]' : 'text-[#9baec7]'}`}>{s.description}</div>
                             <div className="mt-0.5">
-                              <span className={`text-[10.5px] font-semibold ${s.price === 0 ? 'text-[#22a354]' : 'text-[#004B7C]'}`}>{s.price === 0 ? 'Free' : `₹${s.price.toLocaleString('en-IN')}`}</span>
+                              <span className={`text-[10.5px] font-semibold transition-colors duration-300 ${s.price === 0 ? (isLight ? 'text-[#22a354]' : 'text-[#34d399]') : (isLight ? 'text-[#004B7C]' : 'text-[#3B9CFF]')}`}>{s.price === 0 ? 'Free' : `₹${s.price.toLocaleString('en-IN')}`}</span>
                             </div>
                           </div>
                         </div>
                         <button
                           type="button"
                           onClick={() => toggleSsr(s)}
-                          className={`mt-2 w-full cursor-pointer rounded-[6px] py-1.5 text-[10px] font-semibold transition-colors ${added ? 'bg-[#22c55e]/10 text-[#128a4a] hover:bg-[#22c55e]/20' : 'border border-[#004B7C] text-[#004B7C] hover:bg-[#E1EFFB]'}`}
+                          className={`mt-2 w-full cursor-pointer rounded-[6px] py-1.5 text-[10px] font-semibold transition-colors ${added ? 'bg-[#22c55e]/10 text-[#128a4a] hover:bg-[#22c55e]/20' : (isLight ? 'border border-[#004B7C] text-[#004B7C] hover:bg-[#E1EFFB]' : 'border border-[#7CC0FF] text-[#7CC0FF] hover:bg-[#2593fc]/20')}`}
                         >
                           {added ? <span className="flex items-center justify-center gap-1"><Check className="h-3 w-3" strokeWidth={3} />Added</span> : '+ Add'}
                         </button>
@@ -828,50 +840,50 @@ export const SeatMealPricingPanel: React.FC<SeatMealPricingPanelProps> = ({ onBa
             </div>
 
             {/* ── Sticky Footer Summary ── */}
-            <div className="shrink-0 border-t border-[#f0f0f0] bg-[#fafafa] px-5 py-3">
+            <div className={`shrink-0 border-t px-5 py-3 transition-colors duration-300 ${isLight ? 'border-[#f0f0f0] bg-[#fafafa]' : 'border-[#29466e] bg-[#0b1626]'}`}>
               {/* Compact summary rows */}
               <div className="mb-2 space-y-1">
                 {activePassenger.seat && (
                   <div className="flex items-center justify-between">
-                    <span className="text-[10.5px] text-[#888]">💺 Seat</span>
-                    <span className="text-[10.5px] font-semibold text-[#171717]">{activePassenger.seat.id} · {activePassenger.seat.type} &nbsp; ₹{activePassenger.seat.price.toLocaleString('en-IN')}</span>
+                    <span className={`text-[10.5px] transition-colors duration-300 ${isLight ? 'text-[#888]' : 'text-[#9baec7]'}`}>💺 Seat</span>
+                    <span className={`text-[10.5px] font-semibold transition-colors duration-300 ${isLight ? 'text-[#171717]' : 'text-white'}`}>{activePassenger.seat.id} · {activePassenger.seat.type} &nbsp; ₹{activePassenger.seat.price.toLocaleString('en-IN')}</span>
                   </div>
                 )}
                 {activePassenger.meals.length > 0 && (
                   <div className="flex items-center justify-between">
-                    <span className="text-[10.5px] text-[#888]">🍱 Meal</span>
-                    <span className="text-[10.5px] font-semibold text-[#171717]">{activePassenger.meals.map((m) => m.short).join(', ')} &nbsp; ₹{activePassenger.meals.reduce((s, m) => s + m.price, 0).toLocaleString('en-IN')}</span>
+                    <span className={`text-[10.5px] transition-colors duration-300 ${isLight ? 'text-[#888]' : 'text-[#9baec7]'}`}>🍱 Meal</span>
+                    <span className={`text-[10.5px] font-semibold transition-colors duration-300 ${isLight ? 'text-[#171717]' : 'text-white'}`}>{activePassenger.meals.map((m) => m.short).join(', ')} &nbsp; ₹{activePassenger.meals.reduce((s, m) => s + m.price, 0).toLocaleString('en-IN')}</span>
                   </div>
                 )}
                 {activePassenger.baggage && (
                   <div className="flex items-center justify-between">
-                    <span className="text-[10.5px] text-[#888]">🧳 Baggage</span>
-                    <span className="text-[10.5px] font-semibold text-[#171717]">{activePassenger.baggage.weight} KG &nbsp; ₹{activePassenger.baggage.price.toLocaleString('en-IN')}</span>
+                    <span className={`text-[10.5px] transition-colors duration-300 ${isLight ? 'text-[#888]' : 'text-[#9baec7]'}`}>🧳 Baggage</span>
+                    <span className={`text-[10.5px] font-semibold transition-colors duration-300 ${isLight ? 'text-[#171717]' : 'text-white'}`}>{activePassenger.baggage.weight} KG &nbsp; ₹{activePassenger.baggage.price.toLocaleString('en-IN')}</span>
                   </div>
                 )}
                 {activePassenger.ssr.length > 0 && (
                   <div className="flex items-center justify-between">
-                    <span className="text-[10.5px] text-[#888]">🛎️ SSR</span>
-                    <span className="text-[10.5px] font-semibold text-[#171717]">{activePassenger.ssr.map((s) => s.name).join(', ')} &nbsp; ₹{activePassenger.ssr.reduce((s, x) => s + x.price, 0).toLocaleString('en-IN')}</span>
+                    <span className={`text-[10.5px] transition-colors duration-300 ${isLight ? 'text-[#888]' : 'text-[#9baec7]'}`}>🛎️ SSR</span>
+                    <span className={`text-[10.5px] font-semibold transition-colors duration-300 ${isLight ? 'text-[#171717]' : 'text-white'}`}>{activePassenger.ssr.map((s) => s.name).join(', ')} &nbsp; ₹{activePassenger.ssr.reduce((s, x) => s + x.price, 0).toLocaleString('en-IN')}</span>
                   </div>
                 )}
                 {!activePassenger.seat && activePassenger.meals.length === 0 && !activePassenger.baggage && activePassenger.ssr.length === 0 && (
-                  <p className="text-[10.5px] text-[#ccc]">No selections yet</p>
+                  <p className={`text-[10.5px] transition-colors duration-300 ${isLight ? 'text-[#ccc]' : 'text-[#7e93b3]'}`}>No selections yet</p>
                 )}
               </div>
 
               {/* Total + Confirm */}
-              <div className="flex items-center justify-between border-t border-[#e5e5e5] pt-2">
+              <div className={`flex items-center justify-between border-t pt-2 transition-colors duration-300 ${isLight ? 'border-[#e5e5e5]' : 'border-[#29466e]'}`}>
                 <div>
-                  <span className="text-[11px] font-bold text-[#171717]">Total</span>
-                  <span className="ml-1 text-[14px] font-bold text-[#004B7C]">₹{ancillaryTotal.toLocaleString('en-IN')}</span>
+                  <span className={`text-[11px] font-bold transition-colors duration-300 ${isLight ? 'text-[#171717]' : 'text-white'}`}>Total</span>
+                  <span className={`ml-1 text-[14px] font-bold transition-colors duration-300 ${isLight ? 'text-[#004B7C]' : 'text-[#3B9CFF]'}`}>₹{ancillaryTotal.toLocaleString('en-IN')}</span>
                 </div>
-                {error && <span className="text-[10px] text-[#dc2626]">{error}</span>}
+                {error && <span className={`text-[10px] transition-colors duration-300 ${isLight ? 'text-[#dc2626]' : 'text-[#f87171]'}`}>{error}</span>}
                 <button
                   type="button"
                   onClick={confirmContinue}
                   disabled={false}
-                  className="flex items-center gap-1.5 rounded-[6px] bg-[#004B7C] px-4 py-2 text-[11px] font-semibold text-white transition-colors hover:bg-[#003E67] disabled:cursor-not-allowed disabled:bg-[#c9cdd2]"
+                  className={`flex items-center gap-1.5 rounded-[6px] px-4 py-2 text-[11px] font-semibold text-white transition-colors disabled:cursor-not-allowed disabled:bg-[#c9cdd2] ${isLight ? 'bg-[#004B7C] hover:bg-[#003E67]' : 'bg-[#2593fc] hover:bg-[#d4af37]'}`}
                 >
                   <ShieldCheck className="h-3.5 w-3.5" />
                   Confirm &amp; Continue
@@ -887,12 +899,12 @@ export const SeatMealPricingPanel: React.FC<SeatMealPricingPanelProps> = ({ onBa
 
 /* ---------- Seat Button (airline-style) ---------- */
 
-const SeatBtn: React.FC<{ cell: SeatCell; selected: boolean; onClick: () => void }> = ({ cell, selected, onClick }) => {
+const SeatBtn: React.FC<{ cell: SeatCell; selected: boolean; isLight: boolean; onClick: () => void }> = ({ cell, selected, isLight, onClick }) => {
   if (cell.occupied) {
     return (
       <div className="flex w-[28px] flex-col items-center">
-        <div className="flex h-[8px] w-[18px] items-end justify-center rounded-t-[2px] bg-[#ddd]" />
-        <button type="button" disabled className="flex h-[20px] w-[28px] cursor-not-allowed items-center justify-center rounded-b-[3px] border border-[#d0d0d0] bg-[#e8e8e8] text-[7px] font-bold text-[#bbb]">
+        <div className={`flex h-[8px] w-[18px] items-end justify-center rounded-t-[2px] transition-colors duration-300 ${isLight ? 'bg-[#ddd]' : 'bg-[#374151]'}`} />
+        <button type="button" disabled className={`flex h-[20px] w-[28px] cursor-not-allowed items-center justify-center rounded-b-[3px] border text-[7px] font-bold transition-colors duration-300 ${isLight ? 'border-[#d0d0d0] bg-[#e8e8e8] text-[#bbb]' : 'border-[#374151] bg-[#2a2f3a] text-[#7e93b3]'}`}>
           {cell.id}
         </button>
       </div>
@@ -902,14 +914,20 @@ const SeatBtn: React.FC<{ cell: SeatCell; selected: boolean; onClick: () => void
   const seatBg = selected
     ? 'border-[#22c55e] bg-[#22c55e] text-white shadow-[0_2px_6px_rgba(34,197,94,0.35)]'
     : cell.premium
-      ? 'border-[#d4af37]/70 bg-[#fef9e7] text-[#8a6d1f] hover:border-[#d4af37] hover:shadow-[0_1px_3px_rgba(212,175,55,0.2)]'
-      : 'border-[#d0d7e2] bg-white text-[#555] hover:border-[#004B7C] hover:bg-[#E1EFFB] hover:shadow-[0_1px_3px_rgba(0,75,124,0.1)]';
+      ? isLight
+        ? 'border-[#d4af37]/70 bg-[#fef9e7] text-[#8a6d1f] hover:border-[#d4af37] hover:shadow-[0_1px_3px_rgba(212,175,55,0.2)]'
+        : 'border-[#d4af37]/70 bg-[#d4af37]/20 text-[#f0c265] hover:border-[#d4af37] hover:bg-[#d4af37]/35'
+      : isLight
+        ? 'border-[#d0d7e2] bg-white text-[#555] hover:border-[#004B7C] hover:bg-[#E1EFFB] hover:shadow-[0_1px_3px_rgba(0,75,124,0.1)]'
+        : 'border-[#1c3a5f] bg-[#1c3a5f] text-white/80 hover:border-[#2593fc] hover:bg-[#27507c]';
 
   const backrestBg = selected
     ? 'bg-white/30'
     : cell.premium
       ? 'bg-[#d4af37]/15'
-      : 'bg-[#e2e8f0]';
+      : isLight
+        ? 'bg-[#e2e8f0]'
+        : 'bg-[#27507c]';
 
   return (
     <div className="flex w-[28px] flex-col items-center">

@@ -6,14 +6,14 @@ import { GSTInformation } from '../components/review/GSTInformation';
 import { FareSummary } from '../components/review/FareSummary';
 import { SeatMealPricingPanel, type ConfirmedSelections } from '../components/SeatMealPricingPanel';
 import { Footer } from '../components/review/Footer';
-import { ThemeToggle } from '../components/ThemeToggle';
 import type { AncillarySegment } from '../components/AncillaryServicesModal';
 import type { FlightCardProps } from '../components/review/FlightCard';
 import type { Flight } from '../store/flightStore';
 import { useThemeStore } from '../store/themeStore';
 import { cityNameOf } from '../lib/format';
 import type { BookingSelection } from '../lib/openReview';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useGlobalLoaderStore, GLOBAL_BOOKING_MESSAGES, AIRPLANE_RUN_MS } from '../store/globalLoader';
 
 // Fallback demo data — shown only when no booking selection is available so the
 // page keeps its original content instead of showing an empty itinerary.
@@ -22,11 +22,11 @@ const DEMO_ONWARD: FlightCardProps = {
   date: 'Tue, 24 Oct 2024',
   flightNumber: 'AI-865',
   airline: 'Air India',
-  departureTime: '06:15 AM',
+  departureTime: '06:15',
   departureAirport: 'Pune',
   departureCode: 'PNQ',
   departureTerminal: 'Pune Airport',
-  arrivalTime: '10:00 AM',
+  arrivalTime: '10:00',
   arrivalAirport: 'Guwahati',
   arrivalCode: 'GAU',
   arrivalTerminal: 'Lokpriya Gopinath Bordoloi',
@@ -42,11 +42,11 @@ const DEMO_RETURN: FlightCardProps = {
   date: 'Sat, 28 Oct 2024',
   flightNumber: '6E-642',
   airline: 'IndiGo',
-  departureTime: '04:30 PM',
+  departureTime: '16:30',
   departureAirport: 'Guwahati',
   departureCode: 'GAU',
   departureTerminal: 'Lokpriya Gopinath Bordoloi',
-  arrivalTime: '08:40 PM',
+  arrivalTime: '20:40',
   arrivalAirport: 'Pune',
   arrivalCode: 'PNQ',
   arrivalTerminal: 'Pune Airport',
@@ -138,6 +138,21 @@ const TripReviewPage = () => {
   const [confirmed, setConfirmed] = useState<ConfirmedSelections | null>(null);
   const { theme } = useThemeStore();
   const isLight = theme === 'light';
+
+  // This page opens in a NEW tab via the Book buttons. On a fresh load the
+  // router transition controller deliberately skips its loader (no navigation
+  // happened), so we play the branded airplane loader here for exactly one
+  // full flight, then fade it out to reveal the page.
+  const splashShown = useRef(false);
+  useEffect(() => {
+    // Guarded so StrictMode's dev double-invoke never shows the loader twice
+    // (showLoader is ref-counted, so a second call would strand it on screen).
+    if (splashShown.current) return;
+    splashShown.current = true;
+    const store = useGlobalLoaderStore.getState();
+    store.showLoader(GLOBAL_BOOKING_MESSAGES);
+    window.setTimeout(() => store.hideLoader(), AIRPLANE_RUN_MS);
+  }, []);
   let onward: FlightCardProps | undefined;
   let ret: FlightCardProps | undefined;
   let onwardPrice: number | undefined;
@@ -194,10 +209,7 @@ const TripReviewPage = () => {
 
   return (
     <div className={`flex min-h-screen flex-col transition-colors duration-300 ${isLight ? 'bg-[#FAF8F7]' : 'bg-[#0B132B]'}`}>
-      <div className="sticky top-0 z-30 flex items-center justify-end px-5 py-3 lg:px-8">
-        <ThemeToggle size="sm" className="shrink-0" />
-      </div>
-
+      
       <main className="mx-auto w-full max-w-[1200px] flex-1 px-5 py-6 lg:px-6">
         {/* Back link + Title + Booking Reference */}
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">

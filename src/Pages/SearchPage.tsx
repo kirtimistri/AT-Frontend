@@ -1,8 +1,9 @@
 // Search results page: shows available flights (one-way or round-trip),
 // lets the user pick flights, and shows a price summary bar.
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useFlightStore, STRIP_WINDOW, STRIP_DEFAULT_START, STRIP_DEFAULT_SEL } from '../store/flightStore';
 import { useThemeStore } from '../store/themeStore';
+import { useGlobalLoader, GLOBAL_SEARCH_MESSAGES } from '../store/globalLoader';
 import { Header } from '../components/Header';
 import { SidebarFilters } from '../components/SidebarFilters';
 import { ResultsColumn } from '../components/ResultsColumn';
@@ -41,6 +42,10 @@ const SearchPage = () => {
   const shiftStrip = useFlightStore((s) => s.shiftStrip);
   const restoreSearch = useFlightStore((s) => s.restoreSearch);
 
+  // Global branded loader for the flight search operation.
+  const { showLoader, hideLoader } = useGlobalLoader();
+  const searchLoaderRef = useRef(false);
+
   // On mount: if a saved search exists (e.g. from "open review" flow), restore it.
   useEffect(() => {
     const snapshot = readSearchSnapshot();
@@ -49,6 +54,20 @@ const SearchPage = () => {
       clearSearchSnapshot();
     }
   }, [restoreSearch]);
+
+  // Drive the global loader from the real search state. Only this page's own
+  // search request may hide it (a visit from a route transition must not).
+  useEffect(() => {
+    if (searching) {
+      searchLoaderRef.current = true;
+      showLoader(GLOBAL_SEARCH_MESSAGES);
+      return;
+    }
+    if (searchLoaderRef.current) {
+      searchLoaderRef.current = false;
+      hideLoader();
+    }
+  }, [searching, showLoader, hideLoader]);
 
   // Derived data: the date strip window and price difference from the base date.
   const stripDates = datePool.slice(stripStart, stripStart + STRIP_WINDOW);

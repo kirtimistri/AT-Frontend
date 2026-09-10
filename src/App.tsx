@@ -6,6 +6,10 @@ import SearchPage from './Pages/SearchPage'
 import ReviewPage from './Pages/ReviewPage'
 import TripReviewPage from './Pages/TripReviewPage'
 import { ToastViewport } from './components/Toast'
+import {
+  AkbarBizvoyPageLoader,
+  PageTransitionController,
+} from './components/AkbarBizvoyPageLoader'
 import './theme.css' // Light theme styles
 // import LoginPage from './components/LoginPage'
 // import LoginPage3 from './components/LoginPage3'
@@ -14,6 +18,12 @@ function App() {
   return (
     // BrowserRouter enables navigation between pages using the browser URL.
     <BrowserRouter>
+      {/* Drives the global loader for SPA page transitions. */}
+      <PageTransitionController />
+
+      {/* The ONE global branded loader. Everything else calls the store. */}
+      <AkbarBizvoyPageLoader />
+
       {/* Overlay where toast messages (notifications) appear. */}
       <ToastViewport />
       {/* Routes: each <Route> maps a URL path to the page component to show. */}
@@ -30,4 +40,5 @@ function App() {
     </BrowserRouter>
   )
 }
+
 export default App

@@ -5,6 +5,7 @@ import { Luggage, Briefcase, UtensilsCrossed, ChevronDown } from 'lucide-react';
 import { FlightTimeline } from './FlightTimeline';
 import { AirlineLogo } from '../Logos';
 import { useThemeStore } from '../../store/themeStore';
+import { to24H } from '../../lib/format';
 
 // Props that define every piece of data a flight card can show
 export type FlightCardProps = {
@@ -102,7 +103,7 @@ export const FlightCard = ({
       {/* Route + timeline */}
       <div className="mb-4 flex items-center gap-4">
         <div className="shrink-0">
-          <div className={`text-[17px] font-medium transition-colors duration-300 ${isLight ? 'text-[#171717]' : 'text-white'}`}>{departureTime}</div>
+          <div className={`text-[17px] font-medium transition-colors duration-300 ${isLight ? 'text-[#171717]' : 'text-white'}`}>{to24H(departureTime)}</div>
           <div className={`mt-0.5 text-[11px] transition-colors duration-300 ${isLight ? 'text-[#555]' : 'text-[#9baec7]'}`}>
             {departureAirport} ({departureCode})
           </div>
@@ -117,7 +118,7 @@ export const FlightCard = ({
         />
 
         <div className="shrink-0 text-right">
-          <div className={`text-[17px] font-medium transition-colors duration-300 ${isLight ? 'text-[#171717]' : 'text-white'}`}>{arrivalTime}</div>
+          <div className={`text-[17px] font-medium transition-colors duration-300 ${isLight ? 'text-[#171717]' : 'text-white'}`}>{to24H(arrivalTime)}</div>
           <div className={`mt-0.5 text-[11px] transition-colors duration-300 ${isLight ? 'text-[#555]' : 'text-[#9baec7]'}`}>
             {arrivalAirport} ({arrivalCode})
           </div>

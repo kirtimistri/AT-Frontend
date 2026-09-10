@@ -6,8 +6,8 @@ import { useThemeStore } from '../store/themeStore';
 import { ReturnCalendar } from './ReturnCalendar';
 import { ChevronDown, ChevronRight, ArrowLeftRight } from './icons';
 import { iconProps } from '../lib/iconProps';
+import { BrandLogo } from './BrandLogo';
 import { ThemeToggle } from './ThemeToggle';
-import { Logo } from './Logo';
 
 export const Header = () => {
   // Local state for swap animation, travellers popover, and return date calendar
@@ -78,7 +78,7 @@ export const Header = () => {
   // Left section: just the app logo
   const leftSection = (
     <div className="flex min-w-0 items-center gap-2 sm:gap-5">
-      <Logo size="md" textClassName="text-[14px] sm:text-[17px]" />
+      <BrandLogo size="md" />
     </div>
   );
 
@@ -108,7 +108,7 @@ export const Header = () => {
 
   // Search bar: From/To cities, dates, travellers, and the Search button
   const searchBar = (
-    <div className={`group relative mt-1.5 flex flex-wrap items-stretch rounded-[26px] border transition-all duration-300 hover:border-[#d4af37]/70 sm:rounded-l-[16px] sm:rounded-r-[26px] lg:mt-0 ${isLight ? 'bg-white border-[#E5E7EB] shadow-[0_4px_12px_rgba(0,0,0,0.08)]' : 'bg-[#0F1B3A] border-[rgba(124,192,255,0.22)] shadow-[0_10px_30px_rgba(0,0,0,0.35)] hover:shadow-[0_0_18px_rgba(212,175,55,0.3),0_0_50px_rgba(212,175,55,0.14)]'}`}>
+    <div className={`group relative mt-1.5 flex flex-wrap items-stretch rounded-[26px] border transition-all duration-300 sm:rounded-l-[16px] sm:rounded-r-[26px] lg:mt-0 ${isLight ? 'bg-white border-[#E5E7EB] shadow-[0_4px_12px_rgba(0,0,0,0.08)] hover:border-[#2563EB]/50' : 'bg-[#0F1B3A] border-[rgba(124,192,255,0.22)] shadow-[0_10px_30px_rgba(0,0,0,0.35)] hover:border-[#d4af37]/70 hover:shadow-[0_0_18px_rgba(212,175,55,0.3),0_0_50px_rgba(212,175,55,0.14)]'}`}>
       {/* From + To (swap button overlaps the divider) */}
       <div className="relative flex w-full min-w-0 border-b border-white/10 sm:w-auto sm:flex-1 sm:border-b-0">
         <div className={`relative flex min-w-0 flex-1 items-center px-3 py-1 sm:px-5 sm:py-1.5 border-l transition-colors duration-300 ${isLight ? 'border-l-[#E5E7EB]' : 'border-l-white/10'}`}>
@@ -245,7 +245,7 @@ export const Header = () => {
       <button
         type="button"
         onClick={() => doSearch()}
-        className={`flex w-full shrink-0 cursor-pointer items-center justify-center gap-2 rounded-b-[26px] rounded-r-[26px] border-none px-4 py-1.5 text-[13px] font-bold tracking-wide transition-all duration-300 group-hover:bg-[#d4af37] group-hover:shadow-[0_0_18px_rgba(212,175,55,0.45),0_0_45px_rgba(212,175,55,0.25)] sm:absolute sm:inset-y-0 sm:right-0 sm:z-20 sm:w-auto sm:justify-start sm:rounded-b-none sm:py-0 sm:pl-10 sm:pr-11 sm:text-[16px] ${isLight ? 'bg-[#2563EB] text-white shadow-[0_4px_12px_rgba(37,99,235,0.3)] hover:bg-[#1D4ED8]' : 'bg-[#2593fc] text-white shadow-[0_0_28px_rgba(37,147,252,0.4)]'}`}
+        className={`flex w-full shrink-0 cursor-pointer items-center justify-center gap-2 rounded-b-[26px] rounded-r-[26px] border-none px-4 py-1.5 text-[13px] font-bold tracking-wide transition-all duration-300 sm:absolute sm:inset-y-0 sm:right-0 sm:z-20 sm:w-auto sm:justify-start sm:rounded-b-none sm:py-0 sm:pl-10 sm:pr-11 sm:text-[16px] ${isLight ? 'bg-[#2563EB] text-white shadow-[0_4px_12px_rgba(37,99,235,0.3)] group-hover:bg-[#1D4ED8] group-hover:shadow-[0_0_18px_rgba(37,99,235,0.35),0_0_45px_rgba(37,99,235,0.2)] hover:bg-[#1D4ED8]' : 'bg-[#2593fc] text-white shadow-[0_0_28px_rgba(37,147,252,0.4)] group-hover:bg-[#d4af37] group-hover:shadow-[0_0_18px_rgba(212,175,55,0.45),0_0_45px_rgba(212,175,55,0.25)]'}`}
       >
         {searching ? (
           <>

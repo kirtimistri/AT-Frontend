@@ -5,10 +5,11 @@ import { useNavigate } from 'react-router-dom';
 
 import bg2 from '../assets/Backgoundimages/bg2.png';
 import lightBg from '../assets/Backgoundimages/backgroundlight.jpeg';
-import logo from '../assets/Backgoundimages/rlogo.jpeg';
+import logo from '../assets/Backgoundimages/logo2.svg';
 
 import { useThemeStore } from '../store/themeStore';
 import { useAuthStore } from '../store/authStore';
+import { useGlobalLoader, GLOBAL_LOGIN_MESSAGES } from '../store/globalLoader';
 import { loginUser, ApiError } from '../services/authService';
 import { toast } from '../components/toastStore';
 import { ThemeToggle } from '../components/ThemeToggle';
@@ -23,6 +24,9 @@ const LoginPage2 = () => {
   // Theme + auth store setup.
   const { theme } = useThemeStore();
   const authLogin = useAuthStore((s) => s.login);
+
+  // Global branded loader for the full auth transition.
+  const { showLoader, hideLoader } = useGlobalLoader();
 
   // Form state.
   const [email, setEmail] = useState('');
@@ -204,6 +208,9 @@ const LoginPage2 = () => {
 
     setIsSubmitting(true);
 
+    // Full-screen branded loader while the auth request is in flight.
+    showLoader(GLOBAL_LOGIN_MESSAGES);
+
     try {
       const res = await loginUser(trimmed, password);
 
@@ -218,8 +225,12 @@ const LoginPage2 = () => {
             'Welcome back! Redirecting…',
         });
 
+        // Keep the loader visible through the SPA transition — the page
+        // transition controller fades it out once the search page mounts.
         navigate('/search');
       } else {
+        hideLoader();
+
         toast({
           kind: 'error',
           code: 400,
@@ -229,6 +240,8 @@ const LoginPage2 = () => {
         });
       }
     } catch (err: unknown) {
+      hideLoader();
+
       const { message, title, code } =
         err instanceof ApiError
           ? {
@@ -633,9 +646,8 @@ const LoginPage2 = () => {
               <img
                 src={logo}
                 alt="Akbar Bizvoy Logo"
-                className="h-[44px] w-[44px] rounded-full border-2 border-[rgba(40,120,240,0.3)] object-cover"
-              />
-            </div>
+                className="h-[44px] w-auto"
+              />            </div>
 
             <p
               className={`
@@ -1042,7 +1054,7 @@ const LoginPage2 = () => {
                   <img
                     src={logo}
                     alt="Akbar Bizvoy Logo"
-                    className="h-[70px] w-[70px] rounded-full border-2 border-[rgba(40,120,240,0.3)] object-cover"
+                    className="h-[70px] w-auto"
                   />
                 </div>
               </div>

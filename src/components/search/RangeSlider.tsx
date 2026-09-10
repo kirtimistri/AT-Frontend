@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { useThemeStore } from '../store/themeStore';
-export type SliderSpec = { from: number; to: number; lit?: boolean };
+export type SliderSpec = { from: number; to: number };
 export const RangeSlider = ({ from, to }: SliderSpec) => {
   const { theme } = useThemeStore();
   const isLight = theme === 'light';
@@ -61,21 +61,21 @@ export const RangeSlider = ({ from, to }: SliderSpec) => {
     });
   };
 
-  // Thumb style: solid blue, matching the track, in both themes.
-  const thumbCls = `absolute top-1/2 h-[14px] w-[14px] -translate-y-1/2 cursor-grab touch-none rounded-full shadow-[0_1px_4px_rgba(0,0,0,0.35)] outline-none transition-all duration-300 focus-visible:ring-2 focus-visible:ring-[#d4af37]/70 active:cursor-grabbing active:scale-110 ${isLight ? 'bg-[#2563EB]' : 'bg-[#3B9CFF]'}`;
+  // Thumb style: white core with a blue ring and soft shadow; glows on hover/drag.
+  const thumbCls = `absolute top-1/2 h-[14px] w-[14px] -translate-y-1/2 cursor-grab touch-none rounded-full border-2 outline-none transition-all duration-300 focus-visible:ring-2 hover:scale-110 hover:shadow-[0_0_0_5px_rgba(59,156,255,0.18)] active:cursor-grabbing active:scale-110 ${isLight ? 'border-[#2563EB] bg-white shadow-[0_1px_4px_rgba(37,99,235,0.35)] focus-visible:ring-[#2563EB]/70' : 'border-[#3B9CFF] bg-[#0F1B3A] shadow-[0_1px_4px_rgba(0,0,0,0.45)] focus-visible:ring-[#d4af37]/70'}`;
 
   return (
-    <div className="mt-0.5 cursor-pointer px-0.5">
+    <div className="mt-0.5 cursor-pointer px-0.5 py-1">
       <div
         ref={trackRef}
-        className="relative h-[3px] rounded-full bg-white/10"
+        className={`relative h-[4px] rounded-full transition-colors duration-300 ${isLight ? 'bg-[#E5E7EB]' : 'bg-white/12'}`}
         onPointerDown={onTrackPointerDown}
         onPointerMove={(e) => applyDrag(e.clientX)}
         onPointerUp={endDrag}
         onPointerCancel={endDrag}
       >
         <div
-          className={`absolute top-0 h-full rounded-full ${isLight ? 'bg-[#2563EB]' : 'bg-[#3B9CFF]'}`}
+          className={`absolute top-0 h-full rounded-full ${isLight ? 'bg-gradient-to-r from-[#60A5FA] to-[#2563EB]' : 'bg-gradient-to-r from-[#3B9CFF] to-[#7CC0FF]'}`}
           style={{ left: `${range.from}%`, width: `${range.to - range.from}%` }}
         />
         <div
