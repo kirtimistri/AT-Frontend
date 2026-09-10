@@ -10,6 +10,7 @@ import { signupUser, ApiError } from '../services/authService';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { toast } from '../components/toastStore';
 import { ThemeToggle } from '../components/ThemeToggle';
+import { useGlobalLoader, GLOBAL_SIGNUP_MESSAGES } from '../store/globalLoader';
 
 
 // Geometry of the earth limb (horizon) in bg2.png (1672x941).
@@ -214,6 +215,9 @@ const RegisterPage = () => {
   // Theme + a ref to the background image (used by the HorizonGlow).
   const { theme } = useThemeStore();
 
+  // Global branded loader for the signup transition.
+  const { showLoader, hideLoader } = useGlobalLoader();
+
   const bgRef = useRef<HTMLImageElement>(null);
 
   // Form field values.
@@ -413,6 +417,9 @@ const RegisterPage = () => {
 
     setIsSubmitting(true);
 
+    // Full-screen branded loader while the signup request is in flight.
+    showLoader(GLOBAL_SIGNUP_MESSAGES);
+
     try {
       const res = await signupUser({
         name: trimmedName,
@@ -434,6 +441,8 @@ const RegisterPage = () => {
 
         navigate('/login');
       } else {
+        hideLoader();
+
         toast({
           kind: 'error',
           code: 400,
@@ -443,6 +452,8 @@ const RegisterPage = () => {
         });
       }
     } catch (err: unknown) {
+      hideLoader();
+
       const { message, title, code } =
         err instanceof ApiError
           ? {
@@ -617,7 +628,7 @@ const RegisterPage = () => {
           z-index: 1;
           display: flex;
           align-items: center;
-          height: 40px;
+          height: 32px;
           background: #0c1630;
           border-radius: 9px;
           padding: 0 14px;
@@ -1237,92 +1248,91 @@ const RegisterPage = () => {
           "
         >
           <div className="card-golden-wrapper relative w-full max-w-[400px]">
-            <div
-              className="
-                card-golden-inner
-                px-5
-                lg:px-8
-                py-[22px]
-                pb-[18px]
-                text-center
-              "
-            >
-              {/* Logo */}
-              <div className="mb-3 flex justify-center">
-                <div className="relative flex h-[85px] w-[85px] items-center justify-center">
-                  <div className="absolute inset-[-5px] rounded-full border-[2.5px] border-[rgba(40,140,255,0.6)] shadow-[0_0_20px_rgba(40,140,255,0.3),0_0_40px_rgba(40,140,255,0.15),inset_0_0_20px_rgba(40,140,255,0.1)]" />
-
-                  <div className="absolute inset-[-12px] z-0 rounded-full bg-[radial-gradient(circle,rgba(40,140,255,0.12)_0%,transparent_70%)]" />
-
-                  <img
-                    src={logo}
-                    alt="Akbar Bizvoy Logo"
-                    className="h-[70px] w-auto"
-                  />
-                </div>
-              </div>
-
-              {/* Brand name */}
-              <p
-                className={`
-                  m-0
-                  mb-1
+<div
+                className="
+                  card-golden-inner
+                  px-5
+                  lg:px-8
+                  py-[10px]
+                  pb-[8px]
                   text-center
-                  text-[13px]
-                  font-semibold
-                  tracking-[6px]
-                  uppercase
-                  ${
-                    isLight
-                      ? 'text-[#64748b]'
-                      : 'text-[rgba(200,215,235,0.65)]'
-                  }
-                `}
+                "
               >
-                AKBAR BIZVOY
-              </p>
+                {/* Logo */}
+                <div className="mb-0.5 flex justify-center">
+                  <div className="relative flex h-[48px] w-[48px] items-center justify-center">
+                    <div className="absolute inset-[-5px] rounded-full border-[2.5px] border-[rgba(40,140,255,0.6)] shadow-[0_0_20px_rgba(40,140,255,0.3),0_0_40px_rgba(40,140,255,0.15),inset_0_0_20px_rgba(40,140,255,0.1)]" />
 
-              {/* Heading */}
-              <h1
-                className={`
-                  m-0
-                  mb-1
-                  text-[26px]
-                  font-bold
-                  ${
-                    isLight
-                      ? 'text-[#1e293b]'
-                      : 'text-white'
-                  }
-                `}
-              >
-                Create{' '}
-                <span className="text-[#2563eb]">
-                  account.
-                </span>
-              </h1>
+                    <div className="absolute inset-[-12px] z-0 rounded-full bg-[radial-gradient(circle,rgba(40,140,255,0.12)_0%,transparent_70%)]" />
 
-              <p
-                className={`
-                  m-0
-                  mb-5
-                  text-[13px]
-                  ${
-                    isLight
-                      ? 'text-[#64748b]'
-                      : 'text-[rgba(170,195,225,0.55)]'
-                  }
-                `}
-              >
-                Sign up to continue to your account.
-              </p>
+                    <img
+                      src={logo}
+                      alt="Akbar Bizvoy Logo"
+                      className="h-[38px] w-auto"
+                    />
+                  </div>
+                </div>
 
-              {/* FORM */}
-              <form
-                onSubmit={handleSubmit}
-                noValidate
-                className="flex flex-col gap-3 text-left"
-              >
+                {/* Brand name */}
+                <p
+                  className={`
+                    m-0
+                    mb-0.5
+                    text-center
+                    text-[12px]
+                    font-semibold
+                    tracking-[6px]
+                    uppercase
+                    ${
+                      isLight
+                        ? 'text-[#64748b]'
+                        : 'text-[rgba(200,215,235,0.65)]'
+                    }
+                  `}
+                >
+                  AKBAR BIZVOY
+                </p>
+
+                {/* Heading */}
+                <h1
+                  className={`
+                    m-0
+                    text-[22px]
+                    font-bold
+                    ${
+                      isLight
+                        ? 'text-[#1e293b]'
+                        : 'text-white'
+                    }
+                  `}
+                >
+                  Create{' '}
+                  <span className="text-[#2563eb]">
+                    account.
+                  </span>
+                </h1>
+
+                <p
+                  className={`
+                    m-0
+                    mb-2
+                    text-[12px]
+                    ${
+                      isLight
+                        ? 'text-[#64748b]'
+                        : 'text-[rgba(170,195,225,0.55)]'
+                    }
+                  `}
+                >
+                  Sign up to continue to your account.
+                </p>
+
+                {/* FORM */}
+                <form
+                  onSubmit={handleSubmit}
+                  noValidate
+                  className="flex flex-col gap-2 text-left"
+                >
                 {/* NAME */}
                 <div>
                   <label
@@ -1382,7 +1392,7 @@ const RegisterPage = () => {
                           bg-transparent
                           text-[14px]
                           font-inherit
-                          leading-[40px]
+                          leading-[32px]
                           outline-none
                           ${
                             isLight
@@ -1454,7 +1464,7 @@ const RegisterPage = () => {
                           bg-transparent
                           text-[14px]
                           font-inherit
-                          leading-[40px]
+                          leading-[32px]
                           outline-none
                           ${
                             isLight
@@ -1528,7 +1538,7 @@ const RegisterPage = () => {
                           bg-transparent
                           text-[14px]
                           font-inherit
-                          leading-[40px]
+                          leading-[32px]
                           outline-none
                           ${
                             isLight
@@ -1669,7 +1679,7 @@ const RegisterPage = () => {
                           bg-transparent
                           text-[14px]
                           font-inherit
-                          leading-[40px]
+                          leading-[32px]
                           outline-none
                           ${
                             isLight
@@ -1786,8 +1796,8 @@ const RegisterPage = () => {
                     from-[#1565e0]
                     via-[#1d7bf5]
                     to-[#2b8df8]
-                    py-[11px]
-                    text-[15px]
+                    py-[9px]
+                    text-[14px]
                     font-semibold
                     tracking-[0.3px]
                     font-inherit
@@ -1835,7 +1845,7 @@ const RegisterPage = () => {
                 <p
                   className={`
                     m-0
-                    mt-1.5
+                    mt-1
                     text-center
                     text-[13px]
                     ${

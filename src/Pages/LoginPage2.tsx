@@ -9,6 +9,7 @@ import logo from '../assets/Backgoundimages/logo2.svg';
 
 import { useThemeStore } from '../store/themeStore';
 import { useAuthStore } from '../store/authStore';
+import { useGlobalLoader, GLOBAL_LOGIN_MESSAGES } from '../store/globalLoader';
 import { loginUser, ApiError } from '../services/authService';
 import { toast } from '../components/toastStore';
 import { ThemeToggle } from '../components/ThemeToggle';
@@ -23,6 +24,9 @@ const LoginPage2 = () => {
   // Theme + auth store setup.
   const { theme } = useThemeStore();
   const authLogin = useAuthStore((s) => s.login);
+
+  // Global branded loader for the full auth transition.
+  const { showLoader, hideLoader } = useGlobalLoader();
 
   // Form state.
   const [email, setEmail] = useState('');
@@ -204,6 +208,9 @@ const LoginPage2 = () => {
 
     setIsSubmitting(true);
 
+    // Full-screen branded loader while the auth request is in flight.
+    showLoader(GLOBAL_LOGIN_MESSAGES);
+
     try {
       const res = await loginUser(trimmed, password);
 
@@ -218,8 +225,12 @@ const LoginPage2 = () => {
             'Welcome back! Redirecting…',
         });
 
+        // Keep the loader visible through the SPA transition — the page
+        // transition controller fades it out once the search page mounts.
         navigate('/search');
       } else {
+        hideLoader();
+
         toast({
           kind: 'error',
           code: 400,
@@ -229,6 +240,8 @@ const LoginPage2 = () => {
         });
       }
     } catch (err: unknown) {
+      hideLoader();
+
       const { message, title, code } =
         err instanceof ApiError
           ? {

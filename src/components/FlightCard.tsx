@@ -89,14 +89,16 @@ const FareTierCard = ({
   tierId,
   selected = false,
   onSelect,
+  isLight,
 }: {
   tier: ReturnType<typeof fareTiers>[number];
   tierId: string;
   selected?: boolean;
   onSelect?: () => void;
+  isLight?: boolean;
 }) => (
   <div
-    className={`fare-tier-card flex min-w-0 flex-1 flex-col rounded-[12px] border bg-[#0d1b2a] p-3 transition-all duration-300 ${selected ? 'border-[#d4af37] shadow-[0_0_18px_rgba(212,175,55,0.4),0_0_40px_rgba(212,175,55,0.15)]' : 'border-[#29466e] hover:border-[#d4af37]/50'}`}
+    className={`fare-tier-card flex min-w-0 flex-1 flex-col rounded-[12px] border bg-[#0d1b2a] p-3 transition-all duration-300 ${selected ? (isLight ? 'border-[#2563EB] shadow-[0_0_18px_rgba(37,99,235,0.35),0_0_40px_rgba(37,99,235,0.15)]' : 'border-[#d4af37] shadow-[0_0_18px_rgba(212,175,55,0.4),0_0_40px_rgba(212,175,55,0.15)]') : (isLight ? 'border-[#29466e] hover:border-[#2563EB]/60' : 'border-[#29466e] hover:border-[#d4af37]/50')}`}
   >
     <div className="flex items-start justify-between gap-2">
       <div className="min-w-0">
@@ -105,7 +107,7 @@ const FareTierCard = ({
       </div>
       <button
         onClick={onSelect}
-        className={`fare-tier-submit cursor-pointer rounded-[7px] border px-2.5 py-1 text-[10.5px] font-bold uppercase tracking-wide transition-all duration-200 ${selected ? 'border-[#d4af37] bg-[#d4af37] text-[#0d1b2a] shadow-[0_0_12px_rgba(212,175,55,0.6)]' : 'border-[#315073] bg-transparent text-[#7CC0FF] hover:border-[#d4af37]/70 hover:text-[#f0c265]'}`}
+        className={`fare-tier-submit cursor-pointer rounded-[7px] border px-2.5 py-1 text-[10.5px] font-bold uppercase tracking-wide transition-all duration-200 ${selected ? (isLight ? 'border-[#2563EB] bg-[#2563EB] text-white shadow-[0_0_12px_rgba(37,99,235,0.5)]' : 'border-[#d4af37] bg-[#d4af37] text-[#0d1b2a] shadow-[0_0_12px_rgba(212,175,55,0.6)]') : (isLight ? 'border-[#315073] bg-transparent text-[#7CC0FF] hover:border-[#2563EB]/70 hover:text-[#2563EB]' : 'border-[#315073] bg-transparent text-[#7CC0FF] hover:border-[#d4af37]/70 hover:text-[#f0c265]')}`}
       >
         {selected ? 'Selected' : 'Select'}
       </button>
@@ -187,7 +189,6 @@ const CompactFlightLeft = ({
 }) => {
   const stopN = stopsCount(f.stops);
   const viaList = viaCities(f.via);
-  const planeCount = Math.max(stopN, viaList.length);
   const depCode = fromLabel.split(' ')[0];
   const depTerm = fromLabel.split(' ').slice(1).join(' ') || 'Terminal 1';
   const arrCode = toLabel.split(' ')[0];
@@ -394,8 +395,6 @@ export const FlightCard = ({
   const depTerm = fromLabel?.split(' ').slice(1).join(' ') || 'Terminal 1';
   const arrTerm = toLabel?.split(' ').slice(1).join(' ') || 'Terminal 1';
   const layoverMin = 30 + ((f.code.charCodeAt(0) + f.code.length * 13) % 90);
-  const planeCount = Math.max(stopsCount(f.stops) + 1, viaList.length + 1);
-
   return (
   <article
     onClick={onSelect}
@@ -422,7 +421,7 @@ export const FlightCard = ({
         </>
       )}
       <span className={`whitespace-nowrap text-[8px] font-semibold leading-none transition-colors duration-300 ${f.via ? (isLight ? 'text-[#6B7280]' : 'text-[#9eafc7]') : 'text-[#22c55e]'}`}>
-        {f.via ? `via ${viaList.join(', ')} Â· ${stopN} ${stopN === 1 ? 'Stop' : 'Stops'}` : 'Non-stop'}
+        {f.via ? `via ${viaList.join(', ')} · ${stopN} ${stopN === 1 ? 'Stop' : 'Stops'}` : 'Non-stop'}
       </span>
       {selected && (
         <span className={`flex h-5 w-5 items-center justify-center rounded-full transition-colors duration-300 ${isLight ? 'bg-[#DC2626] shadow-[0_0_10px_rgba(220,38,38,0.8)]' : 'bg-[#d4af37] shadow-[0_0_10px_rgba(212,175,55,0.8)]'}`}>
@@ -460,7 +459,7 @@ export const FlightCard = ({
       {/* Top row: airline block (left) + timeline details (right side) */}
       <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-1">
         <div className="flex shrink-0 items-start gap-2">
-          <AirlineLogo airline={f.airline} size="sm" />
+          <AirlineLogo airline={f.airline} size="md" />
           <div className="flex flex-col items-start pt-[3px]">
             <span className={`whitespace-nowrap text-[13px] font-bold leading-none tracking-wide transition-colors duration-300 ${isLight ? 'text-[#111827]' : 'text-white'}`}>{f.airline}</span>
             <span className={`mt-0.5 whitespace-nowrap text-[9.5px] font-semibold leading-none transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#9eafc7]'}`}>{f.code}</span>
@@ -498,20 +497,6 @@ export const FlightCard = ({
                     <span className="absolute -right-1.5 -top-1.5 flex h-[11px] min-w-[11px] items-center justify-center rounded-full bg-[#ef4444] px-[2px] text-[6.5px] font-bold leading-none text-white">{stopN}+</span>
                   )}
                 </FlightInfoPopover>
-                {stopN === 1 && viaList[0] && (
-                  <div className={`absolute left-1/2 top-1/2 max-w-[50%] -translate-x-1/2 -translate-y-[18px] truncate px-0.5 text-[9.5px] leading-none transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#9baec7]'}`}>
-                    {viaList[0]}
-                  </div>
-                )}
-                {viaList.map((city, i) => (
-                  <div
-                    key={`v-${city}`}
-                    className={`absolute top-1/2 max-w-[50%] -translate-x-1/2 -translate-y-[18px] truncate px-0.5 text-[9.5px] leading-none transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#9baec7]'}`}
-                    style={{ left: `${((i + 0.5) / planeCount) * 100}%` }}
-                  >
-                    {city}
-                  </div>
-                ))}
               </>
             ) : null}
           </div>
@@ -612,6 +597,7 @@ export const FlightCard = ({
                   tierId={`${scope ?? 'flight'}:${f.code}:${tier.name.toLowerCase()}`}
                   selected={selTier === tier.name}
                   onSelect={() => pickTier(tier)}
+                  isLight={isLight}
                 />
               ))}
             </div>

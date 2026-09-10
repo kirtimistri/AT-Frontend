@@ -33,7 +33,7 @@ export const SidebarFilters = () => {
         <button
           type="button"
           onClick={clearFilters}
-          className={`flex shrink-0 cursor-pointer items-center gap-1 border-none bg-transparent text-[11px] font-medium transition-all duration-200 hover:text-[#d4af37] hover:drop-shadow-[0_0_6px_rgba(212,175,55,0.7)] ${isLight ? 'text-[#6B7280] hover:text-[#2563EB]' : 'text-white/60 hover:text-[#f5d67b]'}`}
+          className={`flex shrink-0 cursor-pointer items-center gap-1 border-none bg-transparent text-[11px] font-medium transition-all duration-200 ${isLight ? 'text-[#6B7280] hover:text-[#2563EB]' : 'text-white/60 hover:text-[#f5d67b] hover:drop-shadow-[0_0_6px_rgba(212,175,55,0.7)]'}`}
         >
           <RotateCcw className="h-3 w-3" />
           Reset

@@ -12,7 +12,7 @@ let pendingLoad: Promise<void> | null = null;
 // reCAPTCHA v3 tokens are valid for 2 minutes. Cache the most recent token
 // per site key + action and reuse it so submitting skips the Google round-trip.
 // 90s keeps us safely inside the 2-minute window.
-const TOKEN_CACHE_MAX_AGE_MS = 90000;
+const TOKEN_CACHE_MAX_AGE_MS = 9000;
 
 const tokenCache = new Map<
   string,
