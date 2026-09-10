@@ -4,7 +4,6 @@ import LoginPage2 from './Pages/LoginPage2'
 import RegisterPage from './Pages/RegisterPage'
 import SearchPage from './Pages/SearchPage'
 import ReviewPage from './Pages/ReviewPage'
-import { ThemeToggle } from './components/ThemeToggle'
 import TripReviewPage from './Pages/TripReviewPage'
 import { ToastViewport } from './components/Toast'
 import {
@@ -24,8 +23,6 @@ function App() {
 
       {/* The ONE global branded loader. Everything else calls the store. */}
       <AkbarBizvoyPageLoader />
-
-      <ThemeToggle />
 
       {/* Overlay where toast messages (notifications) appear. */}
       <ToastViewport />

@@ -44,12 +44,12 @@ export const ThemeToggle = ({
           right: 'right-[6px]',
         }
       : {
-          btn: 'h-[32px] w-[62px]',
-          knob: 'left-[3px] top-[3px] h-[26px] w-[26px]',
-          knobOn: 'translate-x-[30px]',
-          icon: 'h-[15px] w-[15px]',
-          left: 'left-[9px]',
-          right: 'right-[9px]',
+          btn: 'h-[24px] w-[44px]',
+          knob: 'left-[2px] top-[2px] h-[20px] w-[20px]',
+          knobOn: 'translate-x-[20px]',
+          icon: 'h-[11px] w-[11px]',
+          left: 'left-[6px]',
+          right: 'right-[6px]',
         };
 
   // Render the switch button with sun, moon, and sliding knob

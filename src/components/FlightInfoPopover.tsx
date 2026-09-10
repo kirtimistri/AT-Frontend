@@ -38,6 +38,8 @@ type Props = {
   stops?: StopDetail[];
   /** Per-leg flight codes (length = stops + 1), e.g. ["6E 2169", "6E 6598"]. */
   legCodes?: string[];
+  /** When set, only the leg at this index is shown in the popover. */
+  onlyLeg?: number;
   /** Departure/arrival city names, e.g. "Delhi". */
   depCity?: string;
   arrCity?: string;
@@ -79,6 +81,7 @@ export const FlightInfoPopover = ({
   duration,
   stops,
   legCodes,
+  onlyLeg,
   depCity,
   arrCity,
   children,
@@ -237,6 +240,7 @@ export const FlightInfoPopover = ({
 
             <div className="mt-2 space-y-3.5">
               {legs.map((leg, i) => {
+                if (onlyLeg !== undefined && i !== onlyLeg) return null;
                 const legCode = legCodes?.[i] ?? code;
                 const m = legCode.match(/^(\D+)\s*(\d+)$/);
                 const alCode = (m?.[1] ?? legCode).trim();
