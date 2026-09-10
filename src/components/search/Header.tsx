@@ -1,22 +1,37 @@
 // Main app header: logo, search bar, city swap, return date picker, and theme toggle.
-import { useState } from 'react';
-import { useFlightStore } from '../store/flightStore';
-import { travellersLabel } from '../store/flightStore';
-import { useThemeStore } from '../store/themeStore';
+import { useState, type ReactNode } from 'react';
+import { useFlightStore } from '../../store/flightStore';
+import { travellersLabel } from '../../store/flightStore';
+import { useThemeStore } from '../../store/themeStore';
 import { ReturnCalendar } from './ReturnCalendar';
-import { ChevronDown, ChevronRight, ArrowLeftRight } from './icons';
-import { iconProps } from '../lib/iconProps';
-import { BrandLogo } from './BrandLogo';
-import { ThemeToggle } from './ThemeToggle';
+import { ChevronDown, ChevronRight, ArrowLeftRight } from '../icons';
+import { iconProps } from '../../lib/iconProps';
+import { BrandLogo } from '../BrandLogo';
+import { ThemeToggle } from '../ThemeToggle';
+
+/**
+ * One search-bar field: a small grey label above a bold value.
+ * `labelCls` styles the label, `valueCls` tailors the value row (truncation,
+ * flex layout, placeholder colour). `right` can add an inline icon.
+ */
+const Field = ({ label, value, labelCls, valueCls, right }: { label: string; value: ReactNode; labelCls?: string; valueCls: string; right?: ReactNode }) => (
+  <div className="min-w-0">
+    <div className={`bar-text ${labelCls ?? ''}`}>{label}</div>
+    <div className={`bar-text-value ${valueCls}`}>
+      {value}
+      {right}
+    </div>
+  </div>
+);
 
 export const Header = () => {
-  // Local state for swap animation, travellers popover, and return date calendar
+  // Local UI state (swap animation, travellers popover, cabin class)
   const [swapSpin, setSwapSpin] = useState(0);
   const [cabin, setCabin] = useState('Economy');
   const [paxOpen, setPaxOpen] = useState(false);
   const [paxClosing, setPaxClosing] = useState(false);
 
-  // Flight store values needed for the search bar and return calendar
+  // Values and actions pulled from the flight store
   const fromCity = useFlightStore((s) => s.fromCity);
   const toCity = useFlightStore((s) => s.toCity);
   const datePool = useFlightStore((s) => s.datePool);
@@ -36,20 +51,20 @@ export const Header = () => {
   const travellers = useFlightStore((s) => s.travellers);
   const setTravellers = useFlightStore((s) => s.setTravellers);
 
-  // Theme for light/dark mode styling
+  // Theme (light/dark) selects which colour classes each element uses
   const { theme } = useThemeStore();
   const isLight = theme === 'light';
 
-  // Current departure day based on the selected date strip position
+  // Current departure day, derived from the selected position in the date strip
   const stripDay = datePool[stripStart + stripSel];
 
-  // Swap the from/to cities and trigger a small rotation animation
+  // Swap From<->To and spin the swap icon as feedback
   const handleSwap = () => {
     swapCities();
     setSwapSpin((s) => s + 1);
   };
 
-  // Travellers popover open/close (close plays an exit animation first)
+  // Open/close the travellers popover (closing first plays a short exit animation)
   const openPax = () => {
     setPaxClosing(false);
     setPaxOpen(true);
@@ -62,18 +77,25 @@ export const Header = () => {
     }, 150);
   };
 
-  // Increment/decrement a traveller category; clamping rules live in the store.
+  // Change a traveller count for one category (clamping rules live in the store)
   const changePax = (key: 'adults' | 'children' | 'infants', delta: number) => {
     setTravellers({ ...travellers, [key]: travellers[key] + delta });
   };
 
-  // Shared styling for the −/+ stepper buttons.
+  // Styling for the +/- stepper buttons in the travellers popover
   const stepperCls = (disabled: boolean) =>
     `flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-[14px] font-bold leading-none transition-all duration-200 active:scale-90 ${
       disabled
         ? 'cursor-not-allowed border-current/30 text-current opacity-40'
         : `cursor-pointer ${isLight ? 'border-[#D1D5DB] text-[#2563EB] hover:border-[#2563EB] hover:bg-[#EFF6FF]' : 'border-[rgba(124,192,255,0.4)] text-[#7CC0FF] hover:border-[#7CC0FF] hover:bg-white/5'}`
     }`;
+
+  // --- Shared theme-aware classes so every field looks consistent ---
+  const labelCls = `text-[10px] font-semibold tracking-[0.12em] transition-all duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#7CC0FF]'}`; // small grey field label
+  const valStyle = 'mt-0.5 text-[12.5px] font-bold transition-all duration-300 sm:text-[14px]'; // bold value text
+  const normColor = isLight ? 'text-[#111827]' : 'text-white'; // normal (filled) value colour
+  const phColor = isLight ? 'text-[#9CA3AF]' : 'text-white/40'; // placeholder value colour
+  const dividerL = isLight ? 'border-l-[#E5E7EB]' : 'border-l-white/10'; // column divider line
 
   // Left section: just the app logo
   const leftSection = (
@@ -85,37 +107,34 @@ export const Header = () => {
   // Right section: filters toggle, avatar badge, and theme toggle
   const rightSection = (
     <div className="flex shrink-0 items-center gap-1.5 sm:gap-4">
-        <button
-          type="button"
-          onClick={() => setFiltersOpen(!filtersOpen)}
-          aria-label="Toggle filters"
-          aria-expanded={filtersOpen}
-          className={`flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border transition-colors duration-200 md:hidden ${isLight ? 'bg-white border-[#E5E7EB] text-[#2563EB] hover:bg-[#F3F4F6]' : 'bg-transparent border-[rgba(212,175,55,0.35)] text-[#f0c265] hover:border-[#d4af37]/70 hover:text-[#f5d67b]'}`}
-        >
-          <svg {...iconProps('h-3.5 w-3.5')}><line x1="4" y1="6" x2="20" y2="6" /><line x1="4" y1="12" x2="20" y2="12" /><line x1="4" y1="18" x2="20" y2="18" /></svg>
-        </button>
-        <div
-          role="button"
-          tabIndex={0}
-          aria-label="Account"
-          className={`flex h-7 w-7 cursor-pointer select-none items-center justify-center rounded-full text-[11px] font-bold ring-1 transition-all duration-300 hover:scale-[1.06] ${isLight ? 'bg-[#EFF6FF] text-[#2563EB] ring-[#2563EB]/30 shadow-[0_2px_8px_rgba(37,99,235,0.18)] hover:shadow-[0_4px_14px_rgba(37,99,235,0.28)]' : 'bg-[#2B5BFF] text-white ring-[#7CC0FF]/40 shadow-[0_2px_10px_rgba(43,91,255,0.4)] hover:shadow-[0_4px_16px_rgba(43,91,255,0.55)]'}`}
-        >
-          AS
-        </div>
-        <ThemeToggle className="shrink-0" size="sm" />
+      <button
+        type="button"
+        onClick={() => setFiltersOpen(!filtersOpen)}
+        aria-label="Toggle filters"
+        aria-expanded={filtersOpen}
+        className={`flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border transition-colors duration-200 md:hidden ${isLight ? 'bg-white border-[#E5E7EB] text-[#2563EB] hover:bg-[#F3F4F6]' : 'bg-transparent border-[rgba(212,175,55,0.35)] text-[#f0c265] hover:border-[#d4af37]/70 hover:text-[#f5d67b]'}`}
+      >
+        <svg {...iconProps('h-3.5 w-3.5')}><line x1="4" y1="6" x2="20" y2="6" /><line x1="4" y1="12" x2="20" y2="12" /><line x1="4" y1="18" x2="20" y2="18" /></svg>
+      </button>
+      <div
+        role="button"
+        tabIndex={0}
+        aria-label="Account"
+        className={`flex h-7 w-7 cursor-pointer select-none items-center justify-center rounded-full text-[11px] font-bold ring-1 transition-all duration-300 hover:scale-[1.06] ${isLight ? 'bg-[#EFF6FF] text-[#2563EB] ring-[#2563EB]/30 shadow-[0_2px_8px_rgba(37,99,235,0.18)] hover:shadow-[0_4px_14px_rgba(37,99,235,0.28)]' : 'bg-[#2B5BFF] text-white ring-[#7CC0FF]/40 shadow-[0_2px_10px_rgba(43,91,255,0.4)] hover:shadow-[0_4px_16px_rgba(43,91,255,0.55)]'}`}
+      >
+        AS
+      </div>
+      <ThemeToggle className="shrink-0" size="sm" />
     </div>
   );
 
   // Search bar: From/To cities, dates, travellers, and the Search button
   const searchBar = (
-    <div className={`group relative mt-1.5 flex flex-wrap items-stretch rounded-[26px] border transition-all duration-300 sm:rounded-l-[16px] sm:rounded-r-[26px] lg:mt-0 ${isLight ? 'bg-white border-[#E5E7EB] shadow-[0_4px_12px_rgba(0,0,0,0.08)] hover:border-[#2563EB]/50' : 'bg-[#0F1B3A] border-[rgba(124,192,255,0.22)] shadow-[0_10px_30px_rgba(0,0,0,0.35)] hover:border-[#d4af37]/70 hover:shadow-[0_0_18px_rgba(212,175,55,0.3),0_0_50px_rgba(212,175,55,0.14)]'}`}>
+    <div className={`group relative mt-1.5 flex flex-wrap items-stretch rounded-[999px] border transition-all duration-300 lg:mt-0 ${isLight ? 'bg-white border-[#E5E7EB] shadow-[0_4px_12px_rgba(0,0,0,0.08)] hover:border-[#2563EB]/50' : 'bg-[#0F1B3A] border-[rgba(124,192,255,0.22)] shadow-[0_10px_30px_rgba(0,0,0,0.35)] hover:border-[#d4af37]/70 hover:shadow-[0_0_18px_rgba(212,175,55,0.3),0_0_50px_rgba(212,175,55,0.14)]'}`}>
       {/* From + To (swap button overlaps the divider) */}
       <div className="relative flex w-full min-w-0 border-b border-white/10 sm:w-auto sm:flex-1 sm:border-b-0">
-        <div className={`relative flex min-w-0 flex-1 items-center px-3 py-1 sm:px-5 sm:py-1.5 border-l transition-colors duration-300 ${isLight ? 'border-l-[#E5E7EB]' : 'border-l-white/10'}`}>
-          <div className="min-w-0">
-            <div className={`bar-text text-[10px] font-semibold tracking-[0.12em] transition-all duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#7CC0FF]'}`}>From</div>
-            <div className={`bar-text-value mt-0.5 truncate text-[12.5px] font-bold transition-all duration-300 sm:text-[14px] ${isLight ? 'text-[#111827]' : 'text-white'}`}>{fromCity}</div>
-          </div>
+        <div className={`relative flex min-w-0 flex-1 items-center rounded-full border-l px-3 py-1 sm:rounded-none sm:px-5 sm:py-1.5 transition-colors duration-300 ${dividerL}`}>
+          <Field label="From" value={fromCity} labelCls={labelCls} valueCls={`${valStyle} truncate ${normColor}`} />
         </div>
 
         {/* Swap button — reverses From and To */}
@@ -131,33 +150,24 @@ export const Header = () => {
           </span>
         </button>
 
-        <div className={`relative flex min-w-0 flex-1 items-center border-l px-3 py-1 sm:px-5 sm:py-1.5 transition-colors duration-300 ${isLight ? 'border-l-[#E5E7EB]' : 'border-white/10'}`}>
-          <div className="min-w-0">
-            <div className={`bar-text text-[10px] font-semibold tracking-[0.12em] transition-all duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#7CC0FF]'}`}>To</div>
-            <div className={`bar-text-value mt-0.5 truncate text-[12.5px] font-bold transition-all duration-300 sm:text-[14px] ${isLight ? 'text-[#111827]' : 'text-white'}`}>{toCity}</div>
-          </div>
+        <div className={`relative flex min-w-0 flex-1 items-center rounded-full border-l px-3 py-1 sm:rounded-none sm:px-5 sm:py-1.5 transition-colors duration-300 ${dividerL}`}>
+          <Field label="To" value={toCity} labelCls={labelCls} valueCls={`${valStyle} truncate ${normColor}`} />
         </div>
       </div>
 
-      {/* Departure */}
-      <div className={`flex w-1/2 shrink-0 items-center border-b px-3 py-1 sm:w-[150px] sm:border-b-0 sm:border-l sm:px-5 sm:py-1.5 transition-colors duration-300 ${isLight ? 'border-b-[#E5E7EB]' : 'border-white/10'}`}>
-        <div>
-          <div className={`bar-text text-[10px] font-semibold tracking-[0.12em] transition-all duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#7CC0FF]'}`}>Departure</div>
-          <div className={`bar-text-value mt-0.5 text-[12.5px] font-bold transition-all duration-300 sm:text-[14px] ${isLight ? 'text-[#111827]' : 'text-white'}`}>{stripDay.label}</div>
-        </div>
+      {/* Departure date */}
+      <div className={`flex w-1/2 shrink-0 items-center rounded-full border-b px-3 py-1 sm:w-[150px] sm:rounded-none sm:border-b-0 sm:border-l sm:px-5 sm:py-1.5 transition-colors duration-300 ${isLight ? 'border-b-[#E5E7EB]' : 'border-white/10'}`}>
+        <Field label="Departure" value={stripDay.label} labelCls={labelCls} valueCls={`${valStyle} ${normColor}`} />
       </div>
 
-      {/* Return */}
+      {/* Return date — clickable, opens the calendar */}
       <button
         type="button"
         onClick={() => setReturnOpen(!returnOpen)}
-        className={`relative flex w-1/2 shrink-0 cursor-pointer items-center border-b border-l px-3 py-1 text-left transition-colors duration-200 sm:w-[150px] sm:border-b-0 sm:px-5 sm:py-1.5 ${isLight ? 'bg-white border-[#E5E7EB] hover:bg-[#F9FAFB]' : 'bg-transparent border-white/10 hover:bg-[rgba(212,175,55,0.06)]'}`}
+        className={`relative flex w-1/2 shrink-0 cursor-pointer items-center rounded-full border-b border-l px-3 py-1 text-left transition-colors duration-200 sm:w-[150px] sm:rounded-none sm:border-b-0 sm:px-5 sm:py-1.5 ${isLight ? 'bg-white border-[#E5E7EB] hover:bg-[#F9FAFB]' : 'bg-transparent border-white/10 hover:bg-[rgba(212,175,55,0.06)]'}`}
       >
-        <div>
-          <div className={`bar-text text-[10px] font-semibold tracking-[0.12em] transition-all duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#7CC0FF]'}`}>Return</div>
-          <div className={`mt-0.5 truncate text-[12.5px] font-bold transition-all duration-300 sm:text-[14px] ${returnDate ? (isLight ? 'text-[#111827]' : 'text-white') : (isLight ? 'text-[#9CA3AF]' : 'text-white/40')}`}>{returnDate ?? 'Return'}</div>
-          <ChevronDown className={`absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-white/40'}`} />
-        </div>
+        <Field label="Return" value={returnDate ?? 'Return'} labelCls={labelCls} valueCls={`${valStyle} truncate ${returnDate ? normColor : phColor}`} />
+        <ChevronDown className={`absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-white/40'}`} />
       </button>
 
       {/* Travellers & Class — clickable, opens the travellers popover */}
@@ -167,15 +177,15 @@ export const Header = () => {
           onClick={() => (paxOpen ? closePax() : openPax())}
           aria-expanded={paxOpen}
           aria-haspopup="dialog"
-          className={`flex w-full min-w-0 cursor-pointer items-center border-l px-3 py-1 text-left transition-colors duration-300 sm:px-5 sm:py-1.5 ${isLight ? 'border-l-[#E5E7EB] hover:bg-[#F9FAFB]' : 'border-l-white/10 hover:bg-white/5'}`}
+          className={`flex w-full min-w-0 cursor-pointer items-center rounded-full border-l px-3 py-1 text-left transition-colors duration-300 sm:rounded-none sm:px-5 sm:py-1.5 ${dividerL} ${isLight ? 'hover:bg-[#F9FAFB]' : 'hover:bg-white/5'}`}
         >
-          <div className="min-w-0 flex-1">
-            <div className={`bar-text text-[10px] font-semibold tracking-[0.12em] transition-all duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#7CC0FF]'}`}>Travellers & Class</div>
-            <div className={`bar-text-value mt-0.5 flex items-center gap-1 truncate text-[12.5px] font-bold transition-all duration-300 sm:text-[14px] ${isLight ? 'text-[#111827]' : 'text-white'}`}>
-              <span className="truncate">{travellersLabel(travellers)}, {cabin}</span>
-              <ChevronDown className={`h-3.5 w-3.5 shrink-0 transition-transform duration-300 ${isLight ? 'text-[#6B7280]' : 'text-white/50'} ${paxOpen && !paxClosing ? 'rotate-180' : ''}`} />
-            </div>
-          </div>
+          <Field
+            label="Travellers & Class"
+            value={<span className="truncate">{travellersLabel(travellers)}, {cabin}</span>}
+            labelCls={labelCls}
+            valueCls={`${valStyle} flex items-center gap-1 truncate ${normColor}`}
+            right={<ChevronDown className={`h-3.5 w-3.5 shrink-0 transition-transform duration-300 ${isLight ? 'text-[#6B7280]' : 'text-white/50'} ${paxOpen && !paxClosing ? 'rotate-180' : ''}`} />}
+          />
         </button>
 
         {/* Travellers popover: per-category steppers + cabin class + Done */}
@@ -241,11 +251,11 @@ export const Header = () => {
         )}
       </div>
 
-      {/* Search button — blue pill cap, flush with the bar's top/bottom/right edges */}
+      {/* Search button — pill cap; sharp left edge, rounded right, flush inside the bar */}
       <button
         type="button"
         onClick={() => doSearch()}
-        className={`flex w-full shrink-0 cursor-pointer items-center justify-center gap-2 rounded-b-[26px] rounded-r-[26px] border-none px-4 py-1.5 text-[13px] font-bold tracking-wide transition-all duration-300 sm:absolute sm:inset-y-0 sm:right-0 sm:z-20 sm:w-auto sm:justify-start sm:rounded-b-none sm:py-0 sm:pl-10 sm:pr-11 sm:text-[16px] ${isLight ? 'bg-[#2563EB] text-white shadow-[0_4px_12px_rgba(37,99,235,0.3)] group-hover:bg-[#1D4ED8] group-hover:shadow-[0_0_18px_rgba(37,99,235,0.35),0_0_45px_rgba(37,99,235,0.2)] hover:bg-[#1D4ED8]' : 'bg-[#2593fc] text-white shadow-[0_0_28px_rgba(37,147,252,0.4)] group-hover:bg-[#d4af37] group-hover:shadow-[0_0_18px_rgba(212,175,55,0.45),0_0_45px_rgba(212,175,55,0.25)]'}`}
+        className={`flex w-full shrink-0 cursor-pointer items-center justify-center gap-2 rounded-b-[999px] rounded-r-[999px] border-none px-4 py-1.5 text-[13px] font-bold tracking-wide transition-all duration-300 sm:absolute sm:inset-y-0 sm:right-0 sm:z-20 sm:w-auto sm:justify-start sm:rounded-l-none sm:py-0 sm:pl-10 sm:pr-11 sm:text-[16px] ${isLight ? 'bg-[#2563EB] text-white shadow-[0_4px_12px_rgba(37,99,235,0.3)] group-hover:bg-[#1D4ED8] group-hover:shadow-[0_0_18px_rgba(37,99,235,0.35),0_0_45px_rgba(37,99,235,0.2)] hover:bg-[#1D4ED8]' : 'bg-[#2593fc] text-white shadow-[0_0_28px_rgba(37,147,252,0.4)] group-hover:bg-[#d4af37] group-hover:shadow-[0_0_18px_rgba(212,175,55,0.45),0_0_45px_rgba(212,175,55,0.25)]'}`}
       >
         {searching ? (
           <>

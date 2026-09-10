@@ -1,7 +1,7 @@
 // One column of flight results (onward or return) with sort tabs and a list of flight cards.
-import type { Flight, SortKey } from '../store/flightStore';
-import { useThemeStore } from '../store/themeStore';
-import { sortFlights } from '../lib/format';
+import type { Flight, SortKey } from '../../store/flightStore';
+import { useThemeStore } from '../../store/themeStore';
+import { sortFlights } from '../../lib/format';
 import { FlightCard } from './FlightCard';
 
 // Small pill buttons for sorting the flight list (by price, speed, or departure time)

@@ -1,13 +1,13 @@
 ﻿// FlightCard.tsx
 // Displays a single flight option with airline info, schedule, pricing, and expandable fare tiers.
 import { useEffect, useRef, useState } from 'react';
-import type { Flight } from '../store/flightStore';
-import { useFlightStore } from '../store/flightStore';
-import { useThemeStore } from '../store/themeStore';
-import { AirlineLogo } from './Logos';
-import { Clock, ShoppingBag, PlaneFill, LeafIcon } from './icons';
-import { iconProps } from '../lib/iconProps';
-import { inr, viaCities, stopsCount, minutesToHm, priceBreakdownOf, cityNameOf, to24H } from '../lib/format';
+import type { Flight } from '../../store/flightStore';
+import { useFlightStore } from '../../store/flightStore';
+import { useThemeStore } from '../../store/themeStore';
+import { AirlineLogo } from '../Logos';
+import { Clock, ShoppingBag, PlaneFill, LeafIcon } from '../icons';
+import { iconProps } from '../../lib/iconProps';
+import { inr, viaCities, stopsCount, minutesToHm, priceBreakdownOf, cityNameOf, to24H } from '../../lib/format';
 import type { StopDetail } from './FlightInfoPopover';
 
 
@@ -32,8 +32,8 @@ const cityNameFromCode = (label?: string): string => {
 };
 import { PriceBreakdownPopover } from './PriceBreakdownPopover';
 import { FlightInfoPopover } from './FlightInfoPopover';
-import { tierAdjustedPrice } from '../lib/fare';
-import { prepareReview } from '../lib/openReview';
+import { tierAdjustedPrice } from '../../lib/fare';
+import { prepareReview } from '../../lib/openReview';
 
 /* ---------- Fare option tiers (expandable card details) ---------- */
 // Returns the three fare tiers (SAVER, FLEX, PREMIUM) with their prices and feature rows.
@@ -165,7 +165,7 @@ const SelectButton = ({ selected, onSelect, isLight }: { selected: boolean; onSe
   >
     <span>{selected ? 'Selected' : 'View'}</span>
     {selected ? (
-      <svg viewBox="0 0 24 24" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+      <svg viewBox="0 0 24 24" className="h-2.5 w-2.5" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
         <path d="M20 6 9 17l-5-5" />
       </svg>
     ) : (
@@ -426,8 +426,8 @@ export const FlightCard = ({
         {f.via ? `via ${viaList.join(', ')} · ${stopN} ${stopN === 1 ? 'Stop' : 'Stops'}` : 'Non-stop'}
       </span>
       {selected && (
-        <span className={`flex h-5 w-5 items-center justify-center rounded-full transition-colors duration-300 ${isLight ? 'bg-[#DC2626] shadow-[0_0_10px_rgba(220,38,38,0.8)]' : 'bg-[#d4af37] shadow-[0_0_10px_rgba(212,175,55,0.8)]'}`}>
-          <svg viewBox="0 0 24 24" className="h-3 w-3" fill="none" stroke="#ffffff" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round">
+        <span className={`flex h-4 w-4 items-center justify-center rounded-full transition-colors duration-300 ${isLight ? 'bg-[#DC2626] shadow-[0_0_10px_rgba(220,38,38,0.8)]' : 'bg-[#d4af37] shadow-[0_0_10px_rgba(212,175,55,0.8)]'}`}>
+          <svg viewBox="0 0 24 24" className="h-2.5 w-2.5" fill="none" stroke="#ffffff" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M20 6 9 17l-5-5" />
           </svg>
         </span>

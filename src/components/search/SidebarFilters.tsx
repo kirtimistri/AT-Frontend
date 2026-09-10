@@ -1,8 +1,9 @@
 // Sidebar panel with filter groups (stops, airline, times, price, etc.) and a save-search button.
-import { useFlightStore } from '../store/flightStore';
-import { useThemeStore } from '../store/themeStore';
+import type { ReactElement } from 'react';
+import { useFlightStore } from '../../store/flightStore';
+import { useThemeStore } from '../../store/themeStore';
 import { FilterGroup } from './FilterGroup';
-import { GitFork, PlaneTakeoff, ClockArrowUp, ClockArrowDown, Rupee, Timer, ShoppingBag, RotateCcw, Bookmark, ChevronDown, SlidersHorizontal } from './icons';
+import { GitFork, PlaneTakeoff, ClockArrowUp, ClockArrowDown, Rupee, Timer, ShoppingBag, RotateCcw, Bookmark, ChevronDown, SlidersHorizontal, SunIcon, SunsetIcon, MoonIcon } from '../icons';
 
 export const SidebarFilters = () => {
   // Theme and filter state read from the global store
@@ -12,13 +13,37 @@ export const SidebarFilters = () => {
   const openFilters = useFlightStore((s) => s.openFilters);
   const toggleFilterGroup = useFlightStore((s) => s.toggleFilterGroup);
   const clearFilters = useFlightStore((s) => s.clearFilters);
+  const departureTimes = useFlightStore((s) => s.departureTimes);
+  const toggleDepartureTime = useFlightStore((s) => s.toggleDepartureTime);
 
   // Number of filter groups currently expanded (used for the header badge).
   const activeCount = openFilters.filter(Boolean).length;
 
+  // Map time-of-day icons for the departure filter options
+  const timeIcons: Record<string, ReactElement> = {
+    'early-morning': <MoonIcon className="h-3.5 w-3.5" />,
+    'morning': <SunIcon className="h-3.5 w-3.5" />,
+    'afternoon': <SunIcon className="h-3.5 w-3.5 text-[#f59e0b]" />,
+    'evening': <SunsetIcon className="h-3.5 w-3.5" />,
+  };
+
+  // Check if any departure time is selected for the value display
+  const selectedDepartureTimes = departureTimes.filter((t) => t.selected);
+  const departureTimeValue = selectedDepartureTimes.length > 0
+    ? selectedDepartureTimes.map((t) => t.label).join(', ')
+    : 'All times';
+
+  // Convert departureTimes to FilterOption format for FilterGroup
+  const departureOptions = departureTimes.map((t) => ({
+    icon: timeIcons[t.id] || <SunIcon className="h-3.5 w-3.5" />,
+    label: t.label,
+    timeRange: t.timeRange,
+    selected: t.selected,
+  }));
+
   // Sidebar container: visible only when filters are open (on mobile) or always on desktop
   return (
-    <aside className={`group/sidebar ${filtersOpen ? 'flex' : 'hidden'} w-full shrink-0 flex-col border-r p-3 md:flex md:w-[280px] transition-colors duration-300 ${isLight ? 'bg-[#F7F9FC] border-r-[#E5E7EB]' : 'bg-[#0E1833] border-[rgba(212,175,55,0.25)]'}`}>
+    <aside className={`group/sidebar ${filtersOpen ? 'flex' : 'hidden'} w-full shrink-0 flex-col border-r p-3 md:flex md:w-[280px] lg:w-[300px] transition-colors duration-300 ${isLight ? 'bg-[#F7F9FC] border-r-[#E5E7EB]' : 'bg-[#0E1833] border-[rgba(212,175,55,0.25)]'}`}>
       {/* Header row: sliders glyph + title + count badge, with clear-all on the right. */}
       <div className="flex shrink-0 items-center justify-between gap-2 pb-2">
         <div className="flex min-w-0 items-center gap-1.5">
@@ -40,17 +65,21 @@ export const SidebarFilters = () => {
         </button>
       </div>
 
-      {/* Filter cards: fixed-height stack — every card shares the space so all fit on one screen, no scrollbar. */}
-      <div className="flex min-h-0 flex-1 flex-col gap-1.5 overflow-hidden">
+      {/* Filter cards: always allow vertical scroll — the pretty-scroll styled
+          scrollbar only appears when expanded filter content exceeds the
+          available height. Collapsed cards share space equally (flex-1);
+          expanded cards grow to their natural size (flex-none). */}
+      <div className="flex min-h-0 flex-1 flex-col gap-1.5 overflow-y-auto hide-scrollbar pb-1">
         <FilterGroup icon={<GitFork className="h-4 w-4" />} label="Stops" value="Non-stop, 1 stop" active={openFilters[0]} onToggle={() => toggleFilterGroup(0)} />
         <FilterGroup icon={<PlaneTakeoff className="h-4 w-4" />} label="Airline" value="All airlines" active={openFilters[1]} onToggle={() => toggleFilterGroup(1)} />
         <FilterGroup
           icon={<ClockArrowUp className="h-4 w-4" />}
-          label="Departure"
-          value="05:00 – 23:59"
-          slider={{ from: 10, to: 60 }}
+          label="Departure Time"
+          value={departureTimeValue}
+          options={departureOptions}
           active={openFilters[2]}
           onToggle={() => toggleFilterGroup(2)}
+          onOptionToggle={toggleDepartureTime}
         />
         <FilterGroup
           icon={<ClockArrowDown className="h-4 w-4" />}

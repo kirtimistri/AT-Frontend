@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { inr } from '../../lib/format';
 import { useThemeStore } from '../../store/themeStore';
-import type { ConfirmedSelections } from '../SeatMealPricingPanel';
+import type { ConfirmedSelections } from './SeatMealPricingPanel';
 
 type FareSummaryProps = {
   onwardPrice?: number;

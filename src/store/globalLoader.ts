@@ -45,6 +45,7 @@ type GlobalLoaderState = {
 
 // --- Per-operation rotating messages ---------------------------------------
 
+// Legacy static search messages (kept for any non-route-aware caller).
 export const GLOBAL_SEARCH_MESSAGES = [
   'Searching for available flights...',
   'Checking the best fares...',
@@ -52,6 +53,28 @@ export const GLOBAL_SEARCH_MESSAGES = [
   'Comparing flight options...',
   'Almost there...',
 ];
+
+// Route-aware search messages built from the actual from/to cities in the
+// flight store, so the loader text always matches the cities being searched.
+export const buildSearchMessages = (fromCity: string, toCity: string, roundTrip: boolean): string[] => {
+  const fromName = fromCity.split(' - ')[1] ?? fromCity.split(' - ')[0];
+  const toName = toCity.split(' - ')[1] ?? toCity.split(' - ')[0];
+  if (roundTrip) {
+    return [
+      `Searching outbound flights ${fromName} → ${toName}...`,
+      'Finding the best outbound fares...',
+      `Searching return flights ${toName} → ${fromName}...`,
+      'Finding the best return fares...',
+      'Almost there...',
+    ];
+  }
+  return [
+    `Searching flights from ${fromName}...`,
+    `Finding available flights to ${toName}...`,
+    'Checking available flights...',
+    'Finding the best fares...',
+  ];
+};
 
 export const GLOBAL_FLIGHT_FARE_MESSAGES = [
   'Loading flight details...',
@@ -87,10 +110,18 @@ export const GLOBAL_NAV_MESSAGES = [
 
 /**
  * Duration of a single airplane flight across the loader path. Kept in one
- * place so the CSS animation (`--plane-ms`), the overlay dwell time and the
- * Book->review flow all stay perfectly in sync.
+ * place so the CSS animation (`--fl-ms`), the overlay dwell time and the
+ * Book->review flow all stay perfectly in sync. Slow (6s) on purpose: the
+ * plane drifts right → left while the headline letters flash in one by one.
  */
-export const AIRPLANE_RUN_MS = 2000;
+export const AIRPLANE_RUN_MS = 6000;
+
+/**
+ * Duration of ONE continuous flight-search animation loop (source → dest,
+ * and back again for round trips) in the loader. The plane keyframes are keyed
+ * off this via `--plane-ms`, so the animation and search timing stay in sync.
+ */
+export const ROUTE_LOOP_MS = 1000;
 
 function parseContent(content?: LoaderRequest): ParsedContent {
   if (!content) return { message: null, messages: [] };

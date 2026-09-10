@@ -2,7 +2,7 @@
 // Full-screen modal for browsing and selecting meals, seats, baggage, and special services.
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { X, ChevronDown, Check, Plus, Utensils } from 'lucide-react';
-import type { Flight } from '../store/flightStore';
+import type { Flight } from '../../store/flightStore';
 import {
   catalogueOf,
   selectionTotal,
@@ -12,13 +12,13 @@ import {
   type Seat,
   type BaggageOption,
   type SsrOption,
-} from '../lib/ancillary';
+} from '../../lib/ancillary';
 import {
   useAncillaryStore,
   travellerSectionOf,
-} from '../store/ancillaryStore';
-import { inr } from '../lib/format';
-import { useThemeStore } from '../store/themeStore';
+} from '../../store/ancillaryStore';
+import { inr } from '../../lib/format';
+import { useThemeStore } from '../../store/themeStore';
 
 /* ---------------------------------------------------------------------------
    Shared primitives (theme-aware, following the existing review design system)

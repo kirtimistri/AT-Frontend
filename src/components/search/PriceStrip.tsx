@@ -1,8 +1,8 @@
 // Horizontal strip of selectable date cards showing prices, with prev/next week arrows.
-import type { StripDay } from '../store/flightStore';
-import { useThemeStore } from '../store/themeStore';
-import { stripInr } from '../lib/format';
-import { iconProps } from '../lib/iconProps';
+import type { StripDay } from '../../store/flightStore';
+import { useThemeStore } from '../../store/themeStore';
+import { stripInr } from '../../lib/format';
+import { iconProps } from '../../lib/iconProps';
 
 // Props that let the parent control the dates shown and handle user choices
 type PriceStripProps = {

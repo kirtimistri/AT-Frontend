@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import { toast } from '../components/toastStore';
+import { toast } from './toastStore';
+import { ROUTE_LOOP_MS } from './globalLoader';
 
 export type Flight = {
   badge: string;
@@ -439,6 +440,20 @@ export const holidayForDate = (year: number, month: number, day: number): Holida
     return d >= s && d <= e;
   });
 
+export type DepartureTimeSlot = {
+  id: string;
+  label: string;
+  timeRange: string;
+  selected: boolean;
+};
+
+const DEFAULT_DEPARTURE_TIMES: DepartureTimeSlot[] = [
+  { id: 'early-morning', label: 'Early Morning', timeRange: '00:00 – 06:00', selected: false },
+  { id: 'morning', label: 'Morning', timeRange: '06:00 – 12:00', selected: false },
+  { id: 'afternoon', label: 'Afternoon', timeRange: '12:00 – 18:00', selected: false },
+  { id: 'evening', label: 'Evening', timeRange: '18:00 – 00:00', selected: false },
+];
+
 type FlightStore = {
   // Client-side dummy data (seeded here so zustand owns it)
   flights: Flight[];
@@ -463,11 +478,13 @@ type FlightStore = {
   stripStart: number;
   stripSel: number;
   openFilters: boolean[];
+  departureTimes: DepartureTimeSlot[];
   activePriceBreakdownId: string | null;
   travellers: Travellers;
   setReturnOpen: (v: boolean) => void;
   setFiltersOpen: (v: boolean) => void;
   toggleFilterGroup: (i: number) => void;
+  toggleDepartureTime: (index: number) => void;
   clearFilters: () => void;
   shiftMonth: (dir: -1 | 1) => void;
   pickReturnDate: (label: string) => void;
@@ -508,6 +525,7 @@ export const useFlightStore = create<FlightStore>()((set, get) => ({
   stripStart: STRIP_DEFAULT_START,
   stripSel: STRIP_DEFAULT_SEL,
   openFilters: Array(8).fill(false),
+  departureTimes: [...DEFAULT_DEPARTURE_TIMES],
   activePriceBreakdownId: null,
   travellers: { ...DEFAULT_TRAVELLERS },
 
@@ -526,9 +544,14 @@ export const useFlightStore = create<FlightStore>()((set, get) => ({
   setFiltersOpen: (v) => set({ filtersOpen: v }),
   toggleFilterGroup: (i) =>
     set((s) => ({ openFilters: s.openFilters.map((v, idx) => (idx === i ? !v : v)) })),
+  toggleDepartureTime: (index) =>
+    set((s) => ({
+      departureTimes: s.departureTimes.map((t, i) => (i === index ? { ...t, selected: !t.selected } : t)),
+    })),
   clearFilters: () => {
     set({
       openFilters: Array(8).fill(false),
+      departureTimes: [...DEFAULT_DEPARTURE_TIMES],
       returnDate: null,
       selectedOnward: null,
       selectedReturn: null,
@@ -601,10 +624,12 @@ export const useFlightStore = create<FlightStore>()((set, get) => ({
       travellers: { ...travellers },
     };
     set({ selectedOnward: null, selectedReturn: null, searching: true });
+    // Keep the "searching" flag on for one full loader animation loop so the
+    // continuous source→destination journey is actually visible.
     window.setTimeout(() => {
       set({ searching: false, searched: true });
       const { fromCity: fc, toCity: tc } = get();
       toast({ kind: 'success', code: 200, title: 'Search Complete', message: `${fc} → ${tc} flights loaded for ${travellersLabel(searchRequest.travellers).toLowerCase()}.` });
-    }, 1400);
+    }, ROUTE_LOOP_MS);
   },
 }));

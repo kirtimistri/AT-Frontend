@@ -3,14 +3,14 @@
 import { useEffect, useRef } from 'react';
 import { useFlightStore, STRIP_WINDOW, STRIP_DEFAULT_START, STRIP_DEFAULT_SEL } from '../store/flightStore';
 import { useThemeStore } from '../store/themeStore';
-import { useGlobalLoader, GLOBAL_SEARCH_MESSAGES } from '../store/globalLoader';
-import { Header } from '../components/Header';
-import { SidebarFilters } from '../components/SidebarFilters';
-import { ResultsColumn } from '../components/ResultsColumn';
-import { PriceStrip } from '../components/PriceStrip';
-import { SkeletonCard } from '../components/SkeletonCard';
-import { SummaryBar } from '../components/SummaryBar';
-import { FlightCard } from '../components/FlightCard';
+import { useGlobalLoader, buildSearchMessages } from '../store/globalLoader';
+import { Header } from '../components/search/Header';
+import { FiltersSidebar } from '../components/search/FiltersSidebar';
+import { ResultsColumn } from '../components/search/ResultsColumn';
+import { PriceStrip } from '../components/search/PriceStrip';
+import { SkeletonCard } from '../components/search/SkeletonCard';
+import { SummaryBar } from '../components/search/SummaryBar';
+import { FlightCard } from '../components/search/FlightCard';
 import { PlaneTakeoff } from '../components/icons';
 import { readSearchSnapshot, clearSearchSnapshot } from '../lib/openReview';
 
@@ -60,14 +60,14 @@ const SearchPage = () => {
   useEffect(() => {
     if (searching) {
       searchLoaderRef.current = true;
-      showLoader(GLOBAL_SEARCH_MESSAGES);
+      showLoader(buildSearchMessages(fromCity, toCity, !!returnDate));
       return;
     }
     if (searchLoaderRef.current) {
       searchLoaderRef.current = false;
       hideLoader();
     }
-  }, [searching, showLoader, hideLoader]);
+  }, [searching, showLoader, hideLoader, fromCity, toCity, returnDate]);
 
   // Derived data: the date strip window and price difference from the base date.
   const stripDates = datePool.slice(stripStart, stripStart + STRIP_WINDOW);
@@ -87,10 +87,10 @@ const SearchPage = () => {
       <Header />
 
       <div className="flex min-h-0 flex-1 flex-col items-stretch overflow-hidden md:flex-row">
-        <SidebarFilters />
+        <FiltersSidebar />
 
         {/* ---- Results ---- */}
-        <main className={`pretty-scroll min-w-0 flex-1 overflow-x-hidden overflow-y-scroll p-3 pt-1 sm:p-4 sm:pt-2 ${barVisible ? 'pb-[128px] md:pb-[124px]' : ''}`}>
+        <main className={`pretty-scroll min-w-0 flex-1 overflow-x-hidden overflow-y-scroll p-3 pt-1 sm:p-4 sm:pt-2 ${barVisible ? 'pb-[104px] md:pb-[100px]' : ''}`}>
           {/* Before a search: show a friendly "search flights" message. */}
           {!searched ? (
             <div className="flex h-full flex-col items-center justify-center text-center">

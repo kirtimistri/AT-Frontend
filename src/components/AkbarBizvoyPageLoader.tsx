@@ -16,18 +16,19 @@
 // is always gated on actual loading state.
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import planeImg from '../assets/airplane-loader.svg';
+import { FlightLoader } from './FlightLoader';
 import { LogoIcon } from './Logo';
 import {
   useGlobalLoaderStore,
   GLOBAL_NAV_MESSAGES,
   AIRPLANE_RUN_MS,
 } from '../store/globalLoader';
+import { useFlightStore } from '../store/flightStore';
 import { useThemeStore } from '../store/themeStore';
 
 // The message rotation interval must match the `.bizvoy-message-cycle` CSS
-// duration (2600ms) so each message fades out exactly as the next fades in.
-const MESSAGE_INTERVAL_MS = 2600;
+// duration (2300ms) so each message fades out exactly as the next fades in.
+const MESSAGE_INTERVAL_MS = 2300;
 const ENTER_MS = 500;
 const EXIT_MS = 400;
 
@@ -36,6 +37,11 @@ const EXIT_MS = 400;
 // still running keeps its own counter reference, so the loader stays visible
 // until it ends. There is no extra artificial delay beyond the flight itself.
 const ROUTE_TRANSITION_MS = AIRPLANE_RUN_MS;
+
+// NATO-phonetic spelling of "LOADING" (LIMA OSCAR ALPHA DELTA INDIA
+// NOVEMBER GOLF) — the headline shown by the unified flight-strip loader
+// on every NON-search transition, matching the brand reference art.
+const NATO_LOADING = 'LIMA OSCAR ALPHA DELTA INDIA NOVEMBER GOLF…';
 
 // Fallback messages when a caller did not provide its own.
 const FALLBACK_MESSAGES = [
@@ -56,6 +62,19 @@ export const AkbarBizvoyPageLoader = () => {
 
   const { theme } = useThemeStore();
   const isLight = theme === 'light';
+
+  // When a flight search is in progress, the loader becomes route-aware: it
+  // reads the real source/destination from the flight store and shows them
+  // as the strip headline while the plane flies left → right.
+  const searching = useFlightStore((s) => s.searching);
+  const fromCity = useFlightStore((s) => s.fromCity);
+  const toCity = useFlightStore((s) => s.toCity);
+  const isFlightSearch = searching;
+
+  // Full city names for the route loader text: "PNQ - Pune" → "Pune"
+  // (falls back to the whole string if no " - " suffix is present).
+  const fromName = fromCity.split(' - ')[1] ?? fromCity;
+  const toName = toCity.split(' - ')[1] ?? toCity;
 
   const [show, setShow] = useState(false);
   const [phase, setPhase] = useState<Phase>('idle');
@@ -161,7 +180,7 @@ export const AkbarBizvoyPageLoader = () => {
       aria-live="polite"
       aria-busy
       aria-label="Akbar Bizvoy is loading"
-      className={`bizvoy-overlay fixed inset-0 z-[110] flex items-center justify-center overflow-hidden backdrop-blur-lg ${isLight ? 'bg-white/70' : 'bg-[#060e1f]/70'} ${overlayPhase}`}
+      className={`bizvoy-overlay fixed inset-0 z-[110] flex items-center justify-center overflow-hidden backdrop-blur-sm ${isLight ? 'bg-white/55' : 'bg-[#060e1f]/60'} ${overlayPhase}`}
     >
       <div className={`flex h-full w-full flex-col items-center justify-center px-6 ${contentPhase}`}>
         {/* Brand logo (enters once, then stays stable) */}
@@ -174,60 +193,43 @@ export const AkbarBizvoyPageLoader = () => {
 
         {/* Brand name */}
         <div
-          className={`bizvoy-logo-enter mt-5 text-center text-[24px] font-extrabold leading-none tracking-tight sm:text-[26px] lg:text-[30px] ${isLight ? 'text-[#111827]' : 'text-white'}`}
+          className={`bizvoy-brand-enter mt-5 text-center text-[24px] font-extrabold leading-none tracking-tight sm:text-[26px] lg:text-[30px] ${isLight ? 'text-[#111827]' : 'text-white'} ${isLight ? 'bizvoy-brand-glow-light' : 'bizvoy-brand-glow-dark'}`}
           style={{ fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif" }}
         >
           Akbar Bizvoy
         </div>
 
-        {/* Loading / status message */}
-        <div className="mt-4 flex min-h-[22px] items-center justify-center">
+        {/* Loading / status message (contextual detail) */}
+        <div className="mt-2.5 flex min-h-[18px] items-center justify-center">
           <p
             key={displayedMessage}
-            className={`bizvoy-message-${rotate ? 'cycle' : 'fixed'} text-center text-[13px] font-medium sm:text-[14px] ${isLight ? 'text-[#5B6472]' : 'text-[#9baec7]'}`}
+            className={`bizvoy-message-${rotate ? 'cycle' : 'fixed'} text-center text-[11px] font-medium sm:text-[12px] ${isLight ? 'text-[#5B6472]' : 'text-[#9baec7]'}`}
           >
             {displayedMessage}
           </p>
         </div>
 
-        {/* Subtle progress indicator */}
-        <div className="mt-3 flex items-center gap-1.5" aria-hidden="true">
-          {[0, 1, 2].map((i) => (
-            <span
-              key={i}
-              className={`bizvoy-dot h-1 w-1 rounded-full ${isLight ? 'bg-[#2563EB]' : 'bg-[#7CC0FF]'}`}
-              style={{ animationDelay: `${i * 220}ms` }}
+        {/* THE SAME loader on every page: a bold headline with a red accent
+            and the airplane SVG flying left → right while the text types out
+            one letter at a time. Flight search names the full route
+            ("PUNE TO NEW DELHI..."); every other transition spells "LOADING"
+            in NATO phonetics, per the brand art. */}
+        <div className="mt-9 flex w-full justify-center">
+          {isFlightSearch ? (
+            <FlightLoader
+              isLoading
+              primary={fromName}
+              accent="TO"
+              secondary={`${toName}...`}
             />
-          ))}
-        </div>
-
-        {/* Animated airplane along the flight path */}
-        <div
-          className="relative mt-9 w-[min(380px,80vw)] sm:w-[min(440px,64vw)] lg:w-[min(540px,52vw)]"
-          aria-hidden="true"
-        >
-          <div
-            className={`absolute inset-x-0 top-1/2 h-px rounded-full border-t border-dashed ${isLight ? 'border-[#2563EB]/30' : 'border-[#7CC0FF]/25'}`}
-          />
-          <span
-            className={`absolute left-0 top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full ${isLight ? 'bg-[#2563EB]/40' : 'bg-[#7CC0FF]/40'}`}
-          />
-          <span
-            className={`absolute right-0 top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full ${isLight ? 'bg-[#2563EB]/40' : 'bg-[#7CC0FF]/40'}`}
-          />
-          <div
-            className="bizvoy-plane-rail absolute left-0 top-1/2 -mt-4 flex h-8 w-full items-center sm:-mt-5 sm:h-10 lg:-mt-6 lg:h-12"
-            style={{ ['--plane-ms' as string]: `${AIRPLANE_RUN_MS}ms` }}
-          >
-            <div className="bizvoy-plane-inner flex h-8 items-center sm:h-10 lg:h-12">
-              <img
-                src={planeImg}
-                alt=""
-                draggable={false}
-                className={`pointer-events-none h-8 w-auto select-none sm:h-10 lg:h-12 ${isLight ? 'drop-shadow-[0_6px_14px_rgba(10,40,90,0.35)]' : 'drop-shadow-[0_8px_18px_rgba(0,0,0,0.55)]'}`}
-              />
-            </div>
-          </div>
+          ) : (
+            <FlightLoader
+              isLoading
+              primary="LIMA"
+              accent="OSCAR"
+              secondary={NATO_LOADING.slice('LIMA OSCAR '.length)}
+            />
+          )}
         </div>
       </div>
     </div>

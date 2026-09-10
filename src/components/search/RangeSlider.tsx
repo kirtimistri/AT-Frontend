@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { useThemeStore } from '../store/themeStore';
+import { useThemeStore } from '../../store/themeStore';
 export type SliderSpec = { from: number; to: number };
 export const RangeSlider = ({ from, to }: SliderSpec) => {
   const { theme } = useThemeStore();

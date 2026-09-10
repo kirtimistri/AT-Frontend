@@ -11,7 +11,7 @@ import { useThemeStore } from '../store/themeStore';
 import { useAuthStore } from '../store/authStore';
 import { useGlobalLoader, GLOBAL_LOGIN_MESSAGES } from '../store/globalLoader';
 import { loginUser, ApiError } from '../services/authService';
-import { toast } from '../components/toastStore';
+import { toast } from '../store/toastStore';
 import { ThemeToggle } from '../components/ThemeToggle';
 
 // Pre-filled credentials for the demo login button.

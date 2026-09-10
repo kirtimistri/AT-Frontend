@@ -19,7 +19,7 @@ import {
   HeartPulse,
   Wheat,
 } from 'lucide-react';
-import { useThemeStore } from '../store/themeStore';
+import { useThemeStore } from '../../store/themeStore';
 
 export interface PricingValues {
   serviceCharge: string;

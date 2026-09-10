@@ -8,7 +8,7 @@ import logo from '../assets/Backgoundimages/logo2.svg';
 import { useThemeStore } from '../store/themeStore';
 import { signupUser, ApiError } from '../services/authService';
 import ReCAPTCHA from 'react-google-recaptcha';
-import { toast } from '../components/toastStore';
+import { toast } from '../store/toastStore';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { useGlobalLoader, GLOBAL_SIGNUP_MESSAGES } from '../store/globalLoader';
 
