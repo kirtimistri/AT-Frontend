@@ -53,6 +53,7 @@ export const AkbarBizvoyPageLoader = () => {
   const message = useGlobalLoaderStore((s) => s.message);
   const messages = useGlobalLoaderStore((s) => s.messages);
   const contentVersion = useGlobalLoaderStore((s) => s.contentVersion);
+  const loaderMode = useGlobalLoaderStore((s) => s.loaderMode);
 
   const { theme } = useThemeStore();
   const isLight = theme === 'light';
@@ -66,7 +67,7 @@ export const AkbarBizvoyPageLoader = () => {
   const exitTimer = useRef<number | null>(null);
   const lastVersionRef = useRef(contentVersion);
 
-  const isLoading = counter > 0;
+  const isLoading = counter > 0 && loaderMode === 'global';
 
   const rotationMessages = useMemo(
     () => (messages && messages.length > 0 ? messages : FALLBACK_MESSAGES),
@@ -240,15 +241,19 @@ export const AkbarBizvoyPageLoader = () => {
 
 export const PageTransitionController = () => {
   const location = useLocation();
-  const firstRender = useRef(true);
+  const lastPath = useRef<string | null>(null);
 
   useEffect(() => {
-    if (firstRender.current) {
-      // Initial app load / hard refresh: the requested page is already being
-      // rendered, so do not interrupt it with a transition loader.
-      firstRender.current = false;
+    const path = location.pathname;
+    // Initial app load / hard refresh (incl. a NEW TAB): the requested page is
+    // already being rendered, so never interrupt it with a transition loader.
+    // The ref stays null→path on first render, and the same-pathname guard also
+    // keeps StrictMode's dev double-invoke from replaying the loader here.
+    if (lastPath.current === null || lastPath.current === path) {
+      lastPath.current = path;
       return;
     }
+    lastPath.current = path;
 
     const store = useGlobalLoaderStore.getState();
     if (store.counter > 0) {

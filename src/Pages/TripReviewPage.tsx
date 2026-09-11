@@ -12,8 +12,7 @@ import type { Flight } from '../store/flightStore';
 import { useThemeStore } from '../store/themeStore';
 import { cityNameOf } from '../lib/format';
 import type { BookingSelection } from '../lib/openReview';
-import { useEffect, useRef, useState } from 'react';
-import { useGlobalLoaderStore, GLOBAL_BOOKING_MESSAGES, AIRPLANE_RUN_MS } from '../store/globalLoader';
+import { useState } from 'react';
 
 // Fallback demo data — shown only when no booking selection is available so the
 // page keeps its original content instead of showing an empty itinerary.
@@ -138,21 +137,6 @@ const TripReviewPage = () => {
   const [confirmed, setConfirmed] = useState<ConfirmedSelections | null>(null);
   const { theme } = useThemeStore();
   const isLight = theme === 'light';
-
-  // This page opens in a NEW tab via the Book buttons. On a fresh load the
-  // router transition controller deliberately skips its loader (no navigation
-  // happened), so we play the branded airplane loader here for exactly one
-  // full flight, then fade it out to reveal the page.
-  const splashShown = useRef(false);
-  useEffect(() => {
-    // Guarded so StrictMode's dev double-invoke never shows the loader twice
-    // (showLoader is ref-counted, so a second call would strand it on screen).
-    if (splashShown.current) return;
-    splashShown.current = true;
-    const store = useGlobalLoaderStore.getState();
-    store.showLoader(GLOBAL_BOOKING_MESSAGES);
-    window.setTimeout(() => store.hideLoader(), AIRPLANE_RUN_MS);
-  }, []);
   let onward: FlightCardProps | undefined;
   let ret: FlightCardProps | undefined;
   let onwardPrice: number | undefined;

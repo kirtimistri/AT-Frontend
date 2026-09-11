@@ -88,12 +88,15 @@ export const ReturnCalendar = ({
   selected,
   onPick,
   onClose,
+  title = 'Select return date',
 }: {
   monthOffset: number;
   onShift: (dir: -1 | 1) => void;
   selected: string | null;
-  onPick: (label: string) => void;
+  onPick: (label: string, year: number, month: number, day: number) => void;
   onClose: () => void;
+  /** Popover heading, e.g. "Select return date" / "Select departure date". */
+  title?: string;
 }) => {
   const { theme } = useThemeStore();
   const isLight = theme === 'light';
@@ -115,7 +118,7 @@ export const ReturnCalendar = ({
           >
             <svg {...iconProps('h-3.5 w-3.5')}><path d="m15 18-6-6 6-6" /></svg>
           </button>
-          <span className={`text-[12px] font-semibold transition-colors duration-300 ${isLight ? 'text-[#2563EB]' : 'text-[#7CC0FF]'}`}>Select return date</span>
+          <span className={`text-[12px] font-semibold transition-colors duration-300 ${isLight ? 'text-[#2563EB]' : 'text-[#7CC0FF]'}`}>{title}</span>
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -137,8 +140,8 @@ export const ReturnCalendar = ({
       <HolidayStrip isLight={isLight} />
 
       <div className="flex flex-col gap-4 md:flex-row md:gap-6">
-        <MonthGrid year={year} month={month} selected={selected} isLight={isLight} onPick={(label) => onPick(label)} />
-        <MonthGrid year={year2} month={month2} selected={selected} isLight={isLight} onPick={(label) => onPick(label)} />
+        <MonthGrid year={year} month={month} selected={selected} isLight={isLight} onPick={onPick} />
+        <MonthGrid year={year2} month={month2} selected={selected} isLight={isLight} onPick={onPick} />
       </div>
 
       {/* Price colour legend */}

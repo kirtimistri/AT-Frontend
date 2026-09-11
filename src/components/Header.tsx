@@ -4,6 +4,7 @@ import { useFlightStore } from '../store/flightStore';
 import { travellersLabel } from '../store/flightStore';
 import { useThemeStore } from '../store/themeStore';
 import { ReturnCalendar } from './ReturnCalendar';
+import { AirportSearch } from './AirportSearch';
 import { ChevronDown, ChevronRight, ArrowLeftRight } from './icons';
 import { iconProps } from '../lib/iconProps';
 import { BrandLogo } from './BrandLogo';
@@ -17,8 +18,10 @@ export const Header = () => {
   const [paxClosing, setPaxClosing] = useState(false);
 
   // Flight store values needed for the search bar and return calendar
-  const fromCity = useFlightStore((s) => s.fromCity);
-  const toCity = useFlightStore((s) => s.toCity);
+  const fromAirport = useFlightStore((s) => s.fromAirport);
+  const toAirport = useFlightStore((s) => s.toAirport);
+  const setFromAirport = useFlightStore((s) => s.setFromAirport);
+  const setToAirport = useFlightStore((s) => s.setToAirport);
   const datePool = useFlightStore((s) => s.datePool);
   const stripStart = useFlightStore((s) => s.stripStart);
   const stripSel = useFlightStore((s) => s.stripSel);
@@ -30,9 +33,14 @@ export const Header = () => {
   const returnDate = useFlightStore((s) => s.returnDate);
   const shiftMonth = useFlightStore((s) => s.shiftMonth);
   const pickReturnDate = useFlightStore((s) => s.pickReturnDate);
+  const departDate = useFlightStore((s) => s.departDate);
+  const departOpen = useFlightStore((s) => s.departOpen);
+  const departMonthOffset = useFlightStore((s) => s.departMonthOffset);
+  const setDepartOpen = useFlightStore((s) => s.setDepartOpen);
+  const shiftDepartMonth = useFlightStore((s) => s.shiftDepartMonth);
+  const pickDepartDate = useFlightStore((s) => s.pickDepartDate);
   const swapCities = useFlightStore((s) => s.swapCities);
   const doSearch = useFlightStore((s) => s.doSearch);
-  const searching = useFlightStore((s) => s.searching);
   const travellers = useFlightStore((s) => s.travellers);
   const setTravellers = useFlightStore((s) => s.setTravellers);
 
@@ -111,12 +119,12 @@ export const Header = () => {
     <div className={`group relative mt-1.5 flex flex-wrap items-stretch rounded-[26px] border transition-all duration-300 sm:rounded-l-[16px] sm:rounded-r-[26px] lg:mt-0 ${isLight ? 'bg-white border-[#E5E7EB] shadow-[0_4px_12px_rgba(0,0,0,0.08)] hover:border-[#2563EB]/50' : 'bg-[#0F1B3A] border-[rgba(124,192,255,0.22)] shadow-[0_10px_30px_rgba(0,0,0,0.35)] hover:border-[#d4af37]/70 hover:shadow-[0_0_18px_rgba(212,175,55,0.3),0_0_50px_rgba(212,175,55,0.14)]'}`}>
       {/* From + To (swap button overlaps the divider) */}
       <div className="relative flex w-full min-w-0 border-b border-white/10 sm:w-auto sm:flex-1 sm:border-b-0">
-        <div className={`relative flex min-w-0 flex-1 items-center px-3 py-1 sm:px-5 sm:py-1.5 border-l transition-colors duration-300 ${isLight ? 'border-l-[#E5E7EB]' : 'border-l-white/10'}`}>
-          <div className="min-w-0">
-            <div className={`bar-text text-[10px] font-semibold tracking-[0.12em] transition-all duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#7CC0FF]'}`}>From</div>
-            <div className={`bar-text-value mt-0.5 truncate text-[12.5px] font-bold transition-all duration-300 sm:text-[14px] ${isLight ? 'text-[#111827]' : 'text-white'}`}>{fromCity}</div>
-          </div>
-        </div>
+        <AirportSearch
+          label="From"
+          selected={fromAirport}
+          onSelect={setFromAirport}
+          disabledIata={toAirport.iataCode}
+        />
 
         {/* Swap button — reverses From and To */}
         <button
@@ -131,26 +139,38 @@ export const Header = () => {
           </span>
         </button>
 
-        <div className={`relative flex min-w-0 flex-1 items-center border-l px-3 py-1 sm:px-5 sm:py-1.5 transition-colors duration-300 ${isLight ? 'border-l-[#E5E7EB]' : 'border-white/10'}`}>
-          <div className="min-w-0">
-            <div className={`bar-text text-[10px] font-semibold tracking-[0.12em] transition-all duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#7CC0FF]'}`}>To</div>
-            <div className={`bar-text-value mt-0.5 truncate text-[12.5px] font-bold transition-all duration-300 sm:text-[14px] ${isLight ? 'text-[#111827]' : 'text-white'}`}>{toCity}</div>
-          </div>
-        </div>
+        <AirportSearch
+          label="To"
+          selected={toAirport}
+          onSelect={setToAirport}
+          disabledIata={fromAirport.iataCode}
+          align="right"
+        />
       </div>
 
-      {/* Departure */}
-      <div className={`flex w-1/2 shrink-0 items-center border-b px-3 py-1 sm:w-[150px] sm:border-b-0 sm:border-l sm:px-5 sm:py-1.5 transition-colors duration-300 ${isLight ? 'border-b-[#E5E7EB]' : 'border-white/10'}`}>
+      {/* Departure — opens the departure date calendar, same as Return */}
+      <button
+        type="button"
+        onClick={() => {
+          setReturnOpen(false);
+          setDepartOpen(!departOpen);
+        }}
+        className={`relative flex w-1/2 shrink-0 cursor-pointer items-center border-b border-l px-3 py-1 text-left transition-colors duration-200 sm:w-[150px] sm:border-b-0 sm:px-5 sm:py-1.5 ${isLight ? 'bg-white border-[#E5E7EB] hover:bg-[#F9FAFB]' : 'bg-transparent border-white/10 hover:bg-[rgba(212,175,55,0.06)]'}`}
+      >
         <div>
           <div className={`bar-text text-[10px] font-semibold tracking-[0.12em] transition-all duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#7CC0FF]'}`}>Departure</div>
-          <div className={`bar-text-value mt-0.5 text-[12.5px] font-bold transition-all duration-300 sm:text-[14px] ${isLight ? 'text-[#111827]' : 'text-white'}`}>{stripDay.label}</div>
+          <div className={`mt-0.5 truncate text-[12.5px] font-bold transition-all duration-300 sm:text-[14px] ${isLight ? 'text-[#111827]' : 'text-white'}`}>{departDate ?? stripDay.label}</div>
+          <ChevronDown className={`absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-white/40'}`} />
         </div>
-      </div>
+      </button>
 
       {/* Return */}
       <button
         type="button"
-        onClick={() => setReturnOpen(!returnOpen)}
+        onClick={() => {
+          setDepartOpen(false);
+          setReturnOpen(!returnOpen);
+        }}
         className={`relative flex w-1/2 shrink-0 cursor-pointer items-center border-b border-l px-3 py-1 text-left transition-colors duration-200 sm:w-[150px] sm:border-b-0 sm:px-5 sm:py-1.5 ${isLight ? 'bg-white border-[#E5E7EB] hover:bg-[#F9FAFB]' : 'bg-transparent border-white/10 hover:bg-[rgba(212,175,55,0.06)]'}`}
       >
         <div>
@@ -247,20 +267,8 @@ export const Header = () => {
         onClick={() => doSearch()}
         className={`flex w-full shrink-0 cursor-pointer items-center justify-center gap-2 rounded-b-[26px] rounded-r-[26px] border-none px-4 py-1.5 text-[13px] font-bold tracking-wide transition-all duration-300 sm:absolute sm:inset-y-0 sm:right-0 sm:z-20 sm:w-auto sm:justify-start sm:rounded-b-none sm:py-0 sm:pl-10 sm:pr-11 sm:text-[16px] ${isLight ? 'bg-[#2563EB] text-white shadow-[0_4px_12px_rgba(37,99,235,0.3)] group-hover:bg-[#1D4ED8] group-hover:shadow-[0_0_18px_rgba(37,99,235,0.35),0_0_45px_rgba(37,99,235,0.2)] hover:bg-[#1D4ED8]' : 'bg-[#2593fc] text-white shadow-[0_0_28px_rgba(37,147,252,0.4)] group-hover:bg-[#d4af37] group-hover:shadow-[0_0_18px_rgba(212,175,55,0.45),0_0_45px_rgba(212,175,55,0.25)]'}`}
       >
-        {searching ? (
-          <>
-            <svg className="h-[18px] w-[18px] animate-spin" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeOpacity="0.3" strokeWidth="3" />
-              <path d="M22 12a10 10 0 0 0-10-10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-            </svg>
-            <span>Searching</span>
-          </>
-        ) : (
-          <>
-            <span>Search</span>
-            <ChevronRight className="h-[18px] w-[18px]" />
-          </>
-        )}
+        <span>Search</span>
+        <ChevronRight className="h-[18px] w-[18px]" />
       </button>
     </div>
   );
@@ -283,6 +291,21 @@ export const Header = () => {
             selected={returnDate}
             onPick={pickReturnDate}
             onClose={() => setReturnOpen(false)}
+          />
+        </div>
+      )}
+
+      {/* Departure date calendar dropdown shown below the header when open */}
+      {departOpen && (
+        <div className="relative z-50 mt-2 w-full lg:absolute lg:left-1/2 lg:top-full lg:mt-2 lg:w-max lg:max-w-[94vw] lg:-translate-x-1/2">
+          <div className="pointer-events-none absolute -top-[9px] left-1/2 hidden h-0 w-0 -translate-x-1/2 border-x-[10px] border-b-[10px] border-x-transparent border-b-[rgba(124,192,255,0.35)] lg:block" />
+          <ReturnCalendar
+            title="Select departure date"
+            monthOffset={departMonthOffset}
+            onShift={(dir) => shiftDepartMonth(dir)}
+            selected={departDate}
+            onPick={pickDepartDate}
+            onClose={() => setDepartOpen(false)}
           />
         </div>
       )}

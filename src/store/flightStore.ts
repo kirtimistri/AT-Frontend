@@ -1,5 +1,8 @@
 import { create } from 'zustand';
 import { toast } from '../components/toastStore';
+import { useGlobalLoaderStore } from './globalLoader';
+import type { Airport } from '../data/airports';
+import { airportFromLabel } from '../services/airportSearch';
 
 export type Flight = {
   badge: string;
@@ -389,6 +392,8 @@ const stripPriceFor = (d: Date): number => {
 };
 
 // Pool of consecutive days around the default week so the arrows can page.
+// First pool day: Wed, 09 Sep 2026 (pool index 0).
+const POOL_START = new Date(2026, 8, 9);
 const datePoolData: StripDay[] = Array.from({ length: 28 }, (_, i) => {
   const day = new Date(2026, 8, 9 + i); // Wed, 09 Sep 2026 + i days
   return { label: stripLabel(day), price: stripPriceFor(day) };
@@ -448,10 +453,20 @@ type FlightStore = {
   // UI state
   fromCity: string;
   toCity: string;
+  // The single airport selected in each From/To search field, mirrored into
+  // the `fromCity`/`toCity` label strings above so every existing consumer
+  // (doSearch, FlightCard, search snapshot, global loader) keeps working.
+  fromAirport: Airport;
+  toAirport: Airport;
+  setFromAirport: (a: Airport) => void;
+  setToAirport: (a: Airport) => void;
   returnOpen: boolean;
   filtersOpen: boolean;
   monthOffset: number;
   returnDate: string | null;
+  departDate: string | null;
+  departOpen: boolean;
+  departMonthOffset: number;
   searching: boolean;
   searched: boolean;
   selectedOnward: Flight | null;
@@ -471,6 +486,9 @@ type FlightStore = {
   clearFilters: () => void;
   shiftMonth: (dir: -1 | 1) => void;
   pickReturnDate: (label: string) => void;
+  setDepartOpen: (v: boolean) => void;
+  shiftDepartMonth: (dir: -1 | 1) => void;
+  pickDepartDate: (label: string, year: number, month: number, day: number) => void;
   setSelectedOnward: (f: Flight | null) => void;
   setSelectedReturn: (f: Flight | null) => void;
   setSelectedOnwardTier: (t: string | null) => void;
@@ -493,10 +511,15 @@ export const useFlightStore = create<FlightStore>()((set, get) => ({
 
   fromCity: 'PNQ - Pune',
   toCity: 'DEL - New Delhi',
+  fromAirport: airportFromLabel('PNQ - Pune'),
+  toAirport: airportFromLabel('DEL - New Delhi'),
   returnOpen: false,
   filtersOpen: false,
   monthOffset: 0,
   returnDate: null,
+  departDate: null,
+  departOpen: false,
+  departMonthOffset: 0,
   searching: false,
   searched: false,
   selectedOnward: null,
@@ -545,6 +568,29 @@ export const useFlightStore = create<FlightStore>()((set, get) => ({
   shiftMonth: (dir) =>
     set((s) => ({ monthOffset: Math.max(-12, Math.min(12, s.monthOffset + dir)) })),
   pickReturnDate: (label) => set({ returnDate: label, returnOpen: false }),
+  setDepartOpen: (v) => set({ departOpen: v }),
+  shiftDepartMonth: (dir) =>
+    set((s) => ({ departMonthOffset: Math.max(-12, Math.min(12, s.departMonthOffset + dir)) })),
+  // Picks a departure date and, when the day falls inside the 28-day date
+  // pool, moves the results date strip so the selected day stays in sync
+  // with the header field.
+  pickDepartDate: (label, year, month, day) =>
+    set((s) => {
+      const idx = Math.round((new Date(year, month, day).getTime() - POOL_START.getTime()) / 86_400_000);
+      const patch: { departDate: string; departOpen: boolean; stripStart?: number; stripSel?: number } = {
+        departDate: label,
+        departOpen: false,
+      };
+      if (idx >= 0 && idx < s.datePool.length) {
+        const windowStart = Math.min(
+          STRIP_WINDOW * Math.floor(idx / STRIP_WINDOW),
+          s.datePool.length - STRIP_WINDOW,
+        );
+        patch.stripStart = windowStart;
+        patch.stripSel = idx - windowStart;
+      }
+      return patch;
+    }),
   setSelectedOnward: (f) => set({ selectedOnward: f }),
   setSelectedReturn: (f) => set({ selectedReturn: f }),
   setSelectedOnwardTier: (t) => set({ selectedOnwardTier: t }),
@@ -560,7 +606,34 @@ export const useFlightStore = create<FlightStore>()((set, get) => ({
           ? Math.max(0, s.stripStart - STRIP_WINDOW)
           : Math.min(s.datePool.length - STRIP_WINDOW, s.stripStart + STRIP_WINDOW),
     })),
-  swapCities: () => set((s) => ({ fromCity: s.toCity, toCity: s.fromCity })),
+  // ── Single-select airport helpers ────────────────────────────────────────
+  // Replaces the From selection. The same airport may not be used for both
+  // From and To – the attempt is rejected with a toast and the previous
+  // selection is kept.
+  setFromAirport: (a) =>
+    set((s) => {
+      if (a.iataCode === s.toAirport.iataCode) {
+        toast({ kind: 'error', code: 400, title: 'Invalid Selection', message: 'From and To cannot be the same airport.' });
+        return {};
+      }
+      return { fromAirport: a, fromCity: `${a.iataCode} - ${a.city}` };
+    }),
+  setToAirport: (a) =>
+    set((s) => {
+      if (a.iataCode === s.fromAirport.iataCode) {
+        toast({ kind: 'error', code: 400, title: 'Invalid Selection', message: 'From and To cannot be the same airport.' });
+        return {};
+      }
+      return { toAirport: a, toCity: `${a.iataCode} - ${a.city}` };
+    }),
+
+  swapCities: () =>
+    set((s) => ({
+      fromCity: s.toCity,
+      toCity: s.fromCity,
+      fromAirport: s.toAirport,
+      toAirport: s.fromAirport,
+    })),
 
   restoreSearch: (snapshot) =>
     set({
@@ -569,6 +642,9 @@ export const useFlightStore = create<FlightStore>()((set, get) => ({
       selectedReturn: snapshot.selectedReturn,
       fromCity: snapshot.fromCity,
       toCity: snapshot.toCity,
+      // Rebuild the single selections from the snapshot's labels.
+      fromAirport: airportFromLabel(snapshot.fromCity),
+      toAirport: airportFromLabel(snapshot.toCity),
       returnDate: snapshot.returnDate,
       returnOpen: snapshot.returnOpen,
       onwardSort: snapshot.onwardSort,
@@ -601,8 +677,23 @@ export const useFlightStore = create<FlightStore>()((set, get) => ({
       travellers: { ...travellers },
     };
     set({ selectedOnward: null, selectedReturn: null, searching: true });
+
+    // Enter flight-search loader mode so the Global Loader renders the
+    // animated cards INSIDE the results area instead of the full-screen overlay.
+    useGlobalLoaderStore.getState().setFlightSearchMode({
+      fromCity,
+      toCity,
+      fromCode,
+      toCode,
+    });
+
     window.setTimeout(() => {
       set({ searching: false, searched: true });
+
+      // Exit flight-search loader mode — the animated cards are replaced by
+      // the real flight result cards via the normal `searched` state branch.
+      useGlobalLoaderStore.getState().clearFlightSearchMode();
+
       const { fromCity: fc, toCity: tc } = get();
       toast({ kind: 'success', code: 200, title: 'Search Complete', message: `${fc} → ${tc} flights loaded for ${travellersLabel(searchRequest.travellers).toLowerCase()}.` });
     }, 1400);
