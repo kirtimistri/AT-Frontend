@@ -432,7 +432,7 @@ export const SeatMealPricingPanel: React.FC<SeatMealPricingPanelProps> = ({ onBa
           </button>
         </div>
       ) : (
-        <button type="button" onClick={openModal} className={`flex h-[38px] w-full cursor-pointer items-center justify-center gap-2 rounded-[5px] border text-[12px] font-semibold uppercase tracking-wide text-white transition-all ${isLight ? 'border-[#004B7C] bg-[#004B7C] hover:bg-[#003E67] active:bg-[#003052]' : 'border-[#2593fc] bg-[#2593fc] hover:bg-[#d4af37] active:bg-[#b8922b]'}`}>
+        <button type="button" onClick={openModal} className={`flex h-[38px] w-full cursor-pointer items-center justify-center gap-2 rounded-[5px] border text-[12px] font-semibold uppercase tracking-wide text-white transition ${isLight ? 'border-[#004B7C] bg-[#004B7C] hover:bg-[#003E67] active:bg-[#003052]' : 'border-[#2593fc] bg-[#2593fc] hover:bg-[#d4af37] active:bg-[#b8922b]'}`}>
           <Armchair className="h-4 w-4" />
           Ancillary
           <ChevronDown className="h-3.5 w-3.5" />
@@ -494,7 +494,7 @@ export const SeatMealPricingPanel: React.FC<SeatMealPricingPanelProps> = ({ onBa
                     key={tab.id}
                     type="button"
                     onClick={() => switchTab(tab.id)}
-                    className={`flex items-center gap-1.5 rounded-t-[8px] px-3.5 py-2 text-[11.5px] font-semibold transition-all duration-150 ${
+                    className={`flex items-center gap-1.5 rounded-t-[8px] px-3.5 py-2 text-[11.5px] font-semibold transition duration-150 ${
                       active ? (isLight ? 'bg-[#004B7C] text-white shadow-[0_-2px_6px_rgba(0,75,124,0.1)]' : 'bg-[#d4af37] text-[#0B132B]') : (isLight ? 'text-[#888] hover:bg-[#f5f5f5] hover:text-[#555]' : 'text-[#9baec7] hover:bg-white/[0.04] hover:text-white')
                     }`}
                   >
@@ -731,7 +731,7 @@ export const SeatMealPricingPanel: React.FC<SeatMealPricingPanelProps> = ({ onBa
                               toggleDraftMeal(m);
                             }
                           }}
-                          className={`group flex w-full cursor-pointer flex-col overflow-hidden rounded-[10px] border text-left transition-all duration-150 ${selected ? (isLight ? 'border-[#004B7C] shadow-[0_1px_6px_rgba(0,75,124,0.1)]' : 'border-[#d4af37] shadow-[0_1px_6px_rgba(212,175,55,0.15)]') : (isLight ? 'border-[#eee] hover:border-[#ccc]' : 'border-[#29466e] hover:border-[#315073]')}`}
+                          className={`group flex w-full cursor-pointer flex-col overflow-hidden rounded-[10px] border text-left transition duration-150 ${selected ? (isLight ? 'border-[#004B7C] shadow-[0_1px_6px_rgba(0,75,124,0.1)]' : 'border-[#d4af37] shadow-[0_1px_6px_rgba(212,175,55,0.15)]') : (isLight ? 'border-[#eee] hover:border-[#ccc]' : 'border-[#29466e] hover:border-[#315073]')}`}
                         >
                           <MealImage meal={m} selected={selected} isLight={isLight} />
                           <div className={`flex flex-1 flex-col p-2.5 transition-colors duration-300 ${isLight ? 'bg-white' : 'bg-[#0f172a]'}`}>
@@ -779,7 +779,7 @@ export const SeatMealPricingPanel: React.FC<SeatMealPricingPanelProps> = ({ onBa
                           onClick={() => {
                             if (isSel) { removeBaggage(); } else { updateActivePassenger({ baggage: { ...b } }); setDraftBaggage(null); }
                           }}
-                          className={`flex w-full cursor-pointer flex-col rounded-[10px] border p-3 text-left transition-all duration-150 ${isSel ? (isLight ? 'border-[#004B7C] bg-[#f0f7fc] shadow-[0_1px_6px_rgba(0,75,124,0.1)]' : 'border-[#d4af37] bg-[#d4af37]/10 shadow-[0_1px_6px_rgba(212,175,55,0.15)]') : (isLight ? 'border-[#eee] bg-white hover:border-[#ccc]' : 'border-[#29466e] bg-[#0f172a] hover:border-[#d4af37]/60')}`}
+                          className={`flex w-full cursor-pointer flex-col rounded-[10px] border p-3 text-left transition duration-150 ${isSel ? (isLight ? 'border-[#004B7C] bg-[#f0f7fc] shadow-[0_1px_6px_rgba(0,75,124,0.1)]' : 'border-[#d4af37] bg-[#d4af37]/10 shadow-[0_1px_6px_rgba(212,175,55,0.15)]') : (isLight ? 'border-[#eee] bg-white hover:border-[#ccc]' : 'border-[#29466e] bg-[#0f172a] hover:border-[#d4af37]/60')}`}
                         >
                           <div className="flex items-center gap-2">
                             <span className="text-[20px] leading-none">🧳</span>
@@ -935,14 +935,14 @@ const SeatBtn: React.FC<{ cell: SeatCell; selected: boolean; isLight: boolean; o
       <button
         type="button"
         onClick={onClick}
-        className={`flex h-[8px] w-[18px] cursor-pointer items-end justify-center rounded-t-[2px] transition-all duration-150 ${backrestBg}`}
+        className={`flex h-[8px] w-[18px] cursor-pointer items-end justify-center rounded-t-[2px] transition duration-150 ${backrestBg}`}
         aria-label={`Seat ${cell.id} - ${cell.type}${cell.premium ? ' Premium' : ''} - ₹${cell.price}`}
       />
       {/* Seat base */}
       <button
         type="button"
         onClick={onClick}
-        className={`flex h-[20px] w-[28px] cursor-pointer items-center justify-center rounded-b-[3px] rounded-tr-[1px] border text-[7px] font-bold transition-all duration-150 ${seatBg}`}
+        className={`flex h-[20px] w-[28px] cursor-pointer items-center justify-center rounded-b-[3px] rounded-tr-[1px] border text-[7px] font-bold transition duration-150 ${seatBg}`}
       >
         {selected ? <Check className="h-2.5 w-2.5" strokeWidth={3} /> : cell.id}
       </button>

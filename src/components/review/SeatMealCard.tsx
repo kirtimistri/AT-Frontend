@@ -37,7 +37,7 @@ export const SeatMealCard = ({ onBack, onHold, onBook }: { onBack?: () => void; 
   const [markupBase, setMarkupBase] = useState('');
   const [markupTax, setMarkupTax] = useState('');
 
-  const selectClass = `w-24 cursor-pointer rounded-md border px-2 py-1.5 text-[10px] font-semibold outline-none transition-all duration-300 ${isLight ? 'border-[#2563EB] text-[#2563EB] bg-white hover:bg-[#2563EB] hover:text-white' : 'border-[#7CC0FF] text-[#7CC0FF] bg-[#0f172a] hover:bg-[#7CC0FF] hover:text-[#0B132B]'}`;
+  const selectClass = `w-24 cursor-pointer rounded-md border px-2 py-1.5 text-[10px] font-semibold outline-none transition duration-300 ${isLight ? 'border-[#2563EB] text-[#2563EB] bg-white hover:bg-[#2563EB] hover:text-white' : 'border-[#7CC0FF] text-[#7CC0FF] bg-[#0f172a] hover:bg-[#7CC0FF] hover:text-[#0B132B]'}`;
 
   return (
     <>
@@ -92,19 +92,19 @@ export const SeatMealCard = ({ onBack, onHold, onBook }: { onBack?: () => void; 
         <div className="mt-5 flex gap-3">
           <button
             onClick={onBack}
-            className={`flex-1 cursor-pointer rounded-lg border px-4 py-2.5 text-[12px] font-semibold transition-all duration-300 ${isLight ? 'border-[#E5E7EB] text-[#555] hover:border-[#2563EB] hover:text-[#2563EB]' : 'border-[#29466e] text-[#9baec7] hover:border-[#7CC0FF] hover:text-[#7CC0FF]'}`}
+            className={`flex-1 cursor-pointer rounded-lg border px-4 py-2.5 text-[12px] font-semibold transition duration-300 ${isLight ? 'border-[#E5E7EB] text-[#555] hover:border-[#2563EB] hover:text-[#2563EB]' : 'border-[#29466e] text-[#9baec7] hover:border-[#7CC0FF] hover:text-[#7CC0FF]'}`}
           >
             Back
           </button>
           <button
             onClick={onHold}
-            className={`flex-1 cursor-pointer rounded-lg border px-4 py-2.5 text-[12px] font-semibold transition-all duration-300 ${isLight ? 'border-[#2563EB] text-[#2563EB] hover:bg-[#2563EB] hover:text-white' : 'border-[#7CC0FF] text-[#7CC0FF] hover:bg-[#7CC0FF] hover:text-[#0B132B]'}`}
+            className={`flex-1 cursor-pointer rounded-lg border px-4 py-2.5 text-[12px] font-semibold transition duration-300 ${isLight ? 'border-[#2563EB] text-[#2563EB] hover:bg-[#2563EB] hover:text-white' : 'border-[#7CC0FF] text-[#7CC0FF] hover:bg-[#7CC0FF] hover:text-[#0B132B]'}`}
           >
             Hold
           </button>
           <button
             onClick={onBook}
-            className={`flex-1 cursor-pointer rounded-lg px-4 py-2.5 text-[12px] font-semibold text-white transition-all duration-300 ${isLight ? 'bg-[#2563EB] hover:bg-[#1D4ED8] shadow-[0_4px_12px_rgba(37,99,235,0.3)]' : 'bg-[#2593fc] hover:bg-[#d4af37] shadow-[0_6px_18px_rgba(37,147,252,0.45)]'}`}
+            className={`flex-1 cursor-pointer rounded-lg px-4 py-2.5 text-[12px] font-semibold text-white transition duration-300 ${isLight ? 'bg-[#2563EB] hover:bg-[#1D4ED8] shadow-[0_4px_12px_rgba(37,99,235,0.3)]' : 'bg-[#2593fc] hover:bg-[#d4af37] shadow-[0_6px_18px_rgba(37,147,252,0.45)]'}`}
           >
             Book
           </button>

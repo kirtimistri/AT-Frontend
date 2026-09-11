@@ -84,15 +84,15 @@ export const Header = () => {
 
   // Styling for the +/- stepper buttons in the travellers popover
   const stepperCls = (disabled: boolean) =>
-    `flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-[14px] font-bold leading-none transition-all duration-200 active:scale-90 ${
+    `flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-[14px] font-bold leading-none transition duration-200 active:scale-90 ${
       disabled
         ? 'cursor-not-allowed border-current/30 text-current opacity-40'
         : `cursor-pointer ${isLight ? 'border-[#D1D5DB] text-[#2563EB] hover:border-[#2563EB] hover:bg-[#EFF6FF]' : 'border-[rgba(124,192,255,0.4)] text-[#7CC0FF] hover:border-[#7CC0FF] hover:bg-white/5'}`
     }`;
 
   // --- Shared theme-aware classes so every field looks consistent ---
-  const labelCls = `text-[10px] font-semibold tracking-[0.12em] transition-all duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#7CC0FF]'}`; // small grey field label
-  const valStyle = 'mt-0.5 text-[12.5px] font-bold transition-all duration-300 sm:text-[14px]'; // bold value text
+  const labelCls = `text-[10px] font-semibold tracking-[0.12em] transition duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#7CC0FF]'}`; // small grey field label
+  const valStyle = 'mt-0.5 text-[12.5px] font-bold transition duration-300 sm:text-[14px]'; // bold value text
   const normColor = isLight ? 'text-[#111827]' : 'text-white'; // normal (filled) value colour
   const phColor = isLight ? 'text-[#9CA3AF]' : 'text-white/40'; // placeholder value colour
   const dividerL = isLight ? 'border-l-[#E5E7EB]' : 'border-l-white/10'; // column divider line
@@ -120,7 +120,7 @@ export const Header = () => {
         role="button"
         tabIndex={0}
         aria-label="Account"
-        className={`flex h-7 w-7 cursor-pointer select-none items-center justify-center rounded-full text-[11px] font-bold ring-1 transition-all duration-300 hover:scale-[1.06] ${isLight ? 'bg-[#EFF6FF] text-[#2563EB] ring-[#2563EB]/30 shadow-[0_2px_8px_rgba(37,99,235,0.18)] hover:shadow-[0_4px_14px_rgba(37,99,235,0.28)]' : 'bg-[#2B5BFF] text-white ring-[#7CC0FF]/40 shadow-[0_2px_10px_rgba(43,91,255,0.4)] hover:shadow-[0_4px_16px_rgba(43,91,255,0.55)]'}`}
+        className={`flex h-7 w-7 cursor-pointer select-none items-center justify-center rounded-full text-[11px] font-bold ring-1 transition duration-300 hover:scale-[1.06] ${isLight ? 'bg-[#EFF6FF] text-[#2563EB] ring-[#2563EB]/30 shadow-[0_2px_8px_rgba(37,99,235,0.18)] hover:shadow-[0_4px_14px_rgba(37,99,235,0.28)]' : 'bg-[#2B5BFF] text-white ring-[#7CC0FF]/40 shadow-[0_2px_10px_rgba(43,91,255,0.4)] hover:shadow-[0_4px_16px_rgba(43,91,255,0.55)]'}`}
       >
         AS
       </div>
@@ -130,7 +130,7 @@ export const Header = () => {
 
   // Search bar: From/To cities, dates, travellers, and the Search button
   const searchBar = (
-    <div className={`group relative mt-1.5 flex flex-wrap items-stretch rounded-[999px] border transition-all duration-300 lg:mt-0 ${isLight ? 'bg-white border-[#E5E7EB] shadow-[0_4px_12px_rgba(0,0,0,0.08)] hover:border-[#2563EB]/50' : 'bg-[#0F1B3A] border-[rgba(124,192,255,0.22)] shadow-[0_10px_30px_rgba(0,0,0,0.35)] hover:border-[#d4af37]/70 hover:shadow-[0_0_18px_rgba(212,175,55,0.3),0_0_50px_rgba(212,175,55,0.14)]'}`}>
+    <div className={`group relative mt-1.5 flex flex-wrap items-stretch rounded-[999px] border transition duration-300 lg:mt-0 ${isLight ? 'bg-white border-[#E5E7EB] shadow-[0_4px_12px_rgba(0,0,0,0.08)] hover:border-[#2563EB]/50' : 'bg-[#0F1B3A] border-[rgba(124,192,255,0.22)] shadow-[0_10px_30px_rgba(0,0,0,0.35)] hover:border-[#d4af37]/70 hover:shadow-[0_0_18px_rgba(212,175,55,0.3),0_0_50px_rgba(212,175,55,0.14)]'}`}>
       {/* From + To (swap button overlaps the divider) */}
       <div className="relative flex w-full min-w-0 border-b border-white/10 sm:w-auto sm:flex-1 sm:border-b-0">
         <div className={`relative flex min-w-0 flex-1 items-center rounded-full border-l px-3 py-1 sm:rounded-none sm:px-5 sm:py-1.5 transition-colors duration-300 ${dividerL}`}>
@@ -228,7 +228,7 @@ export const Header = () => {
                       key={c}
                       type="button"
                       onClick={() => setCabin(c)}
-                      className={`cursor-pointer rounded-full border px-2.5 py-1 text-[11px] font-semibold transition-all duration-200 active:scale-95 ${cabin === c
+                      className={`cursor-pointer rounded-full border px-2.5 py-1 text-[11px] font-semibold transition duration-200 active:scale-95 ${cabin === c
                         ? (isLight ? 'border-[#2563EB] bg-[#EFF6FF] text-[#2563EB]' : 'border-[#7CC0FF]/60 bg-[#2B5BFF]/25 text-[#7CC0FF]')
                         : (isLight ? 'border-[#E5E7EB] text-[#374151] hover:border-[#2563EB]/50 hover:bg-[#F9FAFB]' : 'border-white/15 text-white/85 hover:border-[#7CC0FF]/40 hover:bg-white/5')}`}
                     >
@@ -242,7 +242,7 @@ export const Header = () => {
               <button
                 type="button"
                 onClick={closePax}
-                className={`mt-3 h-9 w-full cursor-pointer rounded-lg border-none text-[13px] font-bold tracking-wide transition-all duration-200 active:scale-[0.98] ${isLight ? 'bg-[#2563EB] text-white shadow-[0_2px_8px_rgba(37,99,235,0.3)] hover:bg-[#1D4ED8]' : 'bg-[#2593fc] text-white shadow-[0_2px_10px_rgba(37,147,252,0.4)] hover:bg-[#1D4ED8]'}`}
+                className={`mt-3 h-9 w-full cursor-pointer rounded-lg border-none text-[13px] font-bold tracking-wide transition duration-200 active:scale-[0.98] ${isLight ? 'bg-[#2563EB] text-white shadow-[0_2px_8px_rgba(37,99,235,0.3)] hover:bg-[#1D4ED8]' : 'bg-[#2593fc] text-white shadow-[0_2px_10px_rgba(37,147,252,0.4)] hover:bg-[#1D4ED8]'}`}
               >
                 Done
               </button>
@@ -255,7 +255,7 @@ export const Header = () => {
       <button
         type="button"
         onClick={() => doSearch()}
-        className={`flex w-full shrink-0 cursor-pointer items-center justify-center gap-2 rounded-b-[999px] rounded-r-[999px] border-none px-4 py-1.5 text-[13px] font-bold tracking-wide transition-all duration-300 sm:absolute sm:inset-y-0 sm:right-0 sm:z-20 sm:w-auto sm:justify-start sm:rounded-l-none sm:py-0 sm:pl-10 sm:pr-11 sm:text-[16px] ${isLight ? 'bg-[#2563EB] text-white shadow-[0_4px_12px_rgba(37,99,235,0.3)] group-hover:bg-[#1D4ED8] group-hover:shadow-[0_0_18px_rgba(37,99,235,0.35),0_0_45px_rgba(37,99,235,0.2)] hover:bg-[#1D4ED8]' : 'bg-[#2593fc] text-white shadow-[0_0_28px_rgba(37,147,252,0.4)] group-hover:bg-[#d4af37] group-hover:shadow-[0_0_18px_rgba(212,175,55,0.45),0_0_45px_rgba(212,175,55,0.25)]'}`}
+        className={`flex w-full shrink-0 cursor-pointer items-center justify-center gap-2 rounded-b-[999px] rounded-r-[999px] border-none px-4 py-1.5 text-[13px] font-bold tracking-wide transition duration-300 sm:absolute sm:inset-y-0 sm:right-0 sm:z-20 sm:w-auto sm:justify-start sm:rounded-l-none sm:py-0 sm:pl-10 sm:pr-11 sm:text-[16px] ${isLight ? 'bg-[#2563EB] text-white shadow-[0_4px_12px_rgba(37,99,235,0.3)] group-hover:bg-[#1D4ED8] group-hover:shadow-[0_0_18px_rgba(37,99,235,0.35),0_0_45px_rgba(37,99,235,0.2)] hover:bg-[#1D4ED8]' : 'bg-[#2593fc] text-white shadow-[0_0_28px_rgba(37,147,252,0.4)] group-hover:bg-[#d4af37] group-hover:shadow-[0_0_18px_rgba(212,175,55,0.45),0_0_45px_rgba(212,175,55,0.25)]'}`}
       >
         {searching ? (
           <>

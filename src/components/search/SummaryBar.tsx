@@ -45,7 +45,7 @@ export const SummaryBar = ({ onward, ret, dayDelta }: { onward: Flight | null; r
   const both = !!onward && !!ret;
   const any = !!onward || !!ret;
   return (
-    <div className={`group fixed inset-x-0 bottom-0 z-40 border-t backdrop-blur transition-all duration-300 md:left-[230px] lg:left-[250px] ${isLight ? 'bg-white/95 border-[#E5E7EB] shadow-[0_-10px_36px_rgba(0,0,0,0.08)] hover:border-[#2563EB]/50 hover:shadow-[0_-10px_36px_rgba(0,0,0,0.08),0_0_22px_rgba(37,99,235,0.15),0_0_60px_rgba(37,99,235,0.08)]' : 'bg-[#0F1B3A]/95 border-[rgba(124,192,255,0.25)] shadow-[0_-10px_36px_rgba(0,0,0,0.55)] hover:border-[#d4af37]/60 hover:shadow-[0_-10px_36px_rgba(0,0,0,0.55),0_0_22px_rgba(212,175,55,0.35),0_0_60px_rgba(212,175,55,0.16)]'}`}>
+    <div className={`group fixed inset-x-0 bottom-0 z-40 border-t backdrop-blur transition duration-300 md:left-[230px] lg:left-[250px] ${isLight ? 'bg-white/95 border-[#E5E7EB] shadow-[0_-10px_36px_rgba(0,0,0,0.08)] hover:border-[#2563EB]/50 hover:shadow-[0_-10px_36px_rgba(0,0,0,0.08),0_0_22px_rgba(37,99,235,0.15),0_0_60px_rgba(37,99,235,0.08)]' : 'bg-[#0F1B3A]/95 border-[rgba(124,192,255,0.25)] shadow-[0_-10px_36px_rgba(0,0,0,0.55)] hover:border-[#d4af37]/60 hover:shadow-[0_-10px_36px_rgba(0,0,0,0.55),0_0_22px_rgba(212,175,55,0.35),0_0_60px_rgba(212,175,55,0.16)]'}`}>
       <div className="flex flex-wrap items-stretch">
         <div className={`grid w-full grid-cols-2 divide-x ${isLight ? 'divide-[#E5E7EB]' : 'divide-white/10'} sm:w-auto sm:flex`}>
           <FlightSummary label="ONWARD" f={onward} isLight={isLight} />
@@ -73,7 +73,7 @@ export const SummaryBar = ({ onward, ret, dayDelta }: { onward: Flight | null; r
               }
             }}
             disabled={!any}
-            className={`flex h-7 shrink-0 cursor-pointer items-center rounded-[10px] px-4 text-[13px] font-bold text-white transition-all duration-300 sm:h-8 sm:px-6 sm:text-[14px] ${isLight ? 'bg-[#2563EB] shadow-[0_4px_12px_rgba(37,99,235,0.3)] hover:bg-[#1D4ED8] hover:shadow-[0_0_20px_rgba(37,99,235,0.4)] active:bg-[#1D4ED8] active:shadow-[0_0_26px_rgba(37,99,235,0.5)] disabled:opacity-50 disabled:cursor-not-allowed' : 'bg-[#2593fc] shadow-[0_6px_18px_rgba(37,147,252,0.45)] hover:bg-[#d4af37] hover:shadow-[0_0_20px_rgba(212,175,55,0.7),0_0_45px_rgba(212,175,55,0.4)] active:bg-[#f0c265] active:shadow-[0_0_26px_rgba(212,175,55,0.85),0_0_55px_rgba(212,175,55,0.5)] disabled:opacity-50 disabled:cursor-not-allowed'}`}
+            className={`flex h-7 shrink-0 cursor-pointer items-center rounded-[10px] px-4 text-[13px] font-bold text-white transition duration-300 sm:h-8 sm:px-6 sm:text-[14px] ${isLight ? 'bg-[#2563EB] shadow-[0_4px_12px_rgba(37,99,235,0.3)] hover:bg-[#1D4ED8] hover:shadow-[0_0_20px_rgba(37,99,235,0.4)] active:bg-[#1D4ED8] active:shadow-[0_0_26px_rgba(37,99,235,0.5)] disabled:opacity-50 disabled:cursor-not-allowed' : 'bg-[#2593fc] shadow-[0_6px_18px_rgba(37,147,252,0.45)] hover:bg-[#d4af37] hover:shadow-[0_0_20px_rgba(212,175,55,0.7),0_0_45px_rgba(212,175,55,0.4)] active:bg-[#f0c265] active:shadow-[0_0_26px_rgba(212,175,55,0.85),0_0_55px_rgba(212,175,55,0.5)] disabled:opacity-50 disabled:cursor-not-allowed'}`}
           >
             Book
           </button>

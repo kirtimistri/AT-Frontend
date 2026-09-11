@@ -26,7 +26,7 @@ export const PriceStrip = ({ dates, selected, onPick, onPrev, onNext, canPrev, c
       onClick={onPrev}
       disabled={!canPrev}
       aria-label="Previous week"
-      className={`group relative flex w-[34px] shrink-0 cursor-pointer items-center justify-center border-r bg-transparent transition-all duration-300 disabled:cursor-default disabled:opacity-30 disabled:hover:bg-transparent ${isLight ? 'border-r-[#E5E7EB] text-[#2563EB] hover:bg-[#F9FAFB] disabled:hover:bg-transparent' : 'border-white/10 text-[#7CC0FF] hover:bg-[rgba(212,175,55,0.16)]'}`}
+      className={`group relative flex w-[34px] shrink-0 cursor-pointer items-center justify-center border-r bg-transparent transition duration-300 disabled:cursor-default disabled:opacity-30 disabled:hover:bg-transparent ${isLight ? 'border-r-[#E5E7EB] text-[#2563EB] hover:bg-[#F9FAFB] disabled:hover:bg-transparent' : 'border-white/10 text-[#7CC0FF] hover:bg-[rgba(212,175,55,0.16)]'}`}
     >
       <span className={`pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 ${isLight ? 'shadow-[inset_0_0_28px_rgba(37,99,235,0.35)]' : 'shadow-[inset_0_0_28px_rgba(212,175,55,0.5)]'}`} />
       <svg {...iconProps(isLight ? 'h-4 w-4 transition-colors duration-300 group-hover:text-[#2563EB]' : 'h-4 w-4 transition-colors duration-300 group-hover:text-[#f0c265]')}><path d="m15 18-6-6 6-6" /></svg>
@@ -64,7 +64,7 @@ export const PriceStrip = ({ dates, selected, onPick, onPrev, onNext, canPrev, c
       onClick={onNext}
       disabled={!canNext}
       aria-label="Next week"
-      className={`group relative flex w-[34px] shrink-0 cursor-pointer items-center justify-center border-l bg-transparent transition-all duration-300 disabled:cursor-default disabled:opacity-30 disabled:hover:bg-transparent ${isLight ? 'border-l-[#E5E7EB] text-[#2563EB] hover:bg-[#F9FAFB] disabled:hover:bg-transparent' : 'border-white/10 text-[#7CC0FF] hover:bg-[rgba(212,175,55,0.16)]'}`}
+      className={`group relative flex w-[34px] shrink-0 cursor-pointer items-center justify-center border-l bg-transparent transition duration-300 disabled:cursor-default disabled:opacity-30 disabled:hover:bg-transparent ${isLight ? 'border-l-[#E5E7EB] text-[#2563EB] hover:bg-[#F9FAFB] disabled:hover:bg-transparent' : 'border-white/10 text-[#7CC0FF] hover:bg-[rgba(212,175,55,0.16)]'}`}
     >
       <span className={`pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 ${isLight ? 'shadow-[inset_0_0_28px_rgba(37,99,235,0.35)]' : 'shadow-[inset_0_0_28px_rgba(212,175,55,0.5)]'}`} />
       <svg {...iconProps(isLight ? 'h-4 w-4 transition-colors duration-300 group-hover:text-[#2563EB]' : 'h-4 w-4 transition-colors duration-300 group-hover:text-[#f0c265]')}><path d="m9 18 6-6-6-6" /></svg>

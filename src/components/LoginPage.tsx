@@ -125,7 +125,7 @@ const LoginPage = () => {
           </div>
 
           {/* Sign In button */}
-          <button type="submit" className="mt-0.5 w-full cursor-pointer rounded-[10px] border-none bg-gradient-to-br from-[#1d6de8] via-[#2b82f6] to-[#3b8df7] px-0 py-3 text-[16px] font-semibold tracking-[0.3px] font-inherit text-white shadow-[0_4px_20px_rgba(30,100,230,0.3),0_1px_3px_rgba(30,100,230,0.2)] transition-all duration-250 hover:-translate-y-px hover:from-[#2578f0] hover:via-[#3590ff] hover:to-[#4598ff] hover:shadow-[0_6px_28px_rgba(30,100,230,0.4),0_2px_6px_rgba(30,100,230,0.25)] active:translate-y-0 active:shadow-[0_2px_12px_rgba(30,100,230,0.25),0_1px_3px_rgba(30,100,230,0.15)]">
+          <button type="submit" className="mt-0.5 w-full cursor-pointer rounded-[10px] border-none bg-gradient-to-br from-[#1d6de8] via-[#2b82f6] to-[#3b8df7] px-0 py-3 text-[16px] font-semibold tracking-[0.3px] font-inherit text-white shadow-[0_4px_20px_rgba(30,100,230,0.3),0_1px_3px_rgba(30,100,230,0.2)] transition duration-250 hover:-translate-y-px hover:from-[#2578f0] hover:via-[#3590ff] hover:to-[#4598ff] hover:shadow-[0_6px_28px_rgba(30,100,230,0.4),0_2px_6px_rgba(30,100,230,0.25)] active:translate-y-0 active:shadow-[0_2px_12px_rgba(30,100,230,0.25),0_1px_3px_rgba(30,100,230,0.15)]">
             Sign In
           </button>
 

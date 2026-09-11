@@ -181,7 +181,7 @@ const MealTab = ({
                 type="button"
                 disabled={!meal.available}
                 onClick={() => onSelect(meal)}
-                className={`flex cursor-pointer items-center gap-1.5 rounded-md border px-3 py-1.5 text-[11px] font-semibold transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-40 ${active ? (isLight ? 'bg-[#004B7C] text-white' : 'bg-[#d4af37] text-[#0B132B]') : (isLight ? 'border-[#004B7C] text-[#004B7C] hover:bg-[#004B7C] hover:text-white' : 'border-[#d4af37] text-[#d4af37] hover:bg-[#d4af37] hover:text-[#0B132B]')}`}
+                className={`flex cursor-pointer items-center gap-1.5 rounded-md border px-3 py-1.5 text-[11px] font-semibold transition duration-300 disabled:cursor-not-allowed disabled:opacity-40 ${active ? (isLight ? 'bg-[#004B7C] text-white' : 'bg-[#d4af37] text-[#0B132B]') : (isLight ? 'border-[#004B7C] text-[#004B7C] hover:bg-[#004B7C] hover:text-white' : 'border-[#d4af37] text-[#d4af37] hover:bg-[#d4af37] hover:text-[#0B132B]')}`}
               >
                 {active ? (
                   <>
@@ -250,7 +250,7 @@ const SeatSeatButton = ({
       aria-pressed={selected}
       disabled={disabled}
       onClick={() => onToggle(seat)}
-      className={`flex h-8 w-9 cursor-pointer items-center justify-center rounded-[4px] text-[10px] font-semibold transition-all duration-200 ${cls}`}
+      className={`flex h-8 w-9 cursor-pointer items-center justify-center rounded-[4px] text-[10px] font-semibold transition duration-200 ${cls}`}
     >
       {seat.row}
       {seat.column}
@@ -375,7 +375,7 @@ const BaggageTab = ({
                 type="button"
                 disabled={!bag.available}
                 onClick={() => onSelect(active ? null : bag)}
-                className={`flex cursor-pointer items-center gap-1.5 rounded-md border px-3 py-1.5 text-[11px] font-semibold transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-40 ${active ? (isLight ? 'bg-[#004B7C] text-white' : 'bg-[#d4af37] text-[#0B132B]') : (isLight ? 'border-[#004B7C] text-[#004B7C] hover:bg-[#004B7C] hover:text-white' : 'border-[#d4af37] text-[#d4af37] hover:bg-[#d4af37] hover:text-[#0B132B]')}`}
+                className={`flex cursor-pointer items-center gap-1.5 rounded-md border px-3 py-1.5 text-[11px] font-semibold transition duration-300 disabled:cursor-not-allowed disabled:opacity-40 ${active ? (isLight ? 'bg-[#004B7C] text-white' : 'bg-[#d4af37] text-[#0B132B]') : (isLight ? 'border-[#004B7C] text-[#004B7C] hover:bg-[#004B7C] hover:text-white' : 'border-[#d4af37] text-[#d4af37] hover:bg-[#d4af37] hover:text-[#0B132B]')}`}
               >
                 {active ? (
                   <>
@@ -442,7 +442,7 @@ const SsrTab = ({
                 disabled={!ssr.available}
                 onClick={() => onToggle(ssr)}
                 aria-pressed={active}
-                className={`flex cursor-pointer items-center gap-1.5 rounded-md border px-3 py-1.5 text-[11px] font-semibold transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-40 ${active ? (isLight ? 'bg-[#004B7C] text-white' : 'bg-[#d4af37] text-[#0B132B]') : (isLight ? 'border-[#004B7C] text-[#004B7C] hover:bg-[#004B7C] hover:text-white' : 'border-[#d4af37] text-[#d4af37] hover:bg-[#d4af37] hover:text-[#0B132B]')}`}
+                className={`flex cursor-pointer items-center gap-1.5 rounded-md border px-3 py-1.5 text-[11px] font-semibold transition duration-300 disabled:cursor-not-allowed disabled:opacity-40 ${active ? (isLight ? 'bg-[#004B7C] text-white' : 'bg-[#d4af37] text-[#0B132B]') : (isLight ? 'border-[#004B7C] text-[#004B7C] hover:bg-[#004B7C] hover:text-white' : 'border-[#d4af37] text-[#d4af37] hover:bg-[#d4af37] hover:text-[#0B132B]')}`}
               >
                 {active ? (
                   <>
@@ -704,7 +704,7 @@ export const AncillaryServicesModal = ({ onClose, segments }: AncillaryServicesM
                 aria-selected={active}
                 aria-controls="ancillary-tabpanel"
                 onClick={() => switchTab(t.key)}
-                className={`flex shrink-0 cursor-pointer items-center gap-2 rounded-lg border px-3.5 py-2 text-[12px] font-semibold transition-all duration-300 ${active ? (isLight ? 'border-[#004B7C] bg-[#004B7C] text-white' : 'border-[#d4af37] bg-[#d4af37] text-[#0B132B]') : (isLight ? 'border-[#E5E7EB] text-[#555] hover:border-[#004B7C] hover:text-[#004B7C]' : 'border-[#29466e] text-[#9baec7] hover:border-[#d4af37]/60 hover:text-[#f0c265]')}`}
+                className={`flex shrink-0 cursor-pointer items-center gap-2 rounded-lg border px-3.5 py-2 text-[12px] font-semibold transition duration-300 ${active ? (isLight ? 'border-[#004B7C] bg-[#004B7C] text-white' : 'border-[#d4af37] bg-[#d4af37] text-[#0B132B]') : (isLight ? 'border-[#E5E7EB] text-[#555] hover:border-[#004B7C] hover:text-[#004B7C]' : 'border-[#29466e] text-[#9baec7] hover:border-[#d4af37]/60 hover:text-[#f0c265]')}`}
               >
                 <TabIcon kind={t.icon} isLight={isLight} />
                 {t.label}
@@ -778,14 +778,14 @@ export const AncillaryServicesModal = ({ onClose, segments }: AncillaryServicesM
           <button
             type="button"
             onClick={onClose}
-            className={`cursor-pointer rounded-lg border px-5 py-2.5 text-[13px] font-semibold transition-all duration-300 ${isLight ? 'border-[#E5E7EB] text-[#555] hover:border-[#004B7C] hover:text-[#004B7C]' : 'border-[#29466e] text-[#9baec7] hover:border-[#d4af37]/60 hover:text-[#f0c265]'}`}
+            className={`cursor-pointer rounded-lg border px-5 py-2.5 text-[13px] font-semibold transition duration-300 ${isLight ? 'border-[#E5E7EB] text-[#555] hover:border-[#004B7C] hover:text-[#004B7C]' : 'border-[#29466e] text-[#9baec7] hover:border-[#d4af37]/60 hover:text-[#f0c265]'}`}
           >
             Cancel
           </button>
           <button
             type="button"
             onClick={handleContinue}
-            className={`cursor-pointer rounded-lg px-6 py-2.5 text-[13px] font-semibold text-white transition-all duration-300 ${isLight ? 'bg-[#004B7C] shadow-[0_4px_12px_rgba(0,75,124,0.25)] hover:bg-[#003E67]' : 'bg-[#2593fc] shadow-[0_6px_18px_rgba(37,147,252,0.45)] hover:bg-[#d4af37]'}`}
+            className={`cursor-pointer rounded-lg px-6 py-2.5 text-[13px] font-semibold text-white transition duration-300 ${isLight ? 'bg-[#004B7C] shadow-[0_4px_12px_rgba(0,75,124,0.25)] hover:bg-[#003E67]' : 'bg-[#2593fc] shadow-[0_6px_18px_rgba(37,147,252,0.45)] hover:bg-[#d4af37]'}`}
           >
             Continue
           </button>

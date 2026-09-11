@@ -88,7 +88,7 @@ const FilterSection = ({ icon, title, defaultOpen = false, info, badge, children
   const mutedCls = isLight ? 'text-[#9CA3AF]' : 'text-white/60';
 
   // Icon badge: red core in light, golden glow when open in dark
-  const iconBg = `bg-gradient-to-b from-red-500 to-red-600 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.3),0_2px_6px_rgba(220,38,38,0.35)] transition-all duration-300 ${
+  const iconBg = `bg-gradient-to-b from-red-500 to-red-600 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.3),0_2px_6px_rgba(220,38,38,0.35)] transition duration-300 ${
     open
       ? 'ring-2 ring-[#f0c265]/40 shadow-[inset_0_1px_0_rgba(255,255,255,0.3),0_0_14px_rgba(240,194,101,0.55)]'
       : ''
@@ -114,7 +114,7 @@ const FilterSection = ({ icon, title, defaultOpen = false, info, badge, children
       {/* Left accent bar: Golden when open. */}
       <span
         aria-hidden="true"
-        className={`absolute left-0 top-0 h-full w-[3px] rounded-r-full bg-gradient-to-b from-[#f0c265] to-[#d4af37] transition-all duration-300 ${
+        className={`absolute left-0 top-0 h-full w-[3px] rounded-r-full bg-gradient-to-b from-[#f0c265] to-[#d4af37] transition duration-300 ${
           open ? 'opacity-100 shadow-[0_0_10px_rgba(240,194,101,0.6)]' : 'opacity-0'
         }`}
       />
@@ -183,7 +183,7 @@ const StopsSelector = ({ value, onChange }: StopsSelectorProps) => {
             key={opt.val}
             type="button"
             onClick={() => onChange(opt.val)}
-            className={`flex flex-1 items-center justify-center gap-2 rounded-lg border py-2.5 transition-all duration-200 ${
+            className={`flex flex-1 items-center justify-center gap-2 rounded-lg border py-2.5 transition duration-200 ${
               active
                 ? 'border-[#f0c265]/60 bg-[rgba(212,175,55,0.12)] shadow-[0_0_12px_rgba(240,194,101,0.35)]'
                 : 'border-white/10 bg-white/[0.03] hover:border-white/20 hover:bg-white/[0.06]'
@@ -191,7 +191,7 @@ const StopsSelector = ({ value, onChange }: StopsSelectorProps) => {
           >
             {/* Custom checkbox square */}
             <span
-              className={`flex h-[14px] w-[14px] items-center justify-center rounded-[3px] border transition-all duration-200 ${
+              className={`flex h-[14px] w-[14px] items-center justify-center rounded-[3px] border transition duration-200 ${
                 active
                   ? 'border-blue-500 bg-blue-500 shadow-[0_0_6px_rgba(59,130,246,0.6)]'
                   : 'border-gray-500 bg-white'
@@ -240,7 +240,7 @@ const TimeGridButton = ({ range, iconType, selected, onClick }: TimeGridButtonPr
     <button
       type="button"
       onClick={onClick}
-      className={`flex flex-col items-center justify-center gap-1.5 rounded-lg border py-3 text-center transition-all duration-200 ${btnCls}`}
+      className={`flex flex-col items-center justify-center gap-1.5 rounded-lg border py-3 text-center transition duration-200 ${btnCls}`}
       style={{ transitionTimingFunction: EASE }}
     >
       <span className={iconCls}>{icons[iconType]}</span>
@@ -285,7 +285,7 @@ const FilterCheckbox = ({ label, sublabel, checked, onChange }: FilterCheckboxPr
 
   return (
     <label
-      className={`group/row relative flex cursor-pointer items-center justify-between gap-2 rounded-[8px] border px-2.5 py-2 transition-all duration-200 ${rowCls}`}
+      className={`group/row relative flex cursor-pointer items-center justify-between gap-2 rounded-[8px] border px-2.5 py-2 transition duration-200 ${rowCls}`}
       style={{ transitionTimingFunction: EASE }}
     >
       {checked && (
@@ -294,7 +294,7 @@ const FilterCheckbox = ({ label, sublabel, checked, onChange }: FilterCheckboxPr
 
       <span className="flex min-w-0 items-center gap-2.5">
         <span
-          className={`flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-[5px] border-2 transition-all duration-200 ${checkboxCls}`}
+          className={`flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-[5px] border-2 transition duration-200 ${checkboxCls}`}
         >
           {checked && <Check className="h-3 w-3" strokeWidth={3.5} />}
         </span>
@@ -447,7 +447,7 @@ const PillInput = () => {
     : 'border-[#d4af37]/40 bg-[#d4af37]/[0.08] focus-within:border-[#f0c265] focus-within:bg-[#d4af37]/[0.12] focus-within:shadow-[0_0_0_3px_rgba(240,194,101,0.18)]';
 
   return (
-    <div className={`flex items-center gap-2 rounded-lg border px-3 py-2 transition-all duration-200 ${boxCls}`}>
+    <div className={`flex items-center gap-2 rounded-lg border px-3 py-2 transition duration-200 ${boxCls}`}>
       <input
         type="text"
         value={value}
@@ -576,7 +576,7 @@ export const FiltersSidebar = () => {
         <button
           type="button"
           onClick={clearAll}
-          className={`rounded-md px-2 py-1 text-[11.5px] font-semibold transition-all duration-200 ${clearBtn}`}
+          className={`rounded-md px-2 py-1 text-[11.5px] font-semibold transition duration-200 ${clearBtn}`}
         >
           Clear All
         </button>

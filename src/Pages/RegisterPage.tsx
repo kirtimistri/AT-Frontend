@@ -2,8 +2,22 @@
 // redirects to the login page on success. Includes a CAPTCHA check.
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import bg2 from '../assets/Backgoundimages/bg2.png';
-import lightBg from '../assets/Backgoundimages/backgroundlight.jpeg';
+import bg2Webp640 from '../assets/Backgoundimages/bg2-640w.webp';
+import bg2Webp960 from '../assets/Backgoundimages/bg2-960w.webp';
+import bg2Webp1280 from '../assets/Backgoundimages/bg2-1280w.webp';
+import bg2Webp from '../assets/Backgoundimages/bg2.webp';
+import bg2Avif640 from '../assets/Backgoundimages/bg2-640w.avif';
+import bg2Avif960 from '../assets/Backgoundimages/bg2-960w.avif';
+import bg2Avif1280 from '../assets/Backgoundimages/bg2-1280w.avif';
+import bg2Avif from '../assets/Backgoundimages/bg2.avif';
+import lightBgWebp640 from '../assets/Backgoundimages/backgroundlight-640w.webp';
+import lightBgWebp960 from '../assets/Backgoundimages/backgroundlight-960w.webp';
+import lightBgWebp1280 from '../assets/Backgoundimages/backgroundlight-1280w.webp';
+import lightBgWebp from '../assets/Backgoundimages/backgroundlight.webp';
+import lightBgAvif640 from '../assets/Backgoundimages/backgroundlight-640w.avif';
+import lightBgAvif960 from '../assets/Backgoundimages/backgroundlight-960w.avif';
+import lightBgAvif1280 from '../assets/Backgoundimages/backgroundlight-1280w.avif';
+import lightBgAvif from '../assets/Backgoundimages/backgroundlight.avif';
 import logo from '../assets/Backgoundimages/logo2.svg';
 import { useThemeStore } from '../store/themeStore';
 import { signupUser, ApiError } from '../services/authService';
@@ -11,6 +25,39 @@ import ReCAPTCHA from 'react-google-recaptcha';
 import { toast } from '../store/toastStore';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { useGlobalLoader, GLOBAL_SIGNUP_MESSAGES } from '../store/globalLoader';
+import { ResponsiveImageView, type ImageVariant } from '../components/ResponsiveImageView';
+
+// Responsive variants (640 / 960 / 1280 / full width) for the dark background.
+const darkBgVariants = {
+  webp: [
+    { src: bg2Webp640, w: 640 },
+    { src: bg2Webp960, w: 960 },
+    { src: bg2Webp1280, w: 1280 },
+    { src: bg2Webp, w: 1672 },
+  ] as ImageVariant[],
+  avif: [
+    { src: bg2Avif640, w: 640 },
+    { src: bg2Avif960, w: 960 },
+    { src: bg2Avif1280, w: 1280 },
+    { src: bg2Avif, w: 1672 },
+  ] as ImageVariant[],
+};
+
+// Responsive variants for the light background.
+const lightBgVariants = {
+  webp: [
+    { src: lightBgWebp640, w: 640 },
+    { src: lightBgWebp960, w: 960 },
+    { src: lightBgWebp1280, w: 1280 },
+    { src: lightBgWebp, w: 1600 },
+  ] as ImageVariant[],
+  avif: [
+    { src: lightBgAvif640, w: 640 },
+    { src: lightBgAvif960, w: 960 },
+    { src: lightBgAvif1280, w: 1280 },
+    { src: lightBgAvif, w: 1600 },
+  ] as ImageVariant[],
+};
 
 
 // Geometry of the earth limb (horizon) in bg2.png (1672x941).
@@ -615,12 +662,25 @@ const RegisterPage = () => {
           padding: 1.5px;
           overflow: hidden;
           background: rgba(80, 130, 200, 0.18);
-          transition: box-shadow 0.3s ease;
+        }
+
+        .input-golden-wrapper::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          border-radius: 10px;
+          box-shadow: 0 0 0 3px rgba(50, 120, 220, 0.1);
+          opacity: 0;
+          transition: opacity 0.3s ease;
+          pointer-events: none;
         }
 
         .input-golden-wrapper:focus-within {
           background: rgba(80, 150, 240, 0.35);
-          box-shadow: 0 0 0 3px rgba(50, 120, 220, 0.1);
+        }
+
+        .input-golden-wrapper:focus-within::after {
+          opacity: 1;
         }
 
         .input-golden-inner {
@@ -758,41 +818,19 @@ const RegisterPage = () => {
         {/* BACKGROUND IMAGES */}
         {/* -------------------------------- */}
 
-        <img
-          ref={bgRef}
-          src={bg2}
-          alt=""
-          className={`
-            pointer-events-none
-            fixed
-            inset-0
-            z-0
-            h-[100dvh]
-            min-h-full
-            w-full
-            object-cover
-            object-center
-            lg:object-left
-            ${isLight ? 'hidden' : ''}
-          `}
+        <ResponsiveImageView
+          avif={darkBgVariants.avif}
+          webp={darkBgVariants.webp}
+          fallback={bg2Webp}
+          imgRef={bgRef}
+          imgClassName={`pointer-events-none fixed inset-0 z-0 h-[100dvh] min-h-full w-full object-cover object-center lg:object-left ${isLight ? 'hidden' : ''}`}
         />
 
-        <img
-          src={lightBg}
-          alt=""
-          className={`
-            pointer-events-none
-            fixed
-            inset-0
-            z-0
-            h-[100dvh]
-            min-h-full
-            w-full
-            object-cover
-            object-center
-            lg:object-left
-            ${isLight ? '' : 'hidden'}
-          `}
+        <ResponsiveImageView
+          avif={lightBgVariants.avif}
+          webp={lightBgVariants.webp}
+          fallback={lightBgWebp}
+          imgClassName={`pointer-events-none fixed inset-0 z-0 h-[100dvh] min-h-full w-full object-cover object-center lg:object-left ${isLight ? '' : 'hidden'}`}
         />
 
         {/* -------------------------------- */}
@@ -1803,7 +1841,7 @@ const RegisterPage = () => {
                     font-inherit
                     text-white
                     shadow-[0_4px_20px_rgba(25,100,230,0.3),0_1px_3px_rgba(25,100,230,0.2)]
-                    transition-all
+                    transition
                     duration-250
                     hover:-translate-y-px
                     hover:from-[#1d75f0]

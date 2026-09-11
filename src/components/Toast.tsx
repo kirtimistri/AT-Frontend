@@ -178,7 +178,7 @@ export function ToastViewport() {
               {/* Dismiss button to close this toast. */}
               <button
                 onClick={() => dismissToast(t.id)}
-                className={`toast-dismiss-btn flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-full border bg-transparent transition-all duration-200 ${isLight ? 'border-[#E5E7EB] text-[#9CA3AF] hover:border-[#2563EB] hover:text-[#2563EB]' : 'border-[rgba(124,192,255,0.25)] text-white/45 hover:border-[#d4af37]/70 hover:text-[#f0c265]'}`}
+                className={`toast-dismiss-btn flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-full border bg-transparent transition duration-200 ${isLight ? 'border-[#E5E7EB] text-[#9CA3AF] hover:border-[#2563EB] hover:text-[#2563EB]' : 'border-[rgba(124,192,255,0.25)] text-white/45 hover:border-[#d4af37]/70 hover:text-[#f0c265]'}`}
                 aria-label="Dismiss"
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="h-3 w-3">
@@ -204,8 +204,8 @@ export function ToastViewport() {
         }
         .toast-pop { animation: toastIn 280ms cubic-bezier(0.2, 0.9, 0.3, 1.2) both; }
 
-        @keyframes toastProgress { from { width: 100%; } to { width: 0%; } }
-        .toast-progress { width: 100%; animation: toastProgress 4.5s linear forwards; }
+        @keyframes toastProgress { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+        .toast-progress { width: 100%; transform-origin: left; will-change: transform; animation: toastProgress 4.5s linear forwards; }
 
         @media (prefers-reduced-motion: reduce) {
           .toast-pop, .toast-progress { animation: none; }

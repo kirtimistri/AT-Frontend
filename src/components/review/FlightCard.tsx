@@ -76,7 +76,7 @@ export const FlightCard = ({
             onClick={() => setExpanded((x) => !x)}
             aria-label={expanded ? 'Collapse flight details' : 'Expand flight details'}
             aria-expanded={expanded}
-            className={`flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border transition-all duration-300 ${isLight ? 'border-[#DEDEDE] bg-white text-[#555] hover:border-[#004B7C] hover:text-[#004B7C]' : 'border-[#315073] bg-[#0d1b2a] text-[#7CC0FF] hover:border-[#d4af37]/70 hover:text-[#f0c265]'}`}
+            className={`flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border transition duration-300 ${isLight ? 'border-[#DEDEDE] bg-white text-[#555] hover:border-[#004B7C] hover:text-[#004B7C]' : 'border-[#315073] bg-[#0d1b2a] text-[#7CC0FF] hover:border-[#d4af37]/70 hover:text-[#f0c265]'}`}
           >
             <ChevronDown className={`h-4 w-4 transition-transform duration-300 ${expanded ? 'rotate-180' : ''}`} />
           </button>

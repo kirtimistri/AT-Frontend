@@ -1,4 +1,5 @@
 import { PageHeader } from '../components/review/PageHeader';
+import { ThemeToggle } from '../components/ThemeToggle';
 import { BookingReference } from '../components/review/BookingReference';
 import { FlightItinerary } from '../components/review/FlightItinerary';
 import { TravellerInformation } from '../components/review/TravellerInformation';
@@ -209,7 +210,9 @@ const TripReviewPage = () => {
 
   return (
     <div className={`flex min-h-screen flex-col transition-colors duration-300 ${isLight ? 'bg-[#FAF8F7]' : 'bg-[#0B132B]'}`}>
-      
+      {/* Floating theme switch — consistent with the rest of the app */}
+      <ThemeToggle size="sm" />
+
       <main className="mx-auto w-full max-w-[1200px] flex-1 px-5 py-6 lg:px-6">
         {/* Back link + Title + Booking Reference */}
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">

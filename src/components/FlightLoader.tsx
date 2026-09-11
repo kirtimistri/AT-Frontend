@@ -4,7 +4,7 @@
 // Animation duration is synchronized with the expected response time (loopMs).
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import planeImg from '../assets/Backgoundimages/flight.png';
+import planeImg from '../assets/Backgoundimages/flight.webp';
 import { useThemeStore } from '../store/themeStore';
 import { AIRPLANE_RUN_MS } from '../store/globalLoader';
 
@@ -333,7 +333,7 @@ export const FlightLoader = ({
             ${isLight ? 'text-slate-900' : 'text-slate-100'}
           `}
           style={{
-            fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif",
+            fontFamily: "'Inter Variable', 'Inter', 'Segoe UI', system-ui, sans-serif",
           }}
         >
           {chars.map((c, i) => (

@@ -1,5 +1,31 @@
 @import "tailwindcss";
 
+@theme {
+  --font-sans: 'Inter Variable', 'Inter', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* ============================================================
+   Inter variable font — self-hosted (latin + latin-ext subsets
+   only). Replaces the external Google Fonts stylesheet so no
+   third-party round-trip is needed on first paint.
+   ============================================================ */
+@font-face {
+  font-family: 'Inter Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('@fontsource-variable/inter/files/inter-latin-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: 'Inter Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('@fontsource-variable/inter/files/inter-latin-ext-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+
 /* ============================================================
    Akbar Bizvoy Logo — theme design tokens
    Default values below apply in DARK mode. Light-mode overrides
@@ -47,7 +73,7 @@ html, body {
 }
 
 body {
-  font-family: 'Inter', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family: 'Inter Variable', 'Inter', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -72,19 +98,30 @@ input, button, textarea {
   animation: spin-swap 0.5s ease;
 }
 
-/* Golden glow for the swap button (hover & click) */
-@keyframes swap-glow {
-  0% {
-    border-color: rgba(212, 175, 55, 0.65);
-    box-shadow: 0 0 6px rgba(212, 175, 55, 0.4), 0 0 16px rgba(212, 175, 55, 0.25);
-  }
-  100% {
-    border-color: rgba(212, 175, 55, 0.95);
-    box-shadow: 0 0 8px rgba(212, 175, 55, 0.65), 0 0 22px rgba(212, 175, 55, 0.4);
-  }
+/* Golden glow for the swap button (hover & click) — rendered on an overlay
+   pseudo-element so the animation only touches opacity (GPU-friendly). */
+.swap-glow-hover,
+.swap-glow-click {
+  position: relative;
 }
-.swap-glow-hover:hover,
-.swap-glow-click:active {
+.swap-glow-hover::after,
+.swap-glow-click::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  z-index: 0;
+  border-radius: inherit;
+  border: 2px solid rgba(212, 175, 55, 0.9);
+  box-shadow: 0 0 8px rgba(212, 175, 55, 0.65), 0 0 22px rgba(212, 175, 55, 0.4);
+  opacity: 0;
+  pointer-events: none;
+}
+@keyframes swap-glow {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+.swap-glow-hover:hover::after,
+.swap-glow-click:active::after {
   animation: swap-glow 0.7s ease forwards;
 }
 .swap-glow-hover:hover svg,

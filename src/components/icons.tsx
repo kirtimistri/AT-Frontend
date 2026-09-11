@@ -112,7 +112,7 @@ export const GitFork = ({ className }: { className?: string }) => (
 );
 
 export const Rupee = ({ className }: { className?: string }) => (
-  <span className={`font-bold transition-all duration-300 ${className ?? ''}`}>₹</span>
+  <span className={`font-bold transition duration-300 ${className ?? ''}`}>₹</span>
 );
 
 export const MapPinIcon = () => (

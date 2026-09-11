@@ -47,13 +47,13 @@ export const Logo = ({
         <div className="flex flex-col leading-none">
           <span
             className={`font-extrabold tracking-tight text-[#242365] ${textClassName || 'text-[17px]'}`}
-            style={{ fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif", color: theme === 'light' ? '#111827' : '#ffffff' }}
+            style={{ fontFamily: "'Inter Variable', 'Inter', 'Segoe UI', system-ui, sans-serif", color: theme === 'light' ? '#111827' : '#ffffff' }}
           >
             Akbar
           </span>
           <span
             className={`font-extrabold tracking-tight text-[#242365] ${textClassName || 'text-[17px]'}`}
-            style={{ fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif", color: theme === 'light' ? '#111827' : '#ffffff' }}
+            style={{ fontFamily: "'Inter Variable', 'Inter', 'Segoe UI', system-ui, sans-serif", color: theme === 'light' ? '#111827' : '#ffffff' }}
           >
             Bizvoy
           </span>
@@ -66,7 +66,7 @@ export const Logo = ({
       <div className="mt-2 flex w-full items-center justify-center rounded bg-[#F20D59] px-4 py-1.5">
         <span
           className="text-[11px] font-semibold tracking-[0.08em] text-white"
-          style={{ fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif" }}
+          style={{ fontFamily: "'Inter Variable', 'Inter', 'Segoe UI', system-ui, sans-serif" }}
         >
           An Enterprise Travel Solution
         </span>

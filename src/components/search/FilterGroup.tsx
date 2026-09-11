@@ -51,15 +51,15 @@ export const FilterGroup = ({ icon, label, value, slider, options, active, onTog
           onToggle();
         }
       }}
-      className={`group relative flex cursor-pointer select-none flex-col justify-center rounded-[14px] border px-2.5 py-1 transition-all duration-300 ${active ? 'flex-none' : 'min-h-0 flex-1'} ${cardCls}`}
+      className={`group relative flex cursor-pointer select-none flex-col justify-center rounded-[14px] border px-2.5 py-1 transition duration-300 ${active ? 'flex-none' : 'min-h-0 flex-1'} ${cardCls}`}
     >
       {/* Header row: red icon chip (unchanged) + label/value stack + chevron. */}
       <div className="flex items-center justify-between gap-2">
         <div className="flex min-w-0 items-center gap-2.5">
           <span
-            className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-[8px] ring-1 transition-all duration-300 group-hover:scale-[1.06] group-active:scale-[1.06] group-hover:shadow-[0_0_12px_rgba(212,175,55,0.6)] ${isLight ? (active ? 'bg-[#DC2626] text-white ring-[#DC2626] group-hover:ring-[#f0c265] group-hover:bg-[#DC2626]' : 'bg-[#EF4444] text-white ring-[#EF4444] shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] group-hover:ring-[#f0c265] group-hover:bg-[#DC2626]') : (active ? 'bg-[#DC2626] text-white ring-[#DC2626]/70 group-hover:ring-[#f0c265] group-hover:bg-[#B91C1C]' : 'bg-[#EF4444] text-white ring-[#EF4444]/60 shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] group-hover:ring-[#f0c265] group-hover:bg-[#DC2626]')}`}
+            className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-[8px] ring-1 transition duration-300 group-hover:scale-[1.06] group-active:scale-[1.06] group-hover:shadow-[0_0_12px_rgba(212,175,55,0.6)] ${isLight ? (active ? 'bg-[#DC2626] text-white ring-[#DC2626] group-hover:ring-[#f0c265] group-hover:bg-[#DC2626]' : 'bg-[#EF4444] text-white ring-[#EF4444] shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] group-hover:ring-[#f0c265] group-hover:bg-[#DC2626]') : (active ? 'bg-[#DC2626] text-white ring-[#DC2626]/70 group-hover:ring-[#f0c265] group-hover:bg-[#B91C1C]' : 'bg-[#EF4444] text-white ring-[#EF4444]/60 shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] group-hover:ring-[#f0c265] group-hover:bg-[#DC2626]')}`}
           >
-            <span className="flex items-center justify-center transition-all duration-300">
+            <span className="flex items-center justify-center transition duration-300">
               {icon}
             </span>
           </span>
@@ -89,7 +89,7 @@ export const FilterGroup = ({ icon, label, value, slider, options, active, onTog
               key={opt.label}
               type="button"
               onClick={() => onOptionToggle?.(i)}
-              className={`flex items-center gap-2.5 rounded-lg px-2 py-1.5 text-left transition-all duration-200 ${
+              className={`flex items-center gap-2.5 rounded-lg px-2 py-1.5 text-left transition duration-200 ${
                 opt.selected
                   ? isLight
                     ? 'bg-[#EFF6FF] border border-[#BFDBFE]'
@@ -100,7 +100,7 @@ export const FilterGroup = ({ icon, label, value, slider, options, active, onTog
               }`}
             >
               <span
-                className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-[5px] border transition-all duration-200 ${
+                className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-[5px] border transition duration-200 ${
                   opt.selected
                     ? isLight
                       ? 'bg-[#2563EB] border-[#2563EB] text-white'

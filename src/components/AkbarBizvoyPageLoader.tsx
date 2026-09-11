@@ -194,7 +194,7 @@ export const AkbarBizvoyPageLoader = () => {
         {/* Brand name */}
         <div
           className={`bizvoy-brand-enter mt-5 text-center text-[24px] font-extrabold leading-none tracking-tight sm:text-[26px] lg:text-[30px] ${isLight ? 'text-[#111827]' : 'text-white'} ${isLight ? 'bizvoy-brand-glow-light' : 'bizvoy-brand-glow-dark'}`}
-          style={{ fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif" }}
+          style={{ fontFamily: "'Inter Variable', 'Inter', 'Segoe UI', system-ui, sans-serif" }}
         >
           Akbar Bizvoy
         </div>

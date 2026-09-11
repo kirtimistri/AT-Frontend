@@ -58,7 +58,7 @@ export const SidebarFilters = () => {
         <button
           type="button"
           onClick={clearFilters}
-          className={`flex shrink-0 cursor-pointer items-center gap-1 border-none bg-transparent text-[11px] font-medium transition-all duration-200 ${isLight ? 'text-[#6B7280] hover:text-[#2563EB]' : 'text-white/60 hover:text-[#f5d67b] hover:drop-shadow-[0_0_6px_rgba(212,175,55,0.7)]'}`}
+          className={`flex shrink-0 cursor-pointer items-center gap-1 border-none bg-transparent text-[11px] font-medium transition duration-200 ${isLight ? 'text-[#6B7280] hover:text-[#2563EB]' : 'text-white/60 hover:text-[#f5d67b] hover:drop-shadow-[0_0_6px_rgba(212,175,55,0.7)]'}`}
         >
           <RotateCcw className="h-3 w-3" />
           Reset
@@ -106,9 +106,9 @@ export const SidebarFilters = () => {
       <div className="shrink-0 pt-1.5">
         <button
           type="button"
-          className={`group relative flex w-full shrink-0 cursor-pointer items-center gap-2.5 overflow-hidden rounded-[14px] border px-3 py-2 text-left transition-all duration-300 ${isLight ? 'bg-white border-[#E5E7EB] text-[#111827] shadow-[0_2px_8px_rgba(0,0,0,0.05)] hover:border-[#BFDBFE] hover:bg-[#EFF6FF] hover:text-[#2563EB] active:bg-[#EFF6FF]' : 'bg-[#0F1B3A] border-[rgba(124,192,255,0.22)] hover:border-[rgba(212,175,55,0.45)] hover:bg-[rgba(212,175,55,0.12)] active:bg-[rgba(212,175,55,0.18)]'}`}
+          className={`group relative flex w-full shrink-0 cursor-pointer items-center gap-2.5 overflow-hidden rounded-[14px] border px-3 py-2 text-left transition duration-300 ${isLight ? 'bg-white border-[#E5E7EB] text-[#111827] shadow-[0_2px_8px_rgba(0,0,0,0.05)] hover:border-[#BFDBFE] hover:bg-[#EFF6FF] hover:text-[#2563EB] active:bg-[#EFF6FF]' : 'bg-[#0F1B3A] border-[rgba(124,192,255,0.22)] hover:border-[rgba(212,175,55,0.45)] hover:bg-[rgba(212,175,55,0.12)] active:bg-[rgba(212,175,55,0.18)]'}`}
         >
-          <span className="relative flex h-6 w-6 shrink-0 items-center justify-center rounded-[8px] bg-[#EF4444] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] transition-all duration-300 group-hover:bg-[#DC2626] group-hover:scale-[1.06] group-active:bg-[#DC2626] group-active:scale-[1.06]">
+          <span className="relative flex h-6 w-6 shrink-0 items-center justify-center rounded-[8px] bg-[#EF4444] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] transition duration-300 group-hover:bg-[#DC2626] group-hover:scale-[1.06] group-active:bg-[#DC2626] group-active:scale-[1.06]">
             <Bookmark className="h-3.5 w-3.5" />
           </span>
           <span

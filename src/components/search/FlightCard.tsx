@@ -99,7 +99,7 @@ const FareTierCard = ({
   isLight?: boolean;
 }) => (
   <div
-    className={`fare-tier-card flex min-w-0 flex-1 flex-col rounded-[12px] border bg-[#0d1b2a] p-3 transition-all duration-300 ${selected ? (isLight ? 'border-[#2563EB] shadow-[0_0_18px_rgba(37,99,235,0.35),0_0_40px_rgba(37,99,235,0.15)]' : 'border-[#d4af37] shadow-[0_0_18px_rgba(212,175,55,0.4),0_0_40px_rgba(212,175,55,0.15)]') : (isLight ? 'border-[#29466e] hover:border-[#2563EB]/60' : 'border-[#29466e] hover:border-[#d4af37]/50')}`}
+    className={`fare-tier-card flex min-w-0 flex-1 flex-col rounded-[12px] border bg-[#0d1b2a] p-3 transition duration-300 ${selected ? (isLight ? 'border-[#2563EB] shadow-[0_0_18px_rgba(37,99,235,0.35),0_0_40px_rgba(37,99,235,0.15)]' : 'border-[#d4af37] shadow-[0_0_18px_rgba(212,175,55,0.4),0_0_40px_rgba(212,175,55,0.15)]') : (isLight ? 'border-[#29466e] hover:border-[#2563EB]/60' : 'border-[#29466e] hover:border-[#d4af37]/50')}`}
   >
     <div className="flex items-start justify-between gap-2">
       <div className="min-w-0">
@@ -108,7 +108,7 @@ const FareTierCard = ({
       </div>
       <button
         onClick={onSelect}
-        className={`fare-tier-submit cursor-pointer rounded-[7px] border px-2.5 py-1 text-[10.5px] font-bold uppercase tracking-wide transition-all duration-200 ${selected ? (isLight ? 'border-[#2563EB] bg-[#2563EB] text-white shadow-[0_0_12px_rgba(37,99,235,0.5)]' : 'border-[#d4af37] bg-[#d4af37] text-[#0d1b2a] shadow-[0_0_12px_rgba(212,175,55,0.6)]') : (isLight ? 'border-[#315073] bg-transparent text-[#7CC0FF] hover:border-[#2563EB]/70 hover:text-[#2563EB]' : 'border-[#315073] bg-transparent text-[#7CC0FF] hover:border-[#d4af37]/70 hover:text-[#f0c265]')}`}
+        className={`fare-tier-submit cursor-pointer rounded-[7px] border px-2.5 py-1 text-[10.5px] font-bold uppercase tracking-wide transition duration-200 ${selected ? (isLight ? 'border-[#2563EB] bg-[#2563EB] text-white shadow-[0_0_12px_rgba(37,99,235,0.5)]' : 'border-[#d4af37] bg-[#d4af37] text-[#0d1b2a] shadow-[0_0_12px_rgba(212,175,55,0.6)]') : (isLight ? 'border-[#315073] bg-transparent text-[#7CC0FF] hover:border-[#2563EB]/70 hover:text-[#2563EB]' : 'border-[#315073] bg-transparent text-[#7CC0FF] hover:border-[#d4af37]/70 hover:text-[#f0c265]')}`}
       >
         {selected ? 'Selected' : 'Select'}
       </button>
@@ -161,7 +161,7 @@ const SelectButton = ({ selected, onSelect, isLight }: { selected: boolean; onSe
       e.stopPropagation();
       onSelect?.();
     }}
-    className={`flex h-[20px] w-full cursor-pointer items-center justify-center gap-1 rounded-[6px] text-[11px] font-bold text-white transition-all duration-300 ${isLight ? 'bg-[#2563EB] hover:bg-[#1D4ED8] shadow-[0_4px_12px_rgba(37,99,235,0.25)] hover:shadow-[0_6px_16px_rgba(37,99,235,0.35)] active:bg-[#1D4ED8]' : selected ? 'bg-[#d4af37] shadow-[0_0_16px_rgba(212,175,55,0.5),0_0_30px_rgba(212,175,55,0.25)] hover:bg-[#f0c265] hover:shadow-[0_0_20px_rgba(212,175,55,0.7),0_0_40px_rgba(212,175,55,0.35)]' : 'bg-[#3b82f6] shadow-[0_4px_12px_rgba(59,130,246,0.25)] hover:bg-[#d4af37] hover:shadow-[0_0_16px_rgba(212,175,55,0.5),0_0_35px_rgba(212,175,55,0.25)] active:bg-[#d4af37] active:shadow-[0_0_22px_rgba(212,175,55,0.65),0_0_45px_rgba(212,175,55,0.35)]'}`}
+    className={`flex h-[20px] w-full cursor-pointer items-center justify-center gap-1 rounded-[6px] text-[11px] font-bold text-white transition duration-300 ${isLight ? 'bg-[#2563EB] hover:bg-[#1D4ED8] shadow-[0_4px_12px_rgba(37,99,235,0.25)] hover:shadow-[0_6px_16px_rgba(37,99,235,0.35)] active:bg-[#1D4ED8]' : selected ? 'bg-[#d4af37] shadow-[0_0_16px_rgba(212,175,55,0.5),0_0_30px_rgba(212,175,55,0.25)] hover:bg-[#f0c265] hover:shadow-[0_0_20px_rgba(212,175,55,0.7),0_0_40px_rgba(212,175,55,0.35)]' : 'bg-[#3b82f6] shadow-[0_4px_12px_rgba(59,130,246,0.25)] hover:bg-[#d4af37] hover:shadow-[0_0_16px_rgba(212,175,55,0.5),0_0_35px_rgba(212,175,55,0.25)] active:bg-[#d4af37] active:shadow-[0_0_22px_rgba(212,175,55,0.65),0_0_45px_rgba(212,175,55,0.35)]'}`}
   >
     <span>{selected ? 'Selected' : 'View'}</span>
     {selected ? (
@@ -401,7 +401,7 @@ export const FlightCard = ({
   <article
     onClick={onSelect}
     style={{ animationDelay: `${index * 90}ms` }}
-    className={`card-flash-in relative flex min-h-[84px] flex-col rounded-[12px] border p-1.5 pb-1.5 pt-[22px] shadow-[inset_0_1px_0_rgba(255,255,255,0.015)] transition-all duration-300 ${onSelect ? 'cursor-pointer' : ''} ${isLight ? 'bg-white border-[#E5E7EB] shadow-[0_2px_8px_rgba(0,0,0,0.06)] hover:border-[#D1D5DB] hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)]' : 'bg-[#0f172a] border-[#214b7e] hover:border-[#d4af37]/70 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.015),0_0_18px_rgba(212,175,55,0.28),0_0_45px_rgba(212,175,55,0.12)]'} ${selected ? (isLight ? 'border-[#DC2626] shadow-[0_0_0_2px_#DC2626,0_4px_12px_rgba(220,38,38,0.25)]' : 'border-[#d4af37] shadow-[inset_0_1px_0_rgba(255,255,255,0.015),0_0_18px_rgba(212,175,55,0.45),0_0_45px_rgba(212,175,55,0.18)]') : ''}`}
+    className={`card-flash-in relative flex min-h-[84px] flex-col rounded-[12px] border p-1.5 pb-1.5 pt-[22px] shadow-[inset_0_1px_0_rgba(255,255,255,0.015)] transition duration-300 ${onSelect ? 'cursor-pointer' : ''} ${isLight ? 'bg-white border-[#E5E7EB] shadow-[0_2px_8px_rgba(0,0,0,0.06)] hover:border-[#D1D5DB] hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)]' : 'bg-[#0f172a] border-[#214b7e] hover:border-[#d4af37]/70 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.015),0_0_18px_rgba(212,175,55,0.28),0_0_45px_rgba(212,175,55,0.12)]'} ${selected ? (isLight ? 'border-[#DC2626] shadow-[0_0_0_2px_#DC2626,0_4px_12px_rgba(220,38,38,0.25)]' : 'border-[#d4af37] shadow-[inset_0_1px_0_rgba(255,255,255,0.015),0_0_18px_rgba(212,175,55,0.45),0_0_45px_rgba(212,175,55,0.18)]') : ''}`}
   >
     {/* Badge + selected check (left side) */}
     <div className="absolute left-3 top-1.5 flex items-center gap-1.5">
@@ -584,7 +584,7 @@ export const FlightCard = ({
             <button
               onClick={() => scrollTiers('left')}
               aria-label="Scroll fare options left"
-              className={`absolute -left-3 top-1/2 z-10 flex h-6 w-6 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border shadow-[0_2px_8px_rgba(0,0,0,0.25)] transition-all duration-300 hover:scale-110 ${isLight ? 'border-[#D1D5DB] bg-white text-[#111827]' : 'border-[#315073] bg-[#1d2b40] text-white'}`}
+              className={`absolute -left-3 top-1/2 z-10 flex h-6 w-6 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border shadow-[0_2px_8px_rgba(0,0,0,0.25)] transition duration-300 hover:scale-110 ${isLight ? 'border-[#D1D5DB] bg-white text-[#111827]' : 'border-[#315073] bg-[#1d2b40] text-white'}`}
             >
               <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="m15 18-6-6 6-6" />
@@ -619,7 +619,7 @@ export const FlightCard = ({
             <button
               onClick={() => scrollTiers('right')}
               aria-label="Scroll fare options right"
-              className={`absolute -right-3 top-1/2 z-10 flex h-6 w-6 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border shadow-[0_2px_8px_rgba(0,0,0,0.25)] transition-all duration-300 hover:scale-110 ${isLight ? 'border-[#D1D5DB] bg-white text-[#111827]' : 'border-[#315073] bg-[#1d2b40] text-white'}`}
+              className={`absolute -right-3 top-1/2 z-10 flex h-6 w-6 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border shadow-[0_2px_8px_rgba(0,0,0,0.25)] transition duration-300 hover:scale-110 ${isLight ? 'border-[#D1D5DB] bg-white text-[#111827]' : 'border-[#315073] bg-[#1d2b40] text-white'}`}
             >
               <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="m9 18 6-6-6-6" />

@@ -327,7 +327,7 @@ const ReviewPage = () => {
                 <span className="text-[13px] font-bold">Amount Payable</span>
                 <span className="text-[19px] font-bold leading-none text-[#3B9CFF]">{inr(fare.total)}</span>
               </div>
-              <button className="mt-3.5 flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-[10px] bg-[#2593fc] text-[13.5px] font-bold text-white shadow-[0_6px_18px_rgba(37,147,252,0.4)] transition-all duration-300 hover:bg-[#d4af37] hover:shadow-[0_0_20px_rgba(212,175,55,0.6)]">
+              <button className="mt-3.5 flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-[10px] bg-[#2593fc] text-[13.5px] font-bold text-white shadow-[0_6px_18px_rgba(37,147,252,0.4)] transition duration-300 hover:bg-[#d4af37] hover:shadow-[0_0_20px_rgba(212,175,55,0.6)]">
                 <PlaneTakeoff className="h-4 w-4" />
                 Continue to Secure Payment
               </button>

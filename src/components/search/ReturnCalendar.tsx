@@ -50,7 +50,7 @@ const MonthGrid = ({ year, month, selected, isLight, onPick }: MonthProps) => {
               disabled={past}
               title={holiday?.name}
               onClick={() => onPick(formatReturn(year, month, cell.day), year, month, cell.day)}
-              className={`group relative flex cursor-pointer flex-col items-center rounded-[10px] px-0.5 py-1 transition-all duration-200 ${isSel ? (isLight ? 'bg-[#2563EB] shadow-[0_0_12px_rgba(37,99,235,0.4)]' : 'bg-[#2593fc] shadow-[0_0_12px_rgba(37,147,252,0.5)]') : (past ? 'cursor-default opacity-30 hover:bg-transparent' : (isLight ? 'hover:bg-[#EFF6FF] hover:text-[#2563EB] hover:shadow-[0_0_10px_rgba(37,99,235,0.2)]' : 'hover:bg-[#d4af37] hover:text-black hover:shadow-[0_0_14px_rgba(212,175,55,0.65)]'))}`}
+              className={`group relative flex cursor-pointer flex-col items-center rounded-[10px] px-0.5 py-1 transition duration-200 ${isSel ? (isLight ? 'bg-[#2563EB] shadow-[0_0_12px_rgba(37,99,235,0.4)]' : 'bg-[#2593fc] shadow-[0_0_12px_rgba(37,147,252,0.5)]') : (past ? 'cursor-default opacity-30 hover:bg-transparent' : (isLight ? 'hover:bg-[#EFF6FF] hover:text-[#2563EB] hover:shadow-[0_0_10px_rgba(37,99,235,0.2)]' : 'hover:bg-[#d4af37] hover:text-black hover:shadow-[0_0_14px_rgba(212,175,55,0.65)]'))}`}
             >
               {holiday && !isSel && (
                 <span className="absolute right-0.5 top-0.5 text-[9px] leading-none">{holiday.emoji}</span>
@@ -69,7 +69,7 @@ const HolidayStrip = ({ isLight }: { isLight: boolean }) => (      <div classNam
     {HOLIDAYS.map((h) => (
       <button
         key={h.name}
-        className={`flex shrink-0 cursor-pointer items-center gap-2.5 rounded-full border py-1.5 pl-1.5 pr-4 text-left transition-all duration-200 ${isLight ? 'bg-white border-[#E5E7EB] hover:border-[#2563EB] hover:bg-[#EFF6FF]' : 'bg-[#121E3C] border-[rgba(124,192,255,0.3)] hover:border-[#d4af37]/70 hover:bg-[rgba(212,175,55,0.08)]'}`}
+        className={`flex shrink-0 cursor-pointer items-center gap-2.5 rounded-full border py-1.5 pl-1.5 pr-4 text-left transition duration-200 ${isLight ? 'bg-white border-[#E5E7EB] hover:border-[#2563EB] hover:bg-[#EFF6FF]' : 'bg-[#121E3C] border-[rgba(124,192,255,0.3)] hover:border-[#d4af37]/70 hover:bg-[rgba(212,175,55,0.08)]'}`}
       >
         <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[16px]" style={{ background: `${h.accent}22` }}>{h.emoji}</span>          <span className="min-w-0">
           <span className={`block truncate text-[11.5px] font-bold transition-colors duration-300 ${isLight ? 'text-[#111827]' : 'text-white'}`}>{h.name}</span>
