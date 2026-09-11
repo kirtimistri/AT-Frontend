@@ -1,14 +1,13 @@
 // Search results page: shows available flights (one-way or round-trip),
 // lets the user pick flights, and shows a price summary bar.
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { useFlightStore, STRIP_WINDOW, STRIP_DEFAULT_START, STRIP_DEFAULT_SEL } from '../store/flightStore';
 import { useThemeStore } from '../store/themeStore';
-import { useGlobalLoader, GLOBAL_SEARCH_MESSAGES } from '../store/globalLoader';
 import { Header } from '../components/Header';
 import { SidebarFilters } from '../components/SidebarFilters';
 import { ResultsColumn } from '../components/ResultsColumn';
 import { PriceStrip } from '../components/PriceStrip';
-import { SkeletonCard } from '../components/SkeletonCard';
+import { FlightSearchLoading } from '../components/FlightSearchLoading';
 import { SummaryBar } from '../components/SummaryBar';
 import { FlightCard } from '../components/FlightCard';
 import { PlaneTakeoff } from '../components/icons';
@@ -42,10 +41,6 @@ const SearchPage = () => {
   const shiftStrip = useFlightStore((s) => s.shiftStrip);
   const restoreSearch = useFlightStore((s) => s.restoreSearch);
 
-  // Global branded loader for the flight search operation.
-  const { showLoader, hideLoader } = useGlobalLoader();
-  const searchLoaderRef = useRef(false);
-
   // On mount: if a saved search exists (e.g. from "open review" flow), restore it.
   useEffect(() => {
     const snapshot = readSearchSnapshot();
@@ -54,20 +49,6 @@ const SearchPage = () => {
       clearSearchSnapshot();
     }
   }, [restoreSearch]);
-
-  // Drive the global loader from the real search state. Only this page's own
-  // search request may hide it (a visit from a route transition must not).
-  useEffect(() => {
-    if (searching) {
-      searchLoaderRef.current = true;
-      showLoader(GLOBAL_SEARCH_MESSAGES);
-      return;
-    }
-    if (searchLoaderRef.current) {
-      searchLoaderRef.current = false;
-      hideLoader();
-    }
-  }, [searching, showLoader, hideLoader]);
 
   // Derived data: the date strip window and price difference from the base date.
   const stripDates = datePool.slice(stripStart, stripStart + STRIP_WINDOW);
@@ -104,40 +85,19 @@ const SearchPage = () => {
             </div>
           ) : searching ? (
             <div className="pt-0">
-              {/* While searching: show loading skeleton placeholders. */}
+              {/* While searching: cinematic flight-search loading animation. */}
               {/* Date & price strip skeleton */}
               <div className={`card-shimmer h-[52px] animate-pulse overflow-hidden rounded-[14px] border transition-colors duration-300 ${isLight ? 'bg-white border-[#E5E7EB] shadow-[0_2px_8px_rgba(0,0,0,0.06)]' : 'bg-[#0F1B3A] border-[rgba(124,192,255,0.22)]'}`} />
 
-              {returnDate ? (
-                /* Round trip: two columns of skeleton cards */
-                <div className="grid grid-cols-1 items-start gap-6 pt-5 xl:grid-cols-2">
-                  {[0, 1].map((col) => (
-                    <div key={col}>
-                      <div className="flex animate-pulse items-baseline justify-between gap-3">
-                        <div className={`h-[15px] w-[96px] rounded transition-colors duration-300 ${isLight ? 'bg-[#D1D5DB]' : 'bg-[#1c3a5f]'}`} />
-                        <div className={`h-[12px] w-[128px] rounded transition-colors duration-300 ${isLight ? 'bg-[#E5E7EB]' : 'bg-[#122844]'}`} />
-                      </div>
-                      <div className={`mt-2 flex items-center gap-2 border-b pb-2 transition-colors duration-300 ${isLight ? 'border-[#E5E7EB]' : 'border-white/10'}`}>
-                        {[0, 1, 2].map((p) => (
-                          <div key={p} className={`h-[24px] w-[58px] animate-pulse rounded-full transition-colors duration-300 ${isLight ? 'bg-[#F3F4F6]' : 'bg-[#16304f]'}`} />
-                        ))}
-                      </div>
-                      <div className="space-y-3 pt-4">
-                        {[0, 1, 2].map((i) => (
-                          <SkeletonCard key={i} index={i} />
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                /* One way: single column of skeleton cards */
-                <div className="space-y-3 pt-4">
-                  {[0, 1, 2].map((i) => (
-                    <SkeletonCard key={i} index={i} />
-                  ))}
-                </div>
-              )}
+              {/* The cinematic loader shows the animated route between the two cities */}
+              <div className="pt-4">
+                <FlightSearchLoading
+                  source={fromCity}
+                  destination={toCity}
+                  sourceCode={fromCode}
+                  destinationCode={toCode}
+                />
+              </div>
             </div>
           ) : returnDate ? (
             <div className="pt-0">
