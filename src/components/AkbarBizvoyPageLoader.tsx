@@ -193,7 +193,7 @@ export const AkbarBizvoyPageLoader = () => {
 
         {/* Brand name */}
         <div
-          className={`bizvoy-brand-enter mt-5 text-center text-[24px] font-extrabold leading-none tracking-tight sm:text-[26px] lg:text-[30px] ${isLight ? 'text-[#111827]' : 'text-white'} ${isLight ? 'bizvoy-brand-glow-light' : 'bizvoy-brand-glow-dark'}`}
+          className={`bizvoy-brand-enter mt-5 text-center text-[24px] font-extrabold leading-none tracking-tight sm:text-[26px] lg:text-[30px] ${isLight ? 'text-[#DC2626]' : 'text-white'} ${isLight ? 'bizvoy-brand-glow-light' : 'bizvoy-brand-glow-dark'}`}
           style={{ fontFamily: "'Inter Variable', 'Inter', 'Segoe UI', system-ui, sans-serif" }}
         >
           Akbar Bizvoy
@@ -203,7 +203,7 @@ export const AkbarBizvoyPageLoader = () => {
         <div className="mt-2.5 flex min-h-[18px] items-center justify-center">
           <p
             key={displayedMessage}
-            className={`bizvoy-message-${rotate ? 'cycle' : 'fixed'} text-center text-[11px] font-medium sm:text-[12px] ${isLight ? 'text-[#5B6472]' : 'text-[#9baec7]'}`}
+            className={`bizvoy-message-${rotate ? 'cycle' : 'fixed'} text-center text-[11px] font-medium sm:text-[12px] ${isLight ? 'text-[#DC2626]' : 'text-[#9baec7]'}`}
           >
             {displayedMessage}
           </p>

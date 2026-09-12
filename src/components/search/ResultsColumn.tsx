@@ -11,7 +11,7 @@ const SortTabs = ({ active, onChange, isLight }: { active: SortKey; onChange: (k
       <button
         key={k}
         onClick={() => onChange(k)}
-        className={`cursor-pointer rounded-full px-2.5 py-0.5 text-[11px] font-semibold capitalize transition-colors duration-200 ${isLight ? (active === k ? 'bg-[#2563EB] text-white shadow-[0_2px_8px_rgba(37,99,235,0.3)]' : 'bg-transparent text-[#6B7280] hover:bg-[#EFF6FF] hover:text-[#2563EB]') : (active === k ? 'bg-[#2593fc] text-white shadow-[0_2px_8px_rgba(37,147,252,0.4)]' : 'bg-transparent text-[#7CC0FF] hover:bg-[rgba(37,147,252,0.14)]')}`}
+        className={`cursor-pointer rounded-full px-2.5 py-[2px] text-[11px] font-semibold capitalize leading-tight transition-colors duration-200 ${isLight ? (active === k ? 'bg-[#2563EB] text-white shadow-[0_2px_8px_rgba(37,99,235,0.3)]' : 'bg-transparent text-[#6B7280] hover:bg-[#EFF6FF] hover:text-[#2563EB]') : (active === k ? 'bg-[#2593fc] text-white shadow-[0_2px_8px_rgba(37,147,252,0.4)]' : 'bg-transparent text-[#7CC0FF] hover:bg-[rgba(37,147,252,0.14)]')}`}
       >
         {k}
       </button>
@@ -41,16 +41,16 @@ export const ResultsColumn = ({ title, scope, flights, dayDelta, selected, onSel
   // Header row with title and flight count
   return (
     <section className={`min-w-0 transition-colors duration-300 ${isLight ? 'text-[#111827]' : 'text-white'}`}>
-      <div className="flex items-baseline justify-between gap-3">
-        <span className={`text-[13.5px] font-bold transition-colors duration-300 ${isLight ? 'text-[#111827]' : 'text-white'}`}>{title}</span>
-        <span className={`text-[10.5px] transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#9baec7]'}`}>{flights.length} Flights Available</span>
-      </div>
-      {/* Sort tabs and smart label */}
-      <div className={`mt-1 flex items-center gap-1 border-b pb-1 transition-colors duration-300 ${isLight ? 'border-[#E5E7EB]' : 'border-white/10'}`}>        <SortTabs active={sort} onChange={onSort} isLight={isLight} />
-        <span className={`ml-auto text-[10.5px] transition-colors duration-300 ${isLight ? 'text-[#2563EB]' : 'text-[#7CC0FF]'}`}>Smart</span>
+      {/* Sort tabs (left) + route title & flight count (right) on one row */}
+      <div className={`flex items-center justify-between gap-3 border-b pb-0.5 transition-colors duration-300 ${isLight ? 'border-[#E5E7EB]' : 'border-white/10'}`}>
+        <SortTabs active={sort} onChange={onSort} isLight={isLight} />
+        <div className="flex items-baseline gap-2">
+          <span className={`text-[13px] font-bold leading-tight transition-colors duration-300 ${isLight ? 'text-[#111827]' : 'text-white'}`}>{title}</span>
+          <span className={`text-[10.5px] leading-tight transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#9baec7]'}`}>{flights.length} Flights Available</span>
+        </div>
       </div>
       {/* List of flight cards, sorted, one per available flight */}
-      <div className="space-y-3 pt-2">
+      <div className="space-y-3 pt-1.5">
         {sortFlights(flights, sort).map((f, i) => (
           <FlightCard
             key={f.code}

@@ -4,7 +4,7 @@
 // Animation duration is synchronized with the expected response time (loopMs).
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import planeImg from '../assets/Backgoundimages/flight.webp';
+import planeImg from '../assets/Backgoundimages/flight.png';
 import { useThemeStore } from '../store/themeStore';
 import { AIRPLANE_RUN_MS } from '../store/globalLoader';
 
@@ -275,6 +275,7 @@ export const FlightLoader = ({
   // ------------------------------------------------------------
 
   const accentColor = isLight ? '#DC2626' : '#F87171';
+  const textColor = isLight ? '#DC2626' : '#F87171';
 
   // ------------------------------------------------------------
   // RESPONSIVE TEXT SIZE
@@ -282,12 +283,12 @@ export const FlightLoader = ({
 
   const sizeClass =
     chars.length <= 16
-      ? 'text-[22px] tracking-tight sm:text-[26px] lg:text-[30px]'
+      ? 'text-[26px] tracking-tight sm:text-[32px] lg:text-[38px]'
       : chars.length <= 24
-        ? 'text-[18px] tracking-tight sm:text-[21px] lg:text-[24px]'
+        ? 'text-[22px] tracking-tight sm:text-[26px] lg:text-[30px]'
         : chars.length <= 36
-          ? 'text-[14px] tracking-tight sm:text-[16px] lg:text-[18px]'
-          : 'text-[11px] tracking-[0.06em] sm:text-[13px] lg:text-[15px]';
+          ? 'text-[18px] tracking-tight sm:text-[21px] lg:text-[24px]'
+          : 'text-[14px] tracking-[0.06em] sm:text-[16px] lg:text-[19px]';
 
   // ------------------------------------------------------------
   // UI
@@ -317,7 +318,7 @@ export const FlightLoader = ({
 
       <div
         key={runKey}
-        className="relative flex w-[min(560px,86vw)] items-center"
+        className="relative flex w-[min(880px,94vw)] items-center"
       >
         {/* TEXT */}
         <p
@@ -330,10 +331,10 @@ export const FlightLoader = ({
             uppercase
             leading-none
             ${sizeClass}
-            ${isLight ? 'text-slate-900' : 'text-slate-100'}
           `}
           style={{
             fontFamily: "'Inter Variable', 'Inter', 'Segoe UI', system-ui, sans-serif",
+            color: textColor,
           }}
         >
           {chars.map((c, i) => (
@@ -379,7 +380,7 @@ export const FlightLoader = ({
               alt=""
               draggable={false}
               className={`
-                h-10 w-auto select-none sm:h-12 lg:h-16
+                h-24 w-auto select-none sm:h-28 lg:h-36
                 ${
                   isLight
                     ? 'drop-shadow-[0_6px_12px_rgba(10,40,90,0.30)]'

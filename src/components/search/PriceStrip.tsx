@@ -1,7 +1,6 @@
-// Horizontal strip of selectable date cards showing prices, with prev/next week arrows.
+// Horizontal strip of selectable date cards, with prev/next week arrows.
 import type { StripDay } from '../../store/flightStore';
 import { useThemeStore } from '../../store/themeStore';
-import { stripInr } from '../../lib/format';
 import { iconProps } from '../../lib/iconProps';
 
 // Props that let the parent control the dates shown and handle user choices
@@ -45,7 +44,6 @@ export const PriceStrip = ({ dates, selected, onPick, onPrev, onNext, canPrev, c
           >
             <span className={`hidden max-w-full truncate text-[10.5px] leading-none transition-colors duration-300 sm:block ${isSel ? (isLight ? 'font-semibold text-[#111827]' : 'font-semibold text-[#7CC0FF]') : (isLight ? 'text-[#6B7280] group-hover:text-[#2563EB]' : 'text-[#9baec7] group-hover:text-[#e8c86a]')}`}>{d.label}</span>
             <span className={`block max-w-full truncate text-[10.5px] leading-none transition-colors duration-300 sm:hidden ${isSel ? (isLight ? 'font-semibold text-[#111827]' : 'font-semibold text-[#7CC0FF]') : (isLight ? 'text-[#6B7280] group-hover:text-[#2563EB]' : 'text-[#9baec7] group-hover:text-[#e8c86a]')}`}>{d.label.split(', ')[1]}</span>
-            <span className={`max-w-full truncate px-0.5 text-[11px] font-bold leading-none transition-colors duration-300 sm:text-[12.5px] ${isSel ? (isLight ? 'text-[#2563EB]' : 'text-[#3B9CFF]') : (isLight ? 'text-[#111827] group-hover:text-[#2563EB]' : 'text-white group-hover:text-[#d4af37]')}`}>{stripInr(d.price)}</span>
             {/* Golden glow ring for the hovered cell only */}
             <span className={`pointer-events-none absolute inset-[2px] rounded-[10px] opacity-0 transition-opacity duration-300 group-hover:opacity-100 ${isLight ? 'shadow-[inset_0_0_14px_rgba(37,99,235,0.15),0_0_16px_rgba(37,99,235,0.2)] ring-1 ring-inset ring-[#2563EB]/50' : 'shadow-[inset_0_0_14px_rgba(212,175,55,0.35),0_0_16px_rgba(212,175,55,0.45)] ring-1 ring-inset ring-[#d4af37]/80'}`} />
           </button>
