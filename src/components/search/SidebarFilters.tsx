@@ -630,6 +630,30 @@ export const SidebarFilters = () => {
             <StopsSelector value={stops} onChange={setStops} />
           </FilterSection>
 
+           <FilterSection
+            icon={<Plane className="h-4 w-4" />}
+            title="Preferred Airline"
+            badge={countTrue(airlines)}
+          >
+            <div className="flex flex-col gap-0.5">
+              {Object.entries(airlines).map(([name, checked]) => (
+                <FilterCheckbox
+                  key={name}
+                  label={name}
+                  sublabel="₹5430"
+                  checked={checked}
+                  onChange={() => toggle(setAirlines, name)}
+                />
+              ))}
+            </div>
+            <button
+              type="button"
+              className={`mt-2.5 text-[12px] font-semibold transition-colors ${showMoreCls}`}
+            >
+              Show More
+            </button>
+          </FilterSection>
+
           <FilterSection icon={<Clock className="h-4 w-4" />} title="Departure Time" badge={depTimes.length}>
             <div className="grid grid-cols-2 gap-2">
               {timeSlots.map((slot) => (
@@ -657,16 +681,7 @@ export const SidebarFilters = () => {
               ))}
             </div>
           </FilterSection>
-
-          <FilterSection icon={<Clock className="h-4 w-4" />} title="Departure Duration">
-            <RangeSliderGolden label="0hr - 1hr 45min" />
-          </FilterSection>
-
-          <FilterSection icon={<Clock className="h-4 w-4" />} title="Return Duration">
-            <RangeSliderGolden label="0hr - 1hr 45min" />
-          </FilterSection>
-
-          <FilterSection icon={<Tag className="h-4 w-4" />} title="Price">
+           <FilterSection icon={<Tag className="h-4 w-4" />} title="Price">
             <RangeSliderGolden label="₹8,237 - ₹30,130" />
             <div className="mt-3 flex items-center gap-3">
               <div className="flex flex-1 flex-col gap-1">
@@ -700,6 +715,16 @@ export const SidebarFilters = () => {
             </div>
           </FilterSection>
 
+          <FilterSection icon={<Clock className="h-4 w-4" />} title="Departure Duration">
+            <RangeSliderGolden label="0hr - 1hr 45min" />
+          </FilterSection>
+
+          <FilterSection icon={<Clock className="h-4 w-4" />} title="Return Duration">
+            <RangeSliderGolden label="0hr - 1hr 45min" />
+          </FilterSection>
+
+         
+
           <FilterSection icon={<Route className="h-4 w-4" />} title="Flight Merger" info>
             <PillInput value={mergerIds} onChange={setMergerIds} />
           </FilterSection>
@@ -726,30 +751,7 @@ export const SidebarFilters = () => {
             </div>
           </FilterSection>
 
-          <FilterSection
-            icon={<Plane className="h-4 w-4" />}
-            title="Preferred Airline"
-            badge={countTrue(airlines)}
-          >
-            <div className="flex flex-col gap-0.5">
-              {Object.entries(airlines).map(([name, checked]) => (
-                <FilterCheckbox
-                  key={name}
-                  label={name}
-                  sublabel="₹5430"
-                  checked={checked}
-                  onChange={() => toggle(setAirlines, name)}
-                />
-              ))}
-            </div>
-            <button
-              type="button"
-              className={`mt-2.5 text-[12px] font-semibold transition-colors ${showMoreCls}`}
-            >
-              Show More
-            </button>
-          </FilterSection>
-
+          
           <FilterSection
             icon={<MapPin className="h-4 w-4" />}
             title="Layover"
