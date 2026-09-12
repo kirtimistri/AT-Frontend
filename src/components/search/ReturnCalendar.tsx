@@ -1,7 +1,7 @@
-import { WEEKDAYS, priceFor, priceColor, holidayForDate, HOLIDAYS } from '../store/flightStore';
-import { useThemeStore } from '../store/themeStore';
-import { iconProps } from '../lib/iconProps';
-import { ChevronRight } from './icons';
+import { WEEKDAYS, priceFor, priceColor, holidayForDate, HOLIDAYS } from '../../store/flightStore';
+import { useThemeStore } from '../../store/themeStore';
+import { iconProps } from '../../lib/iconProps';
+import { ChevronRight } from '../icons';
 
 const monthGrid = (year: number, month: number) => {
   const first = new Date(year, month, 1);

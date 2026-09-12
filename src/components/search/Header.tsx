@@ -1,14 +1,14 @@
 // Main app header: logo, search bar, city swap, return date picker, and theme toggle.
 import { useState } from 'react';
-import { useFlightStore } from '../store/flightStore';
-import { travellersLabel } from '../store/flightStore';
-import { useThemeStore } from '../store/themeStore';
+import { useFlightStore } from '../../store/flightStore';
+import { travellersLabel } from '../../store/flightStore';
+import { useThemeStore } from '../../store/themeStore';
 import { ReturnCalendar } from './ReturnCalendar';
-import { AirportSearch } from './AirportSearch';
-import { ChevronDown, ChevronRight, ArrowLeftRight } from './icons';
-import { iconProps } from '../lib/iconProps';
-import { BrandLogo } from './BrandLogo';
-import { ThemeToggle } from './ThemeToggle';
+import { AirportSearch } from '../AirportSearch';
+import { ChevronDown, ChevronRight, ArrowLeftRight } from '../icons';
+import { iconProps } from '../../lib/iconProps';
+import { BrandLogo } from '../BrandLogo';
+import { ThemeToggle } from '../ThemeToggle';
 
 export const Header = () => {
   // Local state for swap animation, travellers popover, and return date calendar

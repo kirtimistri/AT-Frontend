@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { useThemeStore } from '../store/themeStore';
+import { useThemeStore } from '../../store/themeStore';
 export type SliderSpec = { from: number; to: number };
 export const RangeSlider = ({ from, to }: SliderSpec) => {
   const { theme } = useThemeStore();
@@ -75,7 +75,7 @@ export const RangeSlider = ({ from, to }: SliderSpec) => {
         onPointerCancel={endDrag}
       >
         <div
-          className={`absolute top-0 h-full rounded-full ${isLight ? 'bg-gradient-to-r from-[#60A5FA] to-[#2563EB]' : 'bg-gradient-to-r from-[#3B9CFF] to-[#7CC0FF]'}`}
+          className={`absolute top-0 h-full rounded-full ${isLight ? 'bg-[#2563EB]' : 'bg-[#7CC0FF]'}`}
           style={{ left: `${range.from}%`, width: `${range.to - range.from}%` }}
         />
         <div

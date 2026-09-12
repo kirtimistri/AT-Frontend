@@ -1,7 +1,7 @@
 import { create } from 'zustand';
-import { toast } from '../components/toastStore';
-import { useGlobalLoaderStore } from './globalLoader';
+import { toast } from './toastStore';
 import type { Airport } from '../data/airports';
+import { EMPTY_AIRPORT } from '../data/airports';
 import { airportFromLabel } from '../services/airportSearch';
 
 export type Flight = {
@@ -444,6 +444,20 @@ export const holidayForDate = (year: number, month: number, day: number): Holida
     return d >= s && d <= e;
   });
 
+export type DepartureTimeSlot = {
+  id: string;
+  label: string;
+  timeRange: string;
+  selected: boolean;
+};
+
+const DEFAULT_DEPARTURE_TIMES: DepartureTimeSlot[] = [
+  { id: 'early-morning', label: 'Early Morning', timeRange: '00:00 – 06:00', selected: false },
+  { id: 'morning', label: 'Morning', timeRange: '06:00 – 12:00', selected: false },
+  { id: 'afternoon', label: 'Afternoon', timeRange: '12:00 – 18:00', selected: false },
+  { id: 'evening', label: 'Evening', timeRange: '18:00 – 00:00', selected: false },
+];
+
 type FlightStore = {
   // Client-side dummy data (seeded here so zustand owns it)
   flights: Flight[];
@@ -478,11 +492,13 @@ type FlightStore = {
   stripStart: number;
   stripSel: number;
   openFilters: boolean[];
+  departureTimes: DepartureTimeSlot[];
   activePriceBreakdownId: string | null;
   travellers: Travellers;
   setReturnOpen: (v: boolean) => void;
   setFiltersOpen: (v: boolean) => void;
   toggleFilterGroup: (i: number) => void;
+  toggleDepartureTime: (index: number) => void;
   clearFilters: () => void;
   shiftMonth: (dir: -1 | 1) => void;
   pickReturnDate: (label: string) => void;
@@ -509,10 +525,10 @@ export const useFlightStore = create<FlightStore>()((set, get) => ({
   returnFlights: returnFlightData,
   datePool: datePoolData,
 
-  fromCity: 'PNQ - Pune',
-  toCity: 'DEL - New Delhi',
-  fromAirport: airportFromLabel('PNQ - Pune'),
-  toAirport: airportFromLabel('DEL - New Delhi'),
+  fromCity: '',
+  toCity: '',
+  fromAirport: EMPTY_AIRPORT,
+  toAirport: EMPTY_AIRPORT,
   returnOpen: false,
   filtersOpen: false,
   monthOffset: 0,
@@ -531,6 +547,7 @@ export const useFlightStore = create<FlightStore>()((set, get) => ({
   stripStart: STRIP_DEFAULT_START,
   stripSel: STRIP_DEFAULT_SEL,
   openFilters: Array(8).fill(false),
+  departureTimes: [...DEFAULT_DEPARTURE_TIMES],
   activePriceBreakdownId: null,
   travellers: { ...DEFAULT_TRAVELLERS },
 
@@ -549,9 +566,14 @@ export const useFlightStore = create<FlightStore>()((set, get) => ({
   setFiltersOpen: (v) => set({ filtersOpen: v }),
   toggleFilterGroup: (i) =>
     set((s) => ({ openFilters: s.openFilters.map((v, idx) => (idx === i ? !v : v)) })),
+  toggleDepartureTime: (index) =>
+    set((s) => ({
+      departureTimes: s.departureTimes.map((t, i) => (i === index ? { ...t, selected: !t.selected } : t)),
+    })),
   clearFilters: () => {
     set({
       openFilters: Array(8).fill(false),
+      departureTimes: [...DEFAULT_DEPARTURE_TIMES],
       returnDate: null,
       selectedOnward: null,
       selectedReturn: null,
@@ -659,6 +681,10 @@ export const useFlightStore = create<FlightStore>()((set, get) => ({
   doSearch: () => {
     const { searching, fromCity, toCity, returnDate, travellers } = get();
     if (searching) return;
+    if (!fromCity.trim() || !toCity.trim()) {
+      toast({ kind: 'error', code: 400, title: 'Missing Route', message: 'Please select both From and To cities.' });
+      return;
+    }
     const fromCode = fromCity.split(' - ')[0];
     const toCode = toCity.split(' - ')[0];
     if (fromCode === toCode) {
@@ -678,21 +704,8 @@ export const useFlightStore = create<FlightStore>()((set, get) => ({
     };
     set({ selectedOnward: null, selectedReturn: null, searching: true });
 
-    // Enter flight-search loader mode so the Global Loader renders the
-    // animated cards INSIDE the results area instead of the full-screen overlay.
-    useGlobalLoaderStore.getState().setFlightSearchMode({
-      fromCity,
-      toCity,
-      fromCode,
-      toCode,
-    });
-
     window.setTimeout(() => {
       set({ searching: false, searched: true });
-
-      // Exit flight-search loader mode — the animated cards are replaced by
-      // the real flight result cards via the normal `searched` state branch.
-      useGlobalLoaderStore.getState().clearFlightSearchMode();
 
       const { fromCity: fc, toCity: tc } = get();
       toast({ kind: 'success', code: 200, title: 'Search Complete', message: `${fc} → ${tc} flights loaded for ${travellersLabel(searchRequest.travellers).toLowerCase()}.` });

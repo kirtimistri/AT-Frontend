@@ -2,10 +2,10 @@
 // Summary card for ancillary services (meals, seats, baggage, SSR) shown in the flight review sidebar.
 import { useState } from 'react';
 import { Sparkles } from 'lucide-react';
-import { useThemeStore } from '../store/themeStore';
-import { useAncillaryStore, travellerSectionOf } from '../store/ancillaryStore';
-import { selectionTotal } from '../lib/ancillary';
-import { inr } from '../lib/format';
+import { useThemeStore } from '../../store/themeStore';
+import { useAncillaryStore, travellerSectionOf } from '../../store/ancillaryStore';
+import { selectionTotal } from '../../lib/ancillary';
+import { inr } from '../../lib/format';
 import type { AncillarySegment } from './AncillaryServicesModal';
 
 type PricingField = {

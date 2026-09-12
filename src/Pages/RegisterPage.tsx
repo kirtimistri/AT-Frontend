@@ -6,8 +6,7 @@ import logo from'../assets/Backgoundimages/logo2.svg';
 import{useThemeStore}from'../store/themeStore';
 import{signupUser,ApiError}from'../services/authService';
 import ReCAPTCHA from'react-google-recaptcha';
-import{toast}from'../components/toastStore';
-import{ThemeToggle}from'../components/ThemeToggle';
+import{toast}from'../store/toastStore';
 import{useGlobalLoader,GLOBAL_SIGNUP_MESSAGES}from'../store/globalLoader';
 
 const BG_W=1672,BG_H=941,PLANET={cx:929,cy:1575,r:1413};
@@ -20,7 +19,7 @@ const HorizonGlow=({imgRef}:{imgRef:React.RefObject<HTMLImageElement|null>})=>{
    raf=0;const r=img.getBoundingClientRect();if(!r.width||!r.height)return;
    const scale=Math.max(r.width/BG_W,r.height/BG_H),cw=BG_W*scale,ch=BG_H*scale;
    const p=getComputedStyle(img).objectPosition.match(/-?[\d.]+%/g)||[];
-   const px=p.length?parseFloat(p[0])/100:0,py=p.length>1?parseFloat(p[1])/100:.5;
+   const px=p.length?parseFloat(p[0]!)/100:0,py=p.length>1?parseFloat(p[1]!)/100:.5;
    setBox({left:r.left+(r.width-cw)*px,top:r.top+(r.height-ch)*py,width:cw,height:ch});
   };
   const schedule=()=>{if(!raf)raf=requestAnimationFrame(update)};
@@ -100,7 +99,7 @@ const RegisterPage=()=>{
   try{
    const res=await signupUser({name:trimmedName,email:trimmedEmail,password,confirmPassword,captcha:captchaToken});
    if(res.success){
-    toast({kind:'success',code:201,title:'Created',message:res.message||'Account created! Redirecting…'});navigate('/login');
+    hideLoader();toast({kind:'success',code:201,title:'Created',message:res.message||'Account created! Redirecting…'});navigate('/login');
    }else{
     hideLoader();toast({kind:'error',code:400,title:'Signup Failed',message:res.message||'Could not create account.'});
    }
@@ -222,7 +221,7 @@ const RegisterPage=()=>{
      <p className={`m-0 mb-2 text-[12px] ${isLight?'text-[#64748b]':'text-[rgba(170,195,225,.55)]'}`}>Sign up to continue to your account.</p>
 
      <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-2 text-left">
-      {fields.map((f,i)=><div key={f.label}>
+      {fields.map((f)=><div key={f.label}>
        <label className={labelClass}>{f.label}</label>
        <div className="input-golden-wrapper"><div className="input-golden-inner">
         <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">{f.icon}</svg>
@@ -234,9 +233,9 @@ const RegisterPage=()=>{
        ['Password',password,setPassword,showPassword,setShowPassword,'Create a password',<><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></>],
        ['Confirm Password',confirmPassword,setConfirmPassword,showConfirmPassword,setShowConfirmPassword,'Re-enter your password',<><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><path d="M12 15v3"/></>]
       ].map(([label,value,set,show,setShow,placeholder,icon])=><div key={label as string}>
-       <label className={labelClass}>{label}</label>
+       <label className={labelClass}>{label as string}</label>
        <div className="input-golden-wrapper"><div className="input-golden-inner relative">
-        <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">{icon}</svg>
+        <svg className={iconClass} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">{icon as React.ReactNode}</svg>
         <input type={show?'text':'password'} value={value as string} onChange={e=>(set as React.Dispatch<React.SetStateAction<string>>)(e.target.value)} placeholder={placeholder as string} required className={fieldClass}/>
         <Eye show={show as boolean} setShow={setShow as (v:boolean)=>void}/>
        </div></div>

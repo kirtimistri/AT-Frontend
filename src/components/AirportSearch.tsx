@@ -132,11 +132,17 @@ export const AirportSearch = ({
           {label}
         </div>
         <div className="mt-0.5">
-          {/* `PNQ - Pune` style label, matching the original field typography */}
-          <div className={`truncate text-[12.5px] font-bold transition-all duration-300 sm:text-[14px] ${isLight ? 'text-[#111827]' : 'text-white'}`}>
-            <span className="font-extrabold">{selected.iataCode}</span>
-            {` - ${selected.city}`}
-          </div>
+          {selected.iataCode ? (
+            /* `PNQ - Pune` style label, matching the original field typography */
+            <div className={`truncate text-[12.5px] font-bold transition-all duration-300 sm:text-[14px] ${isLight ? 'text-[#111827]' : 'text-white'}`}>
+              <span className="font-extrabold">{selected.iataCode}</span>
+              {` - ${selected.city}`}
+            </div>
+          ) : (
+            <div className={`truncate text-[12.5px] font-semibold transition-all duration-300 sm:text-[14px] ${isLight ? 'text-[#9CA3AF]' : 'text-white/40'}`}>
+              {label === 'From' ? 'Select departure' : 'Select arrival'}
+            </div>
+          )}
         </div>
       </div>
 

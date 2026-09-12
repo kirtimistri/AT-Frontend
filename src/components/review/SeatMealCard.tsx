@@ -1,8 +1,8 @@
 // SeatMealCard.tsx
 // Allows the user to pick a seat and meal, adjust pricing overrides, and proceed to booking.
 import { useState } from 'react';
-import { SeatIcon } from './icons';
-import { useThemeStore } from '../store/themeStore';
+import { SeatIcon } from '../icons';
+import { useThemeStore } from '../../store/themeStore';
 
 type PricingField = {
   label: string;

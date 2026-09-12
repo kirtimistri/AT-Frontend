@@ -9,9 +9,9 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { CSSProperties, ReactNode } from 'react';
-import { useFlightStore } from '../store/flightStore';
-import { useThemeStore } from '../store/themeStore';
-import { minutesToHm, twelveHToMins, minsTo24H, durationMinutes, cityNameOf } from '../lib/format';
+import { useFlightStore } from '../../store/flightStore';
+import { useThemeStore } from '../../store/themeStore';
+import { minutesToHm, twelveHToMins, minsTo24H, durationMinutes, cityNameOf } from '../../lib/format';
 
 const POPOVER_WIDTH = 250;
 const GAP = 10;

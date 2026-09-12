@@ -6,15 +6,17 @@ import lightBg from '../assets/Backgoundimages/backgroundlight.jpeg';
 import logo from '../assets/Backgoundimages/logo2.svg';
 import { useThemeStore } from '../store/themeStore';
 import { useAuthStore } from '../store/authStore';
-import { useGlobalLoader, GLOBAL_LOGIN_MESSAGES } from '../store/globalLoader';
+import { useGlobalLoader } from '../store/globalLoader';
 import { loginUser, ApiError } from '../services/authService';
-import { toast } from '../components/toastStore';
-import { ThemeToggle } from '../components/ThemeToggle';
+import { toast } from '../store/toastStore';
 
 // Pre-filled credentials for the demo login button.
 const DEMO_EMAIL = 'demo@akbarbizvoy.com', DEMO_PASSWORD = 'demo123';
 
-const LoginPage2 = () => {
+const LOGIN_MESSAGES = [
+  'Signing you in...' ,
+  'Preparing your workspace...' ,
+  'Almost there...', ];const LoginPage2 = () => {
   const navigate = useNavigate();
   // Theme + auth store setup.
   const { theme } = useThemeStore();
@@ -121,7 +123,7 @@ const LoginPage2 = () => {
     setIsSubmitting(true);
 
     // Full-screen branded loader while the auth request is in flight.
-    showLoader(GLOBAL_LOGIN_MESSAGES);
+    showLoader(LOGIN_MESSAGES);
 
     try {
       const res = await loginUser(trimmed, password);
@@ -129,7 +131,7 @@ const LoginPage2 = () => {
       if (res.success && res.data) {
         authLogin(res.data);
         toast({ kind: 'success', code: 200, title: 'Signed In', message: 'Welcome back! Redirecting…' });
-        // Keep the loader visible through the SPA transition — the page transition controller fades it out once the search page mounts.
+        hideLoader();
         navigate('/search');
       } else {
         hideLoader();

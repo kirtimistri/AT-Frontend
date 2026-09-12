@@ -15,6 +15,9 @@ export interface Airport {
   country: string;
 }
 
+/** Sentinel used in the From/To search fields when nothing is selected yet. */
+export const EMPTY_AIRPORT: Airport = { iataCode: '', city: '', airportName: '', country: '' };
+
 export const AIRPORTS: readonly Airport[] = [
   // ── India ────────────────────────────────────────────────────────────
   { iataCode: 'PNQ', city: 'Pune', airportName: 'Pune International Airport', country: 'India' },

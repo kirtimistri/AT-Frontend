@@ -9,19 +9,6 @@
 // finished (no arbitrary timers decide when real work is "done").
 import { create } from 'zustand';
 
-/** The two rendering modes for the global loader system.
-    "global"        – full-screen overlay (login, navigation, etc.)
-    "flight-search" – inline loader rendered inside the flight-results area. */
-export type LoaderMode = 'global' | 'flight-search';
-
-/** Metadata for the flight-search loader: the route the user searched. */
-export type FlightSearchMeta = {
-  fromCity: string;
-  toCity: string;
-  fromCode: string;
-  toCode: string;
-};
-
 export type GlobalLoaderContent = {
   /** Fixed message. When set, the loader shows it statically (no rotation). */
   message?: string;
@@ -47,11 +34,6 @@ type GlobalLoaderState = {
   messages: string[];
   /** Bumped every time the loader content changes so the rotation restarts. */
   contentVersion: number;
-  /** Active rendering mode. "global" for the full-screen overlay,
-      "flight-search" for the inline results-area loader. */
-  loaderMode: LoaderMode;
-  /** Route metadata when in flight-search mode. */
-  flightSearchMeta: FlightSearchMeta | null;
   /** Show the loader. Keeps its own reference, so it must be hidden again. */
   showLoader: (content?: LoaderRequest) => void;
   /** Swap the loader content WITHOUT adding a reference (used during page
@@ -59,11 +41,6 @@ type GlobalLoaderState = {
   setLoaderContent: (content?: LoaderRequest) => void;
   /** Hide the loader (releases the caller's reference). */
   hideLoader: () => void;
-  /** Enter flight-search mode with route metadata. Does NOT affect the
-      global overlay counter — the caller still manages show/hide. */
-  setFlightSearchMode: (meta: FlightSearchMeta) => void;
-  /** Exit flight-search mode, reverting to global mode. */
-  clearFlightSearchMode: () => void;
 };
 
 // --- Per-operation rotating messages ---------------------------------------
@@ -88,25 +65,22 @@ export const GLOBAL_BOOKING_MESSAGES = [
   'Securing your seats...',
   'Preparing your itinerary...',
   'Almost there...',
-];
-
-export const GLOBAL_LOGIN_MESSAGES = [
-  'Welcome to Akbar Bizboy...',
-  'Signing you in...',
-  'Preparing your workspace...',
+];export const GLOBAL_LOGIN_MESSAGES = [
+  'Signing you in...' ,
+  'Preparing your workspace...' ,
   'Almost there...',
 ];
 
 export const GLOBAL_SIGNUP_MESSAGES = [
-  'Creating your account...',
-  'Setting up your profile...',
+  'Creating your account...' ,
+  'Setting up your profile...' ,
   'Almost there...',
 ];
 
 export const GLOBAL_NAV_MESSAGES = [
-  'Welcome to Akbar Bizboy...',
-  'Loading your page...',
-  'Preparing your journey...',
+  'Welcome to Akbar Bizvoy...' ,
+  'Loading your page...' ,
+  'Preparing your journey...' ,
   'Almost there...',
 ];
 
@@ -115,7 +89,7 @@ export const GLOBAL_NAV_MESSAGES = [
  * place so the CSS animation (`--plane-ms`), the overlay dwell time and the
  * Book->review flow all stay perfectly in sync.
  */
-export const AIRPLANE_RUN_MS = 1000;
+export const AIRPLANE_RUN_MS = 2000;
 
 function parseContent(content?: LoaderRequest): ParsedContent {
   if (!content) return { message: null, messages: [] };
@@ -133,8 +107,6 @@ export const useGlobalLoaderStore = create<GlobalLoaderState>()((set) => ({
   message: null,
   messages: [],
   contentVersion: 0,
-  loaderMode: 'global',
-  flightSearchMeta: null,
 
   showLoader: (content) =>
     set((state) => {
@@ -161,12 +133,6 @@ export const useGlobalLoaderStore = create<GlobalLoaderState>()((set) => ({
     set((state) => ({
       counter: Math.max(0, state.counter - 1),
     })),
-
-  setFlightSearchMode: (meta) =>
-    set({ loaderMode: 'flight-search', flightSearchMeta: meta }),
-
-  clearFlightSearchMode: () =>
-    set({ loaderMode: 'global', flightSearchMeta: null }),
 }));
 
 /**

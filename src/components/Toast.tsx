@@ -1,6 +1,6 @@
 // Toast.tsx – Toast notification system that shows temporary messages at the top of the screen.
 import { useEffect, useState, type ReactNode } from 'react';
-import { dismissToast, getActiveToasts, subscribeToasts, type ToastData, type ToastKind } from './toastStore';
+import { dismissToast, getActiveToasts, subscribeToasts, type ToastData, type ToastKind } from '../store/toastStore';
 import { useThemeStore } from '../store/themeStore';
 
 // Helper to convert HTTP status codes to human-readable labels.

@@ -4,15 +4,16 @@ import { FlightItinerary } from '../components/review/FlightItinerary';
 import { TravellerInformation } from '../components/review/TravellerInformation';
 import { GSTInformation } from '../components/review/GSTInformation';
 import { FareSummary } from '../components/review/FareSummary';
-import { SeatMealPricingPanel, type ConfirmedSelections } from '../components/SeatMealPricingPanel';
+import { SeatMealPricingPanel, type ConfirmedSelections } from '../components/review/SeatMealPricingPanel';
 import { Footer } from '../components/review/Footer';
-import type { AncillarySegment } from '../components/AncillaryServicesModal';
+import type { AncillarySegment } from '../components/review/AncillaryServicesModal';
 import type { FlightCardProps } from '../components/review/FlightCard';
 import type { Flight } from '../store/flightStore';
 import { useThemeStore } from '../store/themeStore';
 import { cityNameOf } from '../lib/format';
 import type { BookingSelection } from '../lib/openReview';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useGlobalLoaderStore, GLOBAL_BOOKING_MESSAGES } from '../store/globalLoader';
 
 // Fallback demo data — shown only when no booking selection is available so the
 // page keeps its original content instead of showing an empty itinerary.
@@ -137,6 +138,14 @@ const TripReviewPage = () => {
   const [confirmed, setConfirmed] = useState<ConfirmedSelections | null>(null);
   const { theme } = useThemeStore();
   const isLight = theme === 'light';
+
+  const splashShown = useRef(false);
+  useEffect(() => {
+    if (splashShown.current) return;
+    splashShown.current = true;      const store = useGlobalLoaderStore.getState();
+    store.showLoader(GLOBAL_BOOKING_MESSAGES);
+    window.setTimeout(() => store.hideLoader(), 2000);
+  }, []);
   let onward: FlightCardProps | undefined;
   let ret: FlightCardProps | undefined;
   let onwardPrice: number | undefined;

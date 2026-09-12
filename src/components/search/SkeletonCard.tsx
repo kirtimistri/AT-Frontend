@@ -1,7 +1,7 @@
 // SkeletonCard.tsx
 // A shimmer placeholder card shown while flight data is loading.
 import type { CSSProperties } from 'react';
-import { useThemeStore } from '../store/themeStore';
+import { useThemeStore } from '../../store/themeStore';
 
 export const SkeletonCard = ({ index }: { index: number }) => {
   const { theme } = useThemeStore();

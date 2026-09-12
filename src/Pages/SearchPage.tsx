@@ -3,13 +3,13 @@
 import { useEffect } from 'react';
 import { useFlightStore, STRIP_WINDOW, STRIP_DEFAULT_START, STRIP_DEFAULT_SEL } from '../store/flightStore';
 import { useThemeStore } from '../store/themeStore';
-import { Header } from '../components/Header';
-import { SidebarFilters } from '../components/SidebarFilters';
-import { ResultsColumn } from '../components/ResultsColumn';
-import { PriceStrip } from '../components/PriceStrip';
-import { FlightSearchLoading } from '../components/FlightSearchLoading';
-import { SummaryBar } from '../components/SummaryBar';
-import { FlightCard } from '../components/FlightCard';
+import { Header } from '../components/search/Header';
+import { SidebarFilters } from '../components/search/SidebarFilters';
+import { ResultsColumn } from '../components/search/ResultsColumn';
+import { PriceStrip } from '../components/search/PriceStrip';
+import { SkeletonCard } from '../components/search/SkeletonCard';
+import { SummaryBar } from '../components/search/SummaryBar';
+import { FlightCard } from '../components/search/FlightCard';
 import { PlaneTakeoff } from '../components/icons';
 import { readSearchSnapshot, clearSearchSnapshot } from '../lib/openReview';
 
@@ -71,7 +71,7 @@ const SearchPage = () => {
         <SidebarFilters />
 
         {/* ---- Results ---- */}
-        <main className={`pretty-scroll min-w-0 flex-1 overflow-x-hidden overflow-y-scroll p-3 pt-1 sm:p-4 sm:pt-2 ${barVisible ? 'pb-[128px] md:pb-[124px]' : ''}`}>
+        <main className={`pretty-scroll min-w-0 flex-1 overflow-x-hidden overflow-y-scroll p-3 pt-1 sm:p-4 sm:pt-2 ${barVisible ? 'pb-[104px] md:pb-[100px]' : ''}`}>
           {/* Before a search: show a friendly "search flights" message. */}
           {!searched ? (
             <div className="flex h-full flex-col items-center justify-center text-center">
@@ -80,23 +80,23 @@ const SearchPage = () => {
               </div>
               <p className={`mt-5 text-[16px] font-bold transition-colors duration-300 ${isLight ? 'text-[#111827]' : 'text-white'}`}>Search flights to see results</p>
               <p className={`mt-1.5 max-w-sm text-[13px] transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-white/50'}`}>
-                Enter your route and press the Search button to load available flights for {fromCity} → {toCity}.
+                {fromCity && toCity
+                  ? `Enter your route and press the Search button to load available flights for ${fromCity} → ${toCity}.`
+                  : 'Enter your From and To cities in the search bar above, then press Search to load available flights.'}
               </p>
             </div>
           ) : searching ? (
             <div className="pt-0">
-              {/* While searching: cinematic flight-search loading animation. */}
+              {/* While searching: date & price strip skeleton + flight card skeletons. */}
               {/* Date & price strip skeleton */}
               <div className={`card-shimmer h-[52px] animate-pulse overflow-hidden rounded-[14px] border transition-colors duration-300 ${isLight ? 'bg-white border-[#E5E7EB] shadow-[0_2px_8px_rgba(0,0,0,0.06)]' : 'bg-[#0F1B3A] border-[rgba(124,192,255,0.22)]'}`} />
 
-              {/* The cinematic loader shows the animated route between the two cities */}
-              <div className="pt-4">
-                <FlightSearchLoading
-                  source={fromCity}
-                  destination={toCity}
-                  sourceCode={fromCode}
-                  destinationCode={toCode}
-                />
+              {/* Flight card skeletons */}
+              <div className="space-y-3 pt-4">
+                <SkeletonCard index={0} />
+                <SkeletonCard index={1} />
+                <SkeletonCard index={2} />
+                <SkeletonCard index={3} />
               </div>
             </div>
           ) : returnDate ? (

@@ -1,9 +1,9 @@
-import type { Flight } from '../store/flightStore';
-import { useFlightStore } from '../store/flightStore';
-import { AirlineLogo } from './Logos';
-import { inr, to24H } from '../lib/format';
-import { useThemeStore } from '../store/themeStore';
-import { prepareReview } from '../lib/openReview';
+import type { Flight } from '../../store/flightStore';
+import { useFlightStore } from '../../store/flightStore';
+import { AirlineLogo } from '../Logos';
+import { inr, to24H } from '../../lib/format';
+import { useThemeStore } from '../../store/themeStore';
+import { prepareReview } from '../../lib/openReview';
 
 const FlightSummary = ({ label, f, isLight }: { label: 'ONWARD' | 'RETURN'; f: Flight | null; isLight?: boolean }) => (
   <div className={`flex min-w-0 items-center gap-2.5 px-3 py-2 sm:w-auto sm:flex-1 sm:gap-3.5 sm:px-6 sm:py-2 transition-colors duration-300 ${isLight ? 'text-[#111827]' : 'text-white/90'}`}>
@@ -45,7 +45,7 @@ export const SummaryBar = ({ onward, ret, dayDelta }: { onward: Flight | null; r
   const both = !!onward && !!ret;
   const any = !!onward || !!ret;
   return (
-    <div className={`group fixed inset-x-0 bottom-0 z-40 border-t backdrop-blur transition-all duration-300 md:left-[300px] ${isLight ? 'bg-white/95 border-[#E5E7EB] shadow-[0_-10px_36px_rgba(0,0,0,0.08)] hover:border-[#2563EB]/50 hover:shadow-[0_-10px_36px_rgba(0,0,0,0.08),0_0_22px_rgba(37,99,235,0.15),0_0_60px_rgba(37,99,235,0.08)]' : 'bg-[#0F1B3A]/95 border-[rgba(124,192,255,0.25)] shadow-[0_-10px_36px_rgba(0,0,0,0.55)] hover:border-[#d4af37]/60 hover:shadow-[0_-10px_36px_rgba(0,0,0,0.55),0_0_22px_rgba(212,175,55,0.35),0_0_60px_rgba(212,175,55,0.16)]'}`}>
+    <div className={`group fixed inset-x-0 bottom-0 z-40 border-t backdrop-blur transition-all duration-300 md:left-[240px] lg:left-[260px] ${isLight ? 'bg-white/95 border-[#E5E7EB] shadow-[0_-10px_36px_rgba(0,0,0,0.08)] hover:border-[#2563EB]/50 hover:shadow-[0_-10px_36px_rgba(0,0,0,0.08),0_0_22px_rgba(37,99,235,0.15),0_0_60px_rgba(37,99,235,0.08)]' : 'bg-[#0F1B3A]/95 border-[rgba(124,192,255,0.25)] shadow-[0_-10px_36px_rgba(0,0,0,0.55)] hover:border-[#d4af37]/60 hover:shadow-[0_-10px_36px_rgba(0,0,0,0.55),0_0_22px_rgba(212,175,55,0.35),0_0_60px_rgba(212,175,55,0.16)]'}`}>
       <div className="flex flex-wrap items-stretch">
         <div className={`grid w-full grid-cols-2 divide-x ${isLight ? 'divide-[#E5E7EB]' : 'divide-white/10'} sm:w-auto sm:flex`}>
           <FlightSummary label="ONWARD" f={onward} isLight={isLight} />

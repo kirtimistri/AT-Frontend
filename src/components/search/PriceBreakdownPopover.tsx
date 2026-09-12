@@ -3,9 +3,9 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { ReactNode } from 'react';
-import { useFlightStore } from '../store/flightStore';
-import { useThemeStore } from '../store/themeStore';
-import { inr, type PriceBreakdown } from '../lib/format';
+import { useFlightStore } from '../../store/flightStore';
+import { useThemeStore } from '../../store/themeStore';
+import { inr, type PriceBreakdown } from '../../lib/format';
 
 const POPOVER_WIDTH = 240;
 const POPOVER_HEIGHT = 196;
