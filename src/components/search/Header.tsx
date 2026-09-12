@@ -77,41 +77,64 @@ export const Header = () => {
 
   // Shared styling for the −/+ stepper buttons.
   const stepperCls = (disabled: boolean) =>
-    `flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-[14px] font-bold leading-none transition-all duration-200 active:scale-90 ${
-      disabled
-        ? 'cursor-not-allowed border-current/30 text-current opacity-40'
-        : `cursor-pointer ${isLight ? 'border-[#D1D5DB] text-[#2563EB] hover:border-[#2563EB] hover:bg-[#EFF6FF]' : 'border-[rgba(124,192,255,0.4)] text-[#7CC0FF] hover:border-[#7CC0FF] hover:bg-white/5'}`
+    `flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-[14px] font-bold leading-none transition-all duration-200 active:scale-90 ${disabled
+      ? 'cursor-not-allowed border-current/30 text-current opacity-40'
+      : `cursor-pointer ${isLight ? 'border-[#D1D5DB] text-[#2563EB] hover:border-[#2563EB] hover:bg-[#EFF6FF]' : 'border-[rgba(124,192,255,0.4)] text-[#7CC0FF] hover:border-[#7CC0FF] hover:bg-white/5'}`
     }`;
 
   // Left section: just the app logo
   const leftSection = (
-    <div className="flex min-w-0 items-center gap-2 sm:gap-5">
+
+    <div className="flex min-w-0 items-center gap-2 sm:gap-1">
       <BrandLogo size="md" />
-      
+
+      <div className="flex items-center gap-1">
+        <span
+          className="font-extrabold tracking-tight text-[14px] sm:text-[17px]"
+          style={{
+            fontFamily: 'Inter, "Segoe UI", system-ui, sans-serif',
+            color: "rgb(17, 24, 39)",
+          }}
+        >
+          Akbar
+        </span>
+
+        <span
+          className="font-extrabold tracking-tight text-[14px] sm:text-[17px]"
+          style={{
+            fontFamily: 'Inter, "Segoe UI", system-ui, sans-serif',
+            color: "rgb(17, 24, 39)",
+          }}
+        >
+          Bizvoy
+        </span>
+      </div>
     </div>
+
+
   );
 
   // Right section: filters toggle, avatar badge, and theme toggle
   const rightSection = (
     <div className="flex shrink-0 items-center gap-1.5 sm:gap-4">
-        <button
-          type="button"
-          onClick={() => setFiltersOpen(!filtersOpen)}
-          aria-label="Toggle filters"
-          aria-expanded={filtersOpen}
-          className={`flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border transition-colors duration-200 md:hidden ${isLight ? 'bg-white border-[#E5E7EB] text-[#2563EB] hover:bg-[#F3F4F6]' : 'bg-transparent border-[rgba(212,175,55,0.35)] text-[#f0c265] hover:border-[#d4af37]/70 hover:text-[#f5d67b]'}`}
-        >
-          <svg {...iconProps('h-3.5 w-3.5')}><line x1="4" y1="6" x2="20" y2="6" /><line x1="4" y1="12" x2="20" y2="12" /><line x1="4" y1="18" x2="20" y2="18" /></svg>
-        </button>
-        <div
-          role="button"
-          tabIndex={0}
-          aria-label="Account"
-          className={`flex h-7 w-7 cursor-pointer select-none items-center justify-center rounded-full text-[11px] font-bold ring-1 transition-all duration-300 hover:scale-[1.06] ${isLight ? 'bg-[#EFF6FF] text-[#2563EB] ring-[#2563EB]/30 shadow-[0_2px_8px_rgba(37,99,235,0.18)] hover:shadow-[0_4px_14px_rgba(37,99,235,0.28)]' : 'bg-[#2B5BFF] text-white ring-[#7CC0FF]/40 shadow-[0_2px_10px_rgba(43,91,255,0.4)] hover:shadow-[0_4px_16px_rgba(43,91,255,0.55)]'}`}
-        >
-          AS
-        </div>
-        <ThemeToggle className="shrink-0" size="sm" />
+      <button
+        type="button"
+        onClick={() => setFiltersOpen(!filtersOpen)}
+        aria-label="Toggle filters"
+        aria-expanded={filtersOpen}
+        className={`flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border transition-colors duration-200 md:hidden ${isLight ? 'bg-white border-[#E5E7EB] text-[#2563EB] hover:bg-[#F3F4F6]' : 'bg-transparent border-[rgba(212,175,55,0.35)] text-[#f0c265] hover:border-[#d4af37]/70 hover:text-[#f5d67b]'}`}
+      >
+        <svg {...iconProps('h-3.5 w-3.5')}><line x1="4" y1="6" x2="20" y2="6" /><line x1="4" y1="12" x2="20" y2="12" /><line x1="4" y1="18" x2="20" y2="18" /></svg>
+      </button>
+      <div
+        role="button"
+        tabIndex={0}
+        aria-label="Account"
+        className={`flex h-7 w-7 cursor-pointer select-none items-center justify-center rounded-full text-[11px] font-bold ring-1 transition-all duration-300 hover:scale-[1.06] ${isLight ? 'bg-[#EFF6FF] text-[#2563EB] ring-[#2563EB]/30 shadow-[0_2px_8px_rgba(37,99,235,0.18)] hover:shadow-[0_4px_14px_rgba(37,99,235,0.28)]' : 'bg-[#2B5BFF] text-white ring-[#7CC0FF]/40 shadow-[0_2px_10px_rgba(43,91,255,0.4)] hover:shadow-[0_4px_16px_rgba(43,91,255,0.55)]'}`}
+      >
+        AS
+      </div>
+      <ThemeToggle className="shrink-0" size="sm" />
     </div>
   );
 
@@ -160,7 +183,7 @@ export const Header = () => {
       >
         <div>
           <div className={`bar-text text-[10px] font-semibold tracking-[0.12em] transition-all duration-300 ${isLight ? 'text-[#6B7280]' : 'text-[#7CC0FF]'}`}>Departure</div>
-          <div className={`mt-0.5 truncate text-[12.5px] font-bold transition-all duration-300 sm:text-[14px] ${isLight ? 'text-[#111827]' : 'text-white'}`}>{departDate ?? stripDay.label}</div>
+           <div className={`mt-0.5 truncate text-[12.5px] font-bold transition-all duration-300 sm:text-[14px] ${departDate ? (isLight ? 'text-[#111827]' : 'text-white') : (isLight ? 'text-[#9CA3AF]' : 'text-white/40')}`}>{departDate ?? 'Departure'}</div>
           <ChevronDown className={`absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 transition-colors duration-300 ${isLight ? 'text-[#6B7280]' : 'text-white/40'}`} />
         </div>
       </button>
