@@ -87,6 +87,7 @@ export const Header = () => {
   const leftSection = (
     <div className="flex min-w-0 items-center gap-2 sm:gap-5">
       <BrandLogo size="md" />
+      
     </div>
   );
 
