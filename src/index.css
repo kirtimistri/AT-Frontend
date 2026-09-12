@@ -198,6 +198,15 @@ html {
   background: rgba(124, 192, 255, 0.7);
 }
 
+/* Hide the whole-screen (window) scrollbar; wheel/touch scrolling still works */
+html {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+html::-webkit-scrollbar {
+  display: none;
+}
+
 /* Blue scrollbars for internal panels (flight results, filter sidebar) */
 .pretty-scroll {
   scrollbar-width: thin;
@@ -230,6 +239,15 @@ html {
 }
 .pretty-scroll::-webkit-scrollbar-thumb:hover {
   background: rgba(124, 192, 255, 0.7);
+}
+
+/* Scrollbar hidden but content still scrollable */
+.hide-scrollbar {
+  scrollbar-width: none;          /* Firefox */
+  -ms-overflow-style: none;       /* IE / Edge */
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;                  /* Chrome, Safari, Opera */
 }
 
 /* ============================================================

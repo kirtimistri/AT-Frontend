@@ -83,14 +83,14 @@ const SearchPage = () => {
   const barVisible = searched && (!!selectedOnward || !!selectedReturn);
 
   return (
-    <div className={`flex min-h-[100dvh] flex-col overflow-x-hidden lg:h-[100dvh] lg:overflow-hidden font-sans ${isLight ? 'light-theme bg-white text-[#111827]' : 'bg-[#0B132B] text-white'}`}>
+    <div className={`flex h-[100dvh] flex-col overflow-hidden font-sans ${isLight ? 'light-theme bg-white text-[#111827]' : 'bg-[#0B132B] text-white'}`}>
       <Header />
 
       <div className="flex min-h-0 flex-1 flex-col items-stretch overflow-hidden md:flex-row">
         <SidebarFilters />
 
         {/* ---- Results ---- */}
-        <main className={`pretty-scroll min-w-0 flex-1 overflow-x-hidden overflow-y-scroll p-3 pt-1 sm:p-4 sm:pt-2 ${barVisible ? 'pb-[128px] md:pb-[124px]' : ''}`}>
+        <main className={`hide-scrollbar pretty-scroll min-w-0 flex-1 overflow-x-hidden overflow-y-scroll p-3 pt-1 sm:p-4 sm:pt-2 ${barVisible ? 'pb-[128px] md:pb-[124px]' : ''}`}>
           {/* Before a search: show a friendly "search flights" message. */}
           {!searched ? (
             <div className="flex h-full flex-col items-center justify-center text-center">
